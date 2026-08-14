@@ -1,0 +1,707 @@
+Business Requirement Document
+Spatial Data Infrastructure Department
+SDI DGE – GeoVision
+Date of Submission: 07/08/2026
+Version: 1.0
+Document Control:
+| Document Reference Information
+| Master Location: | N/A
+| Document ID: | GeoVision Business Requirement Document Version 1.0
+| Document Name: | GeoVision Business Requirement Document
+| Original Issue Date: | 07/08/2026
+| Latest Issue #: | 1.0
+| Latest Issue Date: | 07/08/2026
+| Document Owner: | Spatial Data Infrastructure
+| Document User: | Spatial Data Infrastructure
+| Information classification: | Confidential
+| Send all questions, clarifications, or suggested changes to the content of this document via email to sdiops@dge.gov.ae, who maintains operational manual documentation.
+---
+| Prepared By | Reviewed By | Approved By | Issued By
+| Infantina Selvan | Prasanna Lakshmi | Sendhil Kumar | IST
+---
+Abbreviations
+The table below lists the abbreviations used throughout this Business Requirement Document, along with their corresponding full forms for reference and clarity.
+| Abbreviation | Full Form
+| AI | Artificial Intelligence
+| AOI | Area of Interest
+| API | Application Programming Interface
+| BR | Business Requirement
+| BRD | Business Requirements Document
+| ESRI | Environmental Systems Research Institute
+| FRS | Functional Requirements Specification
+| GIS | Geographic Information System
+| LLM | Large Language Model
+| NFR | Non-Functional Requirement
+| NLP | Natural Language Processing
+| NLQ | Natural Language Query
+| POI | Point of Interest
+| RBAC | Role-Based Access Control
+| SDI | Spatial Data Infrastructure
+| SIT | System Integration Testing
+| SME | Subject Matter Expert
+| UI | User Interface
+| UX | User Experience
+| KPI | Key Performance Indicator
+| API Gateway | Application Programming Interface Gateway
+| AI Gateway | Artificial Intelligence Gateway
+| GIS API | Geographic Information System Application Programming Interface
+| GIS Layer | Geographic Information System Layer
+| Map AOI | Map Area of Interest
+---
+Requirements Workshops
+This document is based on a series of business requirement workshops conducted with the project stakeholders. The following participants attended the workshops and contributed to the requirements.
+| Date | Workshop | Participants
+| 03-Aug-2026 | Business Requirement Session 01 | Prasad Jakkamsetty (SDI OPS) Hari Kumar Konapuram (SDI OPS) Mahmoud Shaat (SDI OPS) Tarun Visvanadula (SDI OPS) Sendhil Kumar (IST) Riya Fernando (IST) Prasanna Lakshmi (IST) Saxina Brightson (IST) Infantina Selvan (IST)
+| 04-Aug-2026 | Business Requirement Session 02 | Prasad Jakkamsetty (SDI OPS) Hari Kumar Konapuram (SDI OPS) Tarun Visvanadula (SDI OPS) Sendhil Kumar (IST) Riya Fernando (IST) Prasanna Lakshmi (IST) Saxina Brightson (IST) Infantina Selvan (IST)
+---
+Executive Summary
+Purpose
+The purpose of this Business Requirement document (BRD) is to define the functional requirements for the GeoVision– Enterprise AI Enablement project. This document provides a comprehensive description of the business requirements, functional capabilities, user interactions, system behaviors, and integration requirements for incorporating Artificial Intelligence (AI) into the GeoVision Platform.
+The BRD serves as the primary reference for business stakeholders, solution architects, developers, testers, and project teams throughout the solution lifecycle. It establishes a common understanding of the expected system functionality and provides the basis for solution design, development, testing, deployment, and user acceptance.
+Project Scope
+The GeoVision project aims to enhance the existing Smart Maps Platform with enterprise AI capabilities that enable users to interact with authoritative geospatial data using natural language.
+The project includes the implementation of an AI-powered interface that allows users to perform intelligent map searches, discover spatial datasets, execute AI-assisted spatial analysis and receive location-based results through conversational interactions.
+The solution introduces an AI Gateway API to securely integrate the GeoVision application with the approved Large Language Model (LLM) platform, Core42 Compass AI. The AI layer will interpret user queries and coordinate with existing GIS services, Feature Services, and the Spatial Database to retrieve validated spatial information and generate meaningful responses.
+Key Components Include:
+Integration of AI capabilities into the existing Smart Maps Platform.
+Natural language-based search and interaction with spatial datasets.
+AI-assisted spatial analysis and contextual recommendations.
+Discovery of GIS layers and datasets through natural language queries.
+Automated generation of insights, and analytical reports.
+Secure integration with Core42 Compass AI through the AI Gateway API.
+Support for bilingual interactions (Arabic and English).
+Role-based Access Control (RBAC) to ensure users can access only the application features, datasets, and AI capabilities authorized for their roles.
+Logging, monitoring, and auditing of AI interactions in accordance with enterprise governance requirements.
+Functional Expectations:
+The GeoVision Platform aims to provide an AI-enabled geospatial ecosystem where users can access, explore, analyze, and understand government spatial information through conversational interactions while ensuring that all GIS operations continue to be executed using authoritative enterprise GIS services. The solution combines the reasoning capabilities of modern AI with the reliability and governance of Abu Dhabi's Spatial Data Infrastructure, creating a secure, scalable, and future-ready platform for digital government.
+The Enterprise AI-enabled GeoVision Platform shall provide the following core capabilities:
+Functional Module 1 – AI Enablement:
+The GeoVision Enterprise AI Enablement solution extends the existing Smart Maps Platform with Artificial Intelligence (AI) and Natural Language Processing (NLP) capabilities to provide a more intelligent, user-friendly, and scalable geospatial experience.
+The implementation of AI Enablement provides the following business benefits:
+Improved User Experience: Simplifies access to spatial information through conversational interactions, reducing the learning curve for non-GIS users.
+Enhanced Decision-Making: Delivers AI-generated insights, and recommendations to support informed planning and operational decisions.
+Operational Efficiency: Accelerates data discovery and spatial analysis by reducing the number of manual steps required to retrieve and visualize information.
+Governance and Security: Ensures that all AI interactions comply with government security standards through role-based access control, audit logging, and secure integration with authoritative GIS services.
+Future Scalability: Provides a flexible architecture capable of supporting additional datasets, AI capabilities, themes, and digital government services without major redesign.
+Functional Module 2 – Conversational Map Interface:
+The Conversational Map Interface enables users to interact with the Platform using natural language instead of traditional GIS tools.
+Users can submit queries in English or Arabic, and the system interprets their intent, executes the corresponding GIS operations, and returns results in an intuitive format such as text, tables, maps, charts, or reports (if applicable). Enable users to discover relevant datasets, map themes, and spatial layers using natural language queries. Support context-aware conversations, allowing users to ask follow-up questions while maintaining the context of previous interactions.
+The conversational interface is designed for both GIS and non-GIS users, making spatial information accessible without requiring technical GIS expertise.
+The system shall:
+Accept English and Arabic prompts.
+Identify user intent.
+Maintain conversation context.
+Interpret follow-up questions.
+Execute GIS queries.
+Display map results.
+Recommend related datasets.
+Generate Map only reports
+Functional Module 3 – Smart Filtering and Map Visualization:
+The Smart Filtering & Map Visualization module enables users to interactively visualize and analyze spatial data based on natural language queries. Once the AI interprets the user's intent, the Smart Maps backend applies the appropriate attribute and spatial filters to the selected datasets and dynamically updates the map.
+The Smart Filtering & Map Visualization module includes:
+Intelligent map filtering based on AI interpretation
+Attribute-based filtering and Spatial filtering
+Feature highlighting
+Dynamic map updates
+Thematic visualization
+Automatic zoom to selected features
+Real-time rendering of filtered results
+Active filter management
+Integration with GIS Services and Feature Services
+Functional Module 4 – Sketch based AI Insights & Export:
+The Sketch-based AI Insights & Export module enables users to perform interactive spatial analysis by drawing an Area of Interest (AOI) directly on the Smart Maps interface. Users can sketch freehand or use predefined geometric shapes to define the analysis area. Once the AOI is submitted, the system performs spatial intersection analysis against the enabled Smart Maps layers, identifies relevant features, and generates AI-assisted insights and recommendations.
+This module includes:
+Interactive sketch tools
+Area of Interest (AOI) selection and spatial intersection analysis
+Feature counting and categorization
+Pattern detection and Analytical visualizations
+Map-only export
+Integration with Smart Maps layers and GIS services
+Functional Module 5 – Bilingual Support:
+The Bilingual Support module enables the platform to provide a seamless user experience in both English and Arabic. The solution supports bilingual interaction throughout the complete user journey, AI interpretation, GIS processing, map visualization, reports, and AI-generated responses.
+The platform leverages Core42 Compass AI to process natural language queries in either language while maintaining the same functional capabilities regardless of the selected language. Users may choose their preferred language at login or switch languages during an active session.
+This module includes:
+English and Arabic query input and responses
+Localized user interface labels
+Bilingual reports and charts (if applicable)
+Government-standard Arabic terminology
+Language switching
+Integration with Core42 Compass AI for multilingual processing
+Functional Module 6 – Secure Deployment and API Security:
+The Secure Deployment and API Security module defines the security considerations for integrating the Enterprise AI Platform with the GeoVision application and backend services. The module focuses on protecting communications between the AI components, the AI Gateway, and the GIS backend while ensuring compliance with DGE IT governance and cybersecurity policies.
+This module includes:
+Secure API communication between the AI Gateway and backend services
+AI Gateway security architecture
+API authentication and authorization mechanisms (subject to DGE security requirements)
+Secure integration with GIS services and Feature Services
+Audit logging and monitoring of AI service interactions
+Secure deployment within DGE-approved infrastructure
+Compliance with DGE IT governance and cybersecurity policies
+Encryption of data in transit and other applicable security controls
+Functional Module 7 – Compass AI Integration:
+The Compass AI Integration module enables natural language understanding and conversational intelligence within the Enterprise AI Platform. Core42 Compass AI serves as the AI reasoning layer that interprets user requests, identifies user intent, extracts relevant entities, and generates structured function calls for execution by the Smart Maps GIS backend.
+Compass AI does not directly access spatial datasets or GIS services. Instead, it provides structured instructions that are executed by the Smart Maps backend through approved APIs and ArcGIS Feature Services, ensuring that authoritative GIS processing remains within the secure GIS environment.
+The Compass AI Integration module includes:
+Natural Language Query (NLQ) processing.
+Text-based conversational interactions.
+Context-aware conversations within the active session.
+Support for follow-up questions based on previous user interactions.
+Map-based search using natural language.
+Spatial intent interpretation to identify geographic entities, locations, and spatial relationships.
+Feature service queries through secure backend function calls.
+Map filtering through backend integration.
+Structured chart and graph responses (if applicable).
+Compass AI acts solely as the reasoning layer and does not directly execute GIS queries or access spatial datasets.
+Functional Module 8 – User Authentication & Session Management:
+The Smart Maps application shall support secure user authentication and session management to provide both guest and registered public users with an appropriate level of access while ensuring a seamless and personalized user experience.
+The application shall support the following user types:
+Guest User
+Registered Public User
+Anonymous (Guest) User
+Users shall be able to access the Smart Maps application without registration or login.
+A temporary session shall be created for each Guest User.
+AI conversations shall remain active only for the current browser session.
+Session data shall be automatically cleared when the browser window or session is closed.
+User prompts and interactions shall be logged for governance and security purposes.
+Features requiring user-specific information, such as My Favorites and Conversation History, shall not be available.
+Submit feedback
+Registered Public User
+Registered public users shall be able to:
+Create a user account.
+Log in securely to the application.
+Maintain persistent AI conversation history.
+Save and manage favourite locations and searches.
+Resume previous sessions where applicable.
+Access future personalized services and recommendations.
+Submit feedback
+The application shall prompt users to authenticate when accessing restricted functionalities.
+Functional Module 9 – AI Governance & Logging:
+The Smart Maps application shall provide comprehensive AI governance and logging capabilities to support security, auditing, troubleshooting, and continuous improvement of the AI-enabled platform.
+The system shall record AI interactions, including but not limited to:
+User prompts
+AI-generated responses
+Session Identifier
+User Identifier (where applicable)
+Timestamp
+Request status
+The application shall also maintain system logs, including:
+User login activities
+Authentication events
+Application errors
+System exceptions
+Warning messages
+Security events
+API failures
+Governance Requirements
+Logging shall apply to both authenticated and Guest Users.
+All logs shall be securely stored within the backend database.
+Logged information shall be maintained for auditing, security investigation, troubleshooting, and future system improvements.
+No user interface or analytical dashboard is required for viewing logs.
+Log retention policies shall follow DGE security and governance standards.
+Functional Module 10 – User Feedback Management:
+The Smart Maps application shall provide users with the ability to submit feedback regarding the application, AI responses, and overall user experience to support continuous improvement.
+Users shall be able to submit feedback regardless of their authentication status.
+The feedback form shall capture the following information:
+Name
+Email Address
+Feedback Comments
+Application Ratings
+The application shall:
+Validate mandatory fields before submission.
+Store submitted feedback securely within the application database.
+Record the submission date and time.
+Associate feedback with the user account when submitted by an authenticated user.
+Associate feedback with the current session when submitted anonymously.
+The feedback collected shall be stored in the database for future administrative review and product enhancements.
+Functional Module 11 – Open Data & Layer Management:
+The GeoVision application shall provide configurable management of Open Data layers, basemaps, and thematic categories to support future scalability and simplified administration.
+The application shall support:
+Display of all approved Open Data layers.
+Management of thematic categories and GIS layers
+Integration with the existing Phase I shared Portal Groups for basemaps.
+Support for configurable basemaps and raster datasets
+Dynamic enabling and disabling of GIS layers.
+Configuration-based addition of new thematic categories.
+Rearrangement of existing categories and themes.
+Creation of new parent themes through configuration.
+Future expansion of Open Data datasets without requiring application redevelopment wherever feasible.
+Configuration Requirements
+The application shall support configuration-driven management of:
+Layer visibility
+Layer grouping and Category ordering
+Basemap selection
+Theme hierarchy
+Future GIS datasets
+The layer management framework shall be modular and scalable to accommodate future business requirements and Open Data expansions
+Functional Module 12 – Testing, Training and Handover
+The GeoVision project shall include comprehensive testing, user validation, knowledge transfer, and solution handover activities to ensure that the implemented solution meets the agreed business requirements and is ready for operational use.
+Upon successful completion of the project, the solution shall be formally handed over along with the required project deliverables and supporting documentation.
+This module includes:
+Functional testing of GeoVision features.
+AI and Natural Language Query (NLQ) validation, GIS data and map query validation.
+System Integration Testing (SIT) and User Acceptance Testing (UAT) support.
+End-user training & Knowledge transfer sessions.
+Delivery of project documentation.
+Production deployment support & Solution handover.
+Business Requirement Session Feedback:
+| S no | Feedback Description | Comments
+| 1 | The GeoVision application shall provide an AI-powered conversational GIS experience that enables users to interact with the map naturally without requiring GIS expertise. Integrate advanced AI capabilities within the GeoVision Platform with innovative designs. AI shall understand complex and multi-layer spatial queries. | 
+| 2 | The application shall maintain contextual conversations with the user throughout the active session. | 
+| 3 | Smart Recommendations: The system shall proactively provide recommendations based on user interaction | 
+| 4 | The GeoVision application shall support GIS analytical widgets integrated with AI functionality | 
+| 5 | The existing Phase I symbology shall be redesigned | 
+| 6 | AI Governance & Prompt Logging: Every AI interaction shall be logged for governance, auditing and security purposes | 
+| 7 | User Feedback: Users shall be able to submit application feedback regardless of authentication status. | 
+| 8 | Favorites/Bookmark Authenticated users shall be able to: Save favorite locations Revisit saved locations Manage Favorites | Guest Users shall not have Favorites functionality, as the application with prompt the user to login to access my Favorites option.
+| 9 | External Information & AI Trust: Whenever AI responses include external or third-party information, the application shall clearly indicate that the information is not authenticated. | 
+| 10 | Modular Architecture: The GeoVision solution shall follow a modular architecture allowing future expansion. The solution shall support: Additional AI models New GIS widgets Additional datasets Configuration-driven enhancements Future integrations | 
+| 11 | User Authentication: The application shall support two modes of access. Guest User Temporary browser session Session cleared after browser closure Prompts logged No persistent history Registered Public User User account Persistent conversation history My Favorites | Additional privileges for registered public users (subject to DGE confirmation) Clarification is required from the SDI team regarding: --Login prompting strategy --User categories --Registration workflow and details --Application Privilege allocation --Azure Authentication requirement for DGE Users
+| 12 | Logging Requirements: The application shall maintain backend logs for: Login activities User prompts Exceptions Errors Warnings Security events | --No reporting dashboard or statistics UI is required. --Logs shall be stored for future reference only.
+| 13 | Conversational Map Analysis & Export: Users shall be able to perform spatial analysis through AI conversations. The application shall support exporting: Current map view with DGE approved Map layout Export/Print requirements: Standard DGE template Map export only No raw GIS data download GP Service required for map printing | 
+| 14 | Open Data Layers: GeoVision shall support all approved Open Data layers. Current scope: Approximately 11–12 categories Approximately 200 layers Existing Phase I shared Portal groups for Basemaps Configurable basemaps Raster datasets Future requirements: Add new categories Rearrange themes Add new parent themes Configuration-driven layer management | All Dataset details to be confirmed upon agreement
+| 15 | Bilingual Data Support: The application shall support both English and Arabic wherever bilingual data exists. Requirements: Display available bilingual information. Clearly indicate when Arabic or English information is unavailable. Bilingual search functionality shall depend on available source data. | Suitable AI-based automatic translation solutions should be evaluated and proposed
+| 16 | Smart Filtering & Map Visualization: The solution shall provide advanced filtering capabilities enabling users to: Filter spatial datasets Dynamically update map visualization Perform AI-assisted filtering Refine search results interactively | 
+| 17 | Sketch-Based Spatial Analysis: Users shall be able to sketch directly on the map. The system shall: Analyze features within the sketch Display related information Provide AI-generated insights Support exporting/printing the map view in the standard template | Raw GIS data download shall not be permitted.
+| 18 | Future Configurability: The application architecture shall clearly identify Configurable components Non-configurable components Extension points for future enhancements Future updates shall be achievable through configuration without requiring major application redevelopment. | 
+| 19 | AI Platform Current Priority: CORE42 Compass AI. The current implementation will utilize CORE42 Compass AI, while the solution architecture should remain flexible to support Azure AI in the future. | Future Consideration: Azure AI integration (Excluded from the current scope)
+---
+Functional Requirements - GeoVision:
+Application Navigation
+Home
+| Field | Description
+| BR ID | BR - 01
+| Widget Name | Home
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide a home option that allows users to navigate to the GeoVision landing page from any location within the application.
+| Functional Area | GeoVision Landing Page
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can return to the GeoVision landing page by selecting the home option.
+---
+About Us
+| Field | Description
+| BR ID | BR - 02
+| Widget Name | About Us
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide an About Us page containing information about the Department of Government Enablement its objectives, and supporting organizations and platforms.
+| Functional Area | GeoVision Landing Page
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can access the About Us page from the application navigation menu.
+---
+Help
+| Field | Description
+| BR ID | BR - 03
+| Widget Name | Help
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide a Help feature that enables users to access user guides, help documentation, and instructional video tutorials to assist them in understanding and effectively using the GeoVision application.
+| Functional Area | GeoVision Landing Page
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can access the Help section from the application. Help content provides guidance on key application features and functionality. Users can navigate the Help content without leaving the application. |  | Users can access the Help section from the application. Help content provides guidance on key application features and functionality. Users can navigate the Help content without leaving the application.
+| 
+| Users can access the Help section from the application. Help content provides guidance on key application features and functionality. Users can navigate the Help content without leaving the application.
+---
+User Preferences
+Switch Theme
+| Field | Description
+| BR ID | BR - 04
+| Widget Name | Switch Theme (Light/Dark)
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall allow users to switch between available application themes to improve visual accessibility and user preference.
+| Functional Area | User Preferences
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can switch between the available themes, and the selected theme is applied throughout the application.
+---
+Language Toggle
+| Field | Description
+| BR ID | BR - 05
+| Widget Name | Language Toggle
+| Requirement Type | New
+| Description | The system shall provide users with the ability to switch the application interface between the supported languages, including English and Arabic. The selected language shall be consistently applied across the user interface, map labels where supported, AI interactions, and system messages.
+| Functional Area | User Preferences
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can switch between English and Arabic. The application interface updates immediately to the selected language AI search prompts and responses are supported in the selected language The language preference is retained for Registered Public Users and persists for the current session for general users.
+---
+User Profile
+Profile
+| Field | Description
+| BR ID | BR - 06
+| Widget Name | Profile
+| Requirement Type | New
+| Description | The system shall provide authenticated users with access to their profile and personalization settings.
+| Functional Area | User Profile
+| User Persona | Registered Public User
+| Acceptance Criteria | Registered Public Users can access their profile and manage available personal settings.
+---
+Login
+| Field | Description
+| BR ID | BR - 07
+| Widget Name | Login
+| Requirement Type | New
+| Description | The system shall provide registered public users with the ability to securely authenticate using their registered credentials to access personalized features and services within the GeoVision application.
+| Functional Area | User Profile
+| User Persona | Registered Public User
+| Acceptance Criteria | Registered public users can log in using valid credentials. Invalid login attempts display an appropriate error message. Upon successful authentication, users are redirected to the GeoVision application. Authenticated users can access personalized features such as My Favorites, Conversation History, and User Profile.
+---
+Sign Up
+| Field | Description
+| BR ID | BR - 08
+| Widget Name | Sign Up
+| Requirement Type | New
+| Description | The system shall provide new users with the ability to create a GeoVision account by submitting the required registration information and completing the applicable verification process.
+| Functional Area | User Profile
+| User Persona | Guest User
+| Acceptance Criteria | New users can register by providing the required information such as Username, Email ID, Password. Mandatory fields are validated before account creation. Duplicate registrations using the same email address are prevented. Successfully registered public users can log in using their newly created credentials.
+---
+Logout
+| Field | Description
+| BR ID | BR - 09
+| Widget Name | Logout
+| Requirement Type | New
+| Description | The system shall allow authenticated users to securely end their active session by logging out of the GeoVision application. |  | The system shall allow authenticated users to securely end their active session by logging out of the GeoVision application.
+| 
+| The system shall allow authenticated users to securely end their active session by logging out of the GeoVision application.
+| Functional Area | User Profile
+| User Persona | Registered Public User
+| Acceptance Criteria | Users can log out from any authenticated session. The system terminates the active session securely. Users are redirected to the landing page or login screen after logout. Restricted features are no longer accessible until the user logs in again.
+---
+Forgot Password
+| Field | Description
+| BR ID | BR - 10
+| Widget Name | Forgot Password
+| Requirement Type | New
+| Description | The system shall provide registered public users with the ability to securely reset their password when they are unable to access their account.
+| Functional Area | User Profile
+| User Persona | Registered Public User
+| Acceptance Criteria | Users can request a password reset from the login page. The system validates the registered public user before initiating the password reset process. Users can set a new password after successful verification. Users can log in using the newly created password. |  | Users can request a password reset from the login page. The system validates the registered public user before initiating the password reset process. Users can set a new password after successful verification. Users can log in using the newly created password.
+| 
+| Users can request a password reset from the login page. The system validates the registered public user before initiating the password reset process. Users can set a new password after successful verification. Users can log in using the newly created password.
+---
+My Favorites
+| Field | Description
+| BR ID | BR - 11
+| Widget Name | My Favorites
+| Requirement Type | New
+| Description | The system shall allow users to save map locations, datasets, search results, and points of interest for quick access during future sessions. Favorited items shall be accessible through the user's My favorites list and support efficient navigation to saved locations.
+| Functional Area | User Profile
+| User Persona | Registered Public User
+| Acceptance Criteria | Users can save a map location, dataset, or search result. Users can view and manage their favorited items. Selecting a favorited item navigates the user to the saved location My favorites are retained for authenticated users across sessions.
+---
+Feedback
+| Field | Description
+| BR ID | BR - 12
+| Widget Name | Feedback
+| Requirement Type | New
+| Description | The system shall provide users with the ability to submit feedback on the GeoVision application. Feedback may include ratings, comments, or issue reporting to support continuous improvement of the platform.
+| Functional Area | User Profile
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can submit feedback for application features and performance. Users can provide comments and/or ratings where applicable. Feedback is captured and made available for administrative review by properly maintained feedback logs.
+---
+Discover Categories
+All Categories
+| Field | Description
+| BR ID | BR - 13
+| Widget Name | All Categories
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide users with access to all available thematic categories, enabling them to browse and select datasets relevant to their areas of interest.
+| Functional Area | Discover Categories
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can view all available categories. Selecting a category displays the associated datasets or map view. Categories are presented in an organized and easy-to-navigate manner
+---
+Quick Categories Navigation
+| Field | Description
+| BR ID | BR - 14
+| Widget Name | Quick Categories Navigation
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide quick-access categories such as Education, Healthcare, Transport, Government, Parks, Utilities, Recreation etc by allowing users to quickly initiate searches or navigate to relevant datasets without browsing the complete category list.
+| Functional Area | Discover Categories
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Frequently used categories are displayed as quick-access chips. Selecting a chip navigates the user to the corresponding category or search results. The quick category list is presented prominently on the landing page.
+---
+Browse Categories
+| Field | Description
+| BR ID | BR - 15
+| Widget Name | Browse Categories
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide a Category Explorer that enables users to discover, browse, search, and manage thematic categories and datasets available within the GeoVision platform. Users shall be able to expand or collapse category hierarchies, search for specific categories or datasets, and apply multi-select filters to visualize multiple datasets simultaneously on the interactive map.
+| Functional Area | Discover Categories
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can browse all available categories and datasets. Users can expand and collapse category hierarchies to view subcategories. Users can search for categories or datasets using keywords. Users can select one or more categories or datasets simultaneously. The interactive map updates to display the selected datasets.
+---
+Search
+AI Search Bar, Voice Search & Multilingual Natural Language Query (NLQ)
+| Field | Description
+| BR ID | BR - 16
+| Widget Name | AI Search Bar
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide an AI-powered multilingual search capability that enables users to interact with GeoVision using both text and voice-based natural language queries in English and Arabic. Users shall be able to search for locations, government services, facilities, datasets, and other spatial information through a conversational search interface. Users may either type their query into the AI Search Bar or speak their request using the integrated voice search capability. The system shall convert voice input into text, interpret the user's intent, and process the request in the same manner as text-based queries. The solution enhances the existing Natural Language Query (NLQ) capability available in Smart Maps Phase 1 by providing a more intuitive AI-powered search experience, multilingual support, voice interaction, contextual understanding, and intelligent responses within GeoVision.
+| Functional Area | Search |  | Search
+| 
+| Search
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can submit natural language queries in English and Arabic. The system accurately interprets the user's intent regardless of the selected language. The system returns relevant map results, datasets, AI-generated responses, and recommendations. Selecting a search result navigates the user to the appropriate map view or related information. Users can continue follow-up conversations while maintaining the context of the interaction. AI responses, search results, and recommendations are presented in the selected language where supported. The AI Search interface is accessible from the GeoVision landing page and the Interactive Map Workspace.
+---
+Location Search
+| Field | Description
+| BR ID | BR - 17
+| Widget Name | Location Search
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide a Location Search feature that enables users to search for geographic locations within Abu Dhabi using area names, city names, districts, communities, or postal codes. The feature shall display matching locations as users type and allow users to select a result or choose a location directly from the map to navigate to the selected location.
+| Functional Area | Search |  | Search
+| 
+| Search
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can search for locations using keywords such as area names, city names, districts or postal codes. Matching locations are displayed as a searchable list while typing. Users can select a location from the search results. Users can alternatively select a location directly from the map. The map automatically navigates and zooms to the selected location The selected location is highlighted on the map for easy identification. The AI Search interface is accessible from the GeoVision landing page and the Interactive Map Workspace.
+---
+Map Access
+Explore Map View
+| Field | Description
+| BR ID | BR - 18
+| Widget Name | Explore Map View
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide users with an Explore Map View option that serves as the primary entry point to the interactive GeoVision Map Workspace. Users shall be able to seamlessly transition from the landing page to the map interface to explore geospatial datasets, perform searches, apply filters, and utilize AI-powered capabilities. The functionality enhances the existing map access available in Smart Maps Phase 1 through an improved user experience and integration with GeoVision features.
+| Functional Area | Map Access
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can launch the interactive map workspace by selecting Explore Map View from the Landing page The map workspace loads successfully with the default map extent and available datasets. Users can immediately access map navigation, search, filtering, and AI-assisted capabilities after entering the workspace.
+---
+Interactive Map Workspace
+Interactive GIS Map
+| Field | Description
+| BR ID | BR - 19
+| Widget Name | Map Navigation
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide map navigation controls that enable users to efficiently explore the interactive GIS map. Users shall be able to zoom in, zoom out, pan the map, select location from map, return to the default map extent, rotate the map orientation, and locate their current position where supported.
+| Functional Area | Interactive Map Workspace
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can zoom in and zoom out using the available navigation controls. Users can pan the map in any direction. Users can return to the default map extent. Users can reset the map orientation. Users can use the Locate Me function (subject to device/browser permissions).
+---
+Identify Tool
+| Field | Description
+| BR ID | BR - 20
+| Widget Name | Identify Tool
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide an Identify Tool that enables users to select a map feature and view its associated spatial attributes, metadata, and related information. The tool shall display feature details from the underlying GIS layers to support data exploration and decision-making.
+| Functional Area | Interactive Map Workspace
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can select a map feature by clicking or tapping on it. The system displays the available attribute information for the selected feature. The Identify Tool supports features from all visible and enabled GIS layers. Users can close the information panel and continue exploring the map. Feature information is displayed without requiring users to leave the map interface.
+---
+Map Tools
+Basemap Selection
+| Field | Description
+| BR ID | BR - 21
+| Widget Name | Basemap Selection
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide users with the ability to switch between available basemap styles to support different visualization and analysis requirements.
+| Functional Area | Map Tools
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can select an available basemap. The selected basemap is displayed without affecting operational map layers. Users can switch between basemaps at any time.
+---
+Map Legend
+| Field | Description
+| BR ID | BR - 22
+| Widget Name | Map Legend
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide a dynamic legend that explains the symbols and colours used for the currently visible map layers and datasets.
+| Functional Area | Map Tools
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can open and close the map legend. The legend displays symbols for visible layers. The legend updates when visible layers change.
+---
+Copy Coordinates
+| Field | Description
+| BR ID | BR - 23
+| Widget Name | Copy Coordinates
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall display the geographic coordinates of the selected map location and allow users to copy the coordinates for use in external applications or reports.
+| Functional Area | Map Tools
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can view map coordinates. Users can copy the displayed coordinates. Coordinates are displayed in the supported format(s).
+---
+Map Scale
+| Field | Description
+| BR ID | BR – 24
+| Widget Name | Map Scale
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall display the current map scale to provide users with context regarding the level of detail and geographic coverage being viewed.
+| Functional Area | Map Tools
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | The current map scale is displayed. The scale updates dynamically as users zoom in or out.
+---
+Buffer
+| Field | Description
+| BR ID | BR - 25
+| Widget Name | Buffer
+| Requirement Type | Available in Phase 1 – Retained in GeoVision
+| Description | The system shall provide a Buffer tool that enables users to create a specified distance around a selected map feature, location, or Area of Interest (AOI). The generated buffer shall be used to identify and visualize nearby spatial features and datasets that fall within the defined distance.
+| Functional Area | Map Tools
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can select a location, feature, or AOI to create a buffer. Users can specify the buffer distance using supported measurement units. The system displays the generated buffer on the map. Spatial features within the buffer are identified and displayed where applicable. Users can modify or remove the generated buffer. |  | Users can select a location, feature, or AOI to create a buffer. Users can specify the buffer distance using supported measurement units. The system displays the generated buffer on the map. Spatial features within the buffer are identified and displayed where applicable. Users can modify or remove the generated buffer.
+| 
+| Users can select a location, feature, or AOI to create a buffer. Users can specify the buffer distance using supported measurement units. The system displays the generated buffer on the map. Spatial features within the buffer are identified and displayed where applicable. Users can modify or remove the generated buffer.
+---
+Print Map
+| Field | Description
+| BR ID | BR - 26
+| Widget Name | Print Map
+| Requirement Type | New
+| Description | The system shall enable users to generate a printable version of the current map view, including visible layers and map elements, for reporting and offline use.
+| Functional Area | Map Tools |  | Map Tools
+| 
+| Map Tools
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can print the current map view. The printed output reflects the current map extent and visible layers. The print output includes essential map elements where applicable (Title, legend, north arrow, scale, and other standard map elements) Users can export the current map view in supported formats (PDF, PNG, and JPEG). |  | Users can print the current map view. The printed output reflects the current map extent and visible layers. The print output includes essential map elements where applicable (Title, legend, north arrow, scale, and other standard map elements) Users can export the current map view in supported formats (PDF, PNG, and JPEG).
+| 
+| Users can print the current map view. The printed output reflects the current map extent and visible layers. The print output includes essential map elements where applicable (Title, legend, north arrow, scale, and other standard map elements) Users can export the current map view in supported formats (PDF, PNG, and JPEG).
+---
+Sketch Area of Interest (AOI)
+| Field | Description
+| BR ID | BR - 27
+| Widget Name | Smart Insights
+| Requirement Type | New
+| Description | The system shall provide a Smart Insights capability that enables users to define an Area of Interest (AOI) using interactive map drawing tools and perform AI-assisted spatial analysis on the selected area. Users shall be able to sketch an AOI or select an existing geographic boundary, execute spatial searches, retrieve relevant datasets and map features, and receive AI-generated summaries, statistics, and insights for the selected area. The capability shall integrate GIS spatial analysis with AI reasoning to provide contextual information, thematic insights, and decision-support outputs based on authoritative spatial datasets.
+| Functional Area | Sketch Area of Interest (AOI)
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can create an AOI using the available sketch tools. Users can edit or delete an AOI. The AOI is displayed on the map until cleared or replaced. The AOI can be used in supported spatial search or analysis workflows. |  | Users can create an AOI using the available sketch tools. Users can edit or delete an AOI. The AOI is displayed on the map until cleared or replaced. The AOI can be used in supported spatial search or analysis workflows.
+| 
+| Users can create an AOI using the available sketch tools. Users can edit or delete an AOI. The AOI is displayed on the map until cleared or replaced. The AOI can be used in supported spatial search or analysis workflows.
+---
+GeoVision AI
+Ask GeoVision AI
+| Field | Description
+| BR ID | BR - 28
+| Widget Name | Ask GeoVision AI
+| Requirement Type | New
+| Description | The system shall provide a conversational AI assistant that enables users to interact with GeoVision through multi-turn conversations. The assistant shall maintain the context of the conversation to support follow-up questions and refine responses based on previous interactions.
+| Functional Area | GeoVision AI
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can ask follow-up questions. The AI maintains conversational context within an active session The system shall retain conversation context within the current session and correctly answer follow-up questions referencing previous prompts. |  | Users can ask follow-up questions. The AI maintains conversational context within an active session The system shall retain conversation context within the current session and correctly answer follow-up questions referencing previous prompts.
+| 
+| Users can ask follow-up questions. The AI maintains conversational context within an active session The system shall retain conversation context within the current session and correctly answer follow-up questions referencing previous prompts.
+---
+AI Recommendations
+| Field | Description
+| BR ID | BR - 29
+| Widget Name | AI Recommendations
+| Requirement Type | New
+| Description | The system shall provide AI-generated recommendations related to the user's query, including suggested datasets, locations, services, or follow-up questions to support further exploration.
+| Functional Area | GeoVision AI
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | The system displays relevant recommendations based on the user's query. Users can select a recommendation to continue their search or exploration.
+---
+Conversation History
+| Field | Description
+| BR ID | BR - 30
+| Widget Name | Conversation History
+| Requirement Type | New
+| Description | The system shall maintain a history of AI conversations, enabling users to review previous interactions and continue existing conversations where supported.
+| Functional Area | GeoVision AI
+| User Persona | Registered Public User
+| Acceptance Criteria | Users can view previous AI conversations. Users can reopen an existing conversation. Conversation history is displayed in chronological order.
+---
+Smart Filters
+Smart Filters
+| Field | Description
+| BR ID | BR - 31
+| Widget Name | Smart Filters
+| Requirement Type | Enhanced (Smart Maps Phase 1 + GeoVision)
+| Description | The system shall provide Smart Filters that enable users to refine and narrow search results, datasets, and map features based on selected spatial and attribute criteria. Users shall be able to apply one or more filters simultaneously, including category, location, distance, and other supported filter parameters. The map and search results shall update dynamically based on the applied filters, allowing users to efficiently identify relevant spatial information.
+| Functional Area | Smart Filters
+| User Persona | Guest User, Registered Public User
+| Acceptance Criteria | Users can apply one or more Smart Filters to refine map results and datasets. The system dynamically updates the map and search results based on the selected filters. Users can modify or remove applied filters without restarting the search. Users can clear all applied filters and restore the default search results. Multiple filters can be applied simultaneously where supported.
+---
+Non-Functional Requirements:
+The GeoVision Enterprise AI Platform shall satisfy the following non-functional requirements to ensure the solution is secure, reliable, scalable, performant, and compliant with the Department of Government Enablement (DGE) standards. These requirements define the quality attributes and operational constraints that the solution must meet in addition to its functional capabilities.
+Performance Requirements
+The solution shall be designed to meet enterprise-level performance targets under normal operating conditions. Performance benchmarks will be validated during System Integration Testing (SIT), User Acceptance Testing (UAT), and Performance Testing.
+Performance Considerations:
+Actual performance may vary depending on:
+Infrastructure sizing
+Volume of spatial datasets
+GIS service response time
+AI model processing time
+Network latency
+DGE-approved deployment architecture
+Performance testing shall be conducted using representative production workloads to validate compliance with the above targets.
+| NFR ID | Requirement
+| NFR -P-01 | AI-generated responses for standard user queries shall be returned within 3 to 5 seconds.
+| NFR-P-02 | Filtered map rendering after AI query execution shall complete within 3 to 5 seconds.
+| NFR-P-03 | Query execution reliability shall be maintained subject to GIS service availability and data quality
+---
+Security Requirements
+The solution shall comply with DGE information security, cybersecurity, and privacy standards to ensure secure processing of government spatial information and AI-generated responses.
+| NFR ID | Requirement
+| NFR-S-01 | All communication between GeoVision, AI Gateway, Compass AI, GIS Services, and backend systems shall use secure communication protocols.
+| NFR-S-02 | The solution shall protect sensitive government information from unauthorized access, disclosure, or modification.
+| NFR-S-03 | The solution shall be deployed only within DGE-approved infrastructure or approved secure hosting environments.
+| NFR-S-04 | Security controls shall comply with DGE cybersecurity policies and applicable government standards.
+| NFR-S-05 | Sensitive government spatial information shall not be shared with external Large Language Models (LLMs) unless explicitly approved by DGE.
+| NFR-S-06 | Secure communication channels shall be maintained between all integrated application components.
+---
+Compliance and Data Governance
+The solution shall adhere to DGE's data governance framework and applicable privacy regulations governing government spatial information.
+| NFR ID | Requirement
+| NFR-G-01 | The solution shall comply with DGE information security policies.
+| NFR-G-02 | The solution shall comply with applicable government cybersecurity requirements.
+| NFR-G-03 | The solution shall comply with government data governance policies.
+| NFR-G-04 | The solution shall comply with applicable privacy and personal data protection regulations.
+| NFR -G-05 | Government spatial datasets shall remain under DGE governance and shall not be exposed to unauthorized external systems.
+---
+Scalability
+The solution shall support future expansion without requiring major architectural redesign.
+| NFR ID | Requirement
+| NFR-SC-01 | The platform shall support the addition of new GeoVision themes and datasets.
+| NFR-SC-02 | The platform shall support increasing numbers of users without significant degradation in performance.
+| NFR-SC-03 | The solution shall support future AI capabilities and additional government digital services.
+---
+Out of Scope
+The following items are not included within the scope of GeoVision unless specifically approved through a formal change request.
+Development of additional themes, datasets, or business modules beyond those approved for GeoVision Project.
+Integration with additional third-party systems, applications, or external government services not identified within the approved project scope.
+Development of custom AI models beyond the approved Compass AI integration.
+Major enhancements requested after requirements sign-off that are outside the agreed project scope.
+Infrastructure upgrades or procurement outside the agreed implementation scope.
+References
+This Business Requirements Document (BRD) has been prepared with reference to the IST Proposal for DGE Enterprise AI Enablement for Smart Maps, the approved Project Scope Document, and the business requirements, discussions, and feedback captured during the stakeholder requirement gathering and validation workshops.
+| Document Name | Source
+| Proposal for DGE Enterprise AI Enablement for Smart Maps | 
+---
+Glossary and Definitions
+| Term | Definition
+| AI Assistant | The conversational interface within GeoVision that enables users to interact with the system using natural language and receive AI-generated responses, recommendations, and insights.
+| AI Gateway | The secure integration layer that connects GeoVision with the approved enterprise AI platform for processing natural language requests while maintaining secure communication with backend services.
+| Area of Interest (AOI) | A user-defined geographic area created through sketching or selection to focus map visualization, filtering, or spatial analysis.
+| Basemap | The background map that provides geographic context for displaying operational GIS layers and spatial information.
+| Buffer | A spatial analysis function that creates a specified distance around a selected location or feature to identify nearby spatial data.
+| Category | A thematic grouping of related spatial datasets, such as Education, Healthcare, Tourism, or Environment.
+| Cluster | A visual grouping of multiple map features displayed together at lower zoom levels to improve map readability and performance.
+| Dataset | A collection of related geospatial information published for visualization, analysis, or reporting within GeoVision.
+| Feature | An individual spatial object represented on the map, such as a school, hospital, road, or landmark.
+| Interactive Map Workspace | The primary working area where users visualize, navigate, search, and analyse geospatial information using interactive map tools and AI capabilities.
+| Natural Language Query (NLQ) | A capability that enables users to search and interact with GeoVision using conversational English or Arabic instead of structured GIS queries.
+| Point of Interest (POI) | A specific geographic location or landmark that users can search for, view, or analyse within the application.
+| Search History | A record of previously executed search queries that enables users to quickly revisit or repeat earlier searches.
+| Spatial Analysis | The process of analysing geographic data to identify relationships, patterns, proximity, or trends within a defined geographic area.
+| Spatial Data | Information that represents the location, shape, and attributes of geographic features.
+| Theme | A logical grouping of datasets representing a specific business domain, such as Education, Healthcare, Utilities, or Tourism.
+| AI Insight | An AI-generated summary, recommendation, or analytical observation produced from user queries and spatial datasets.
+| Context-Aware Conversation | An AI capability that retains the context of previous interactions to support follow-up questions and continuous conversations.
+| Prompt | A natural language question or instruction entered by the user to interact with the AI Assistant.
+| GIS Backend | Geographic Information System Backend Services
+| Open Data | Publicly Accessible Government Spatial Data
+| Map Workspace | Interactive Geographic Information System Workspace
+| Smart Filters | Intelligent Spatial and Attribute-Based Filters
+| Basemap | Base Geographic Map Layer
+| Compass AI | Core42 Compass Artificial Intelligence Platform
+| Portal Groups | ArcGIS Portal Content Groups
+| Map Export | Export of Map View for Reporting or Printing
+| Layer Management | Management of GIS Layers and Themes
+| Spatial Analysis | Geographic Analysis Based on Spatial Relationships
+| Spatial Database | Database for Storing Geographic Data
+| Geospatial Data | Location-Based Spatial Information
+| Authentication | User Identity Verification
+| Authorization | User Access Permission Management
+| Audit Logging | Recording of System and User Activities
+| Bilingual Support | Support for English and Arabic Languages
+| Map Navigation | User Interaction with the GIS Map
+| GIS Services | Geographic Information System Services
+| Open Data Layer | Publicly Available GIS Layer
+---
+Approval and Sign Off
+The Approval and Sign-off section ensure that the document is officially approved by key stakeholders, confirming that all parties have reviewed and agreed to the contents. It serves as the formal acknowledgment of the document's readiness for the next phase of the project.

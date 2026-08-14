@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoVision — Abu Dhabi Spatial Data</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<style>
+:root{
+  --f:'Plus Jakarta Sans','IBM Plex Sans Arabic',system-ui,sans-serif;
+  --shell:#0d1424; --shell-2:#131c30; --line:rgba(255,255,255,.09);
+  --pane:#161f33; --pane-2:#1d2740; --pane-line:rgba(255,255,255,.08);
+  --ink:#eef2f8; --dim:#93a1bb;
+  --card:#ffffff; --card-ink:#101828; --card-dim:#667085; --card-line:#e6eaf1; --card-soft:#f2f4f8;
+  --blue:#2563eb; --blue-soft:#e8effd; --blue-line:#bcd0f8; --pin:#e0313f;
+  --heroGrid:rgba(125,180,255,.09);
+}
+[data-t="light"]{
+  --shell:#e9edf4; --shell-2:#ffffff; --line:rgba(16,24,40,.1);
+  --pane:#ffffff; --pane-2:#f4f6fa; --pane-line:#e6eaf1; --ink:#101828; --dim:#667085;
+  --heroGrid:rgba(37,99,235,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--shell);font-family:var(--f)}
+button,input,select,textarea{font-family:var(--f)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(320%)}}
+@keyframes shine{0%{transform:translateX(-120%)}60%,100%{transform:translateX(320%)}}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.85;transform:scale(1.04)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes gridDrift{0%{background-position:0 0}100%{background-position:44px 44px}}
+@keyframes orb{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes march{to{stroke-dashoffset:-64}}
+@keyframes breathe{0%,100%{opacity:.14}50%{opacity:.34}}
+@keyframes sonar{0%{transform:scale(.55);opacity:.85}70%{opacity:.12}100%{transform:scale(1.06);opacity:0}}
+@keyframes vpop{0%{opacity:0;transform:scale(0)}60%{transform:scale(1.35)}100%{opacity:1;transform:scale(1)}}
+@keyframes ringIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.gv-march{stroke-dasharray:14 10;animation:march 1.6s linear infinite}
+.gv-glow{animation:breathe 2.6s ease-in-out infinite}
+.gv-pulse{transform-box:fill-box;transform-origin:center;animation:sonar 2.8s cubic-bezier(.2,.6,.3,1) infinite}
+.gv-vertex{transform-box:fill-box;transform-origin:center;animation:vpop .5s cubic-bezier(.2,1.4,.4,1) backwards}
+.gv-ring-1,.gv-ring-2{transform-box:fill-box;transform-origin:center;animation:ringIn .55s cubic-bezier(.2,.9,.3,1) backwards}
+.gv-ring-1{animation-delay:.1s}.gv-ring-2{animation-delay:.2s}
+.leaflet-container{background:#dfe6ef!important;font-family:var(--f)}
+.leaflet-control-attribution{font:400 10px/1.6 var(--f)!important;background:rgba(255,255,255,.7)!important;color:#475467!important}
+.leaflet-control-attribution a{color:#2563eb!important}
+[data-t="dark"] .leaflet-container{background:#0f1521!important}
+[data-t="dark"] .leaflet-control-attribution{background:rgba(10,16,26,.66)!important;color:#8fa0bb!important}
+[data-t="dark"] .leaflet-control-attribution a{color:#7db4ff!important}
+[data-chips]::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(140,155,185,.4);border-radius:99px;border:2px solid transparent;background-clip:content-box}
+a{color:var(--blue);text-decoration:none}
+a:hover{color:var(--card-ink)}
+</style>
+</helmet>
+
+<div dir="{{ dir }}" data-t="{{ theme }}" style="min-height:100vh;background:var(--shell);color:var(--ink);font-family:var(--f)">
+
+  <div style="display:flex;align-items:center;gap:16px;height:34px;padding:0 12px;background:#05080f;color:#8b98ae;font-size:11px;letter-spacing:.06em">
+    <span style="color:#cfd8e6">GeoVision prototype</span>
+    <div style="display:flex;gap:4px;margin-inline-start:auto">
+      <button onClick="{{ goLogin }}" style="{{ tabLogin }}">Login</button>
+      <button onClick="{{ goLanding }}" style="{{ tabLanding }}">Landing</button>
+      <button onClick="{{ goMap }}" style="{{ tabMap }}">Map workspace</button>
+      <button onClick="{{ goAbout }}" style="{{ tabAbout }}">About us</button>
+      <button onClick="{{ toggleBr }}" style="{{ tabBr }}">BR tags</button>
+      <button onClick="{{ toggleDevice }}" style="{{ tabDev }}">{{ deviceLabel }}</button>
+    </div>
+  </div>
+
+  <div style="{{ frameStyle }}">
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+  <div style="position:relative;display:flex;align-items:center;justify-content:flex-end;min-height:calc(100vh - 34px);padding:40px 6% 40px 24px;overflow:hidden;animation:fade .3s ease">
+    <video ref="{{ loginVidRef }}" src="uploads/login-bg-video.mp4" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"></video>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><img src="assets/logo-dge-white.png" alt="Department of Government Enablement" style="height: 117px; width: 465px; position: absolute; left: 10%; top: 50%; transform: translateY(-50%);"></div>
+    
+    <div style="position:relative;z-index:2;width:100%;max-width:420px">
+      
+      <div style="padding:32px;border-radius:20px;background:var(--pane);border:1px solid var(--pane-line);backdrop-filter:blur(18px);box-shadow:0 28px 70px rgba(5,10,25,.5)">
+        <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;letter-spacing:-.01em">{{ t.loginTitle }}</h1>
+        <p style="margin:0 0 26px;font-size:14px;line-height:1.6;color:var(--dim)">{{ t.loginSub }}</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <label style="display:block">
+            <span style="display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:7px">{{ t.email }}</span>
+            <input value="{{ email }}" onChange="{{ setEmail }}" placeholder="name@dge.gov.ae" style="width:100%;height:48px;padding:0 14px;border-radius:12px;background:var(--pane-2);border:1px solid var(--pane-line);color:var(--ink);font:400 14.5px/1 var(--f);outline:none">
+          </label>
+          <label style="display:block">
+            <span style="display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:7px">{{ t.password }}</span>
+            <div style="display:flex;align-items:center;gap:6px;height:48px;padding:0 8px 0 14px;border-radius:12px;background:var(--pane-2);border:1px solid var(--pane-line)">
+              <input type="{{ pwType }}" value="{{ pwd }}" onChange="{{ setPwd }}" onKeyDown="{{ loginOnEnter }}" placeholder="••••••••" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font:400 14.5px/1 var(--f)">
+              <button onClick="{{ togglePw }}" style="display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:999px;background:none;border:none;color:var(--dim);cursor:pointer"><dc-import name="Icon" hint-size="17px,17px" icon="eye" size="{{ 17 }}"></dc-import></button>
+            </div>
+          </label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <button onClick="{{ toggleRemember }}" style="display:flex;align-items:center;gap:9px;background:none;border:none;padding:0;color:var(--ink);font:400 13.5px/1 var(--f);cursor:pointer">
+              <span style="{{ rememberBox }}"><sc-if value="{{ remember }}" hint-placeholder-val="{{ true }}"><dc-import name="Icon" hint-size="12px,12px" icon="check" size="{{ 12 }}" stroke="{{ 2.6 }}"></dc-import></sc-if></span>
+              {{ t.remember }}
+            </button>
+            <a href="#" onClick="{{ noop }}" style="margin-inline-start:auto;font-size:13.5px">{{ t.forgot }}</a>
+          </div>
+          <button onClick="{{ doLogin }}" style="height:52px;margin-top:6px;border-radius:12px;background:var(--blue);color:#fff;border:none;font:600 15px/1 var(--f);cursor:pointer;box-shadow:0 12px 28px rgba(37,99,235,.3)" style-hover="background:#1d4ed8">{{ t.signIn }}</button>
+          <button onClick="{{ guestIn }}" style="height:46px;border-radius:12px;background:none;border:1px solid var(--pane-line);color:var(--ink);font:500 14px/1 var(--f);cursor:pointer" style-hover="border-color:var(--blue)">{{ t.guest }}</button>
+        </div>
+        <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--pane-line);font-size:13.5px;color:var(--dim);text-align:center">
+          {{ t.noAccount }} <a href="#" onClick="{{ noop }}">{{ t.signUp }}</a>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px">
+        <button onClick="{{ toggleLang }}" style="{{ sqBtn }}">{{ langShort }}</button>
+        <button onClick="{{ toggleTheme }}" style="{{ sqBtn }}"><dc-import name="Icon" hint-size="18px,18px" icon="{{ themeIcon }}" size="{{ 18 }}"></dc-import></button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:calc(100vh - 34px);background:var(--shell);animation:fade .3s ease">
+    <div style="position:sticky;top:0;z-index:60;border-bottom:1px solid var(--pane-line);background:{{ navGlass }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
+      <div style="display:flex;align-items:center;gap:18px;max-width:1240px;margin:0 auto;height:60px;padding:0 22px">
+        <img src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:32px;width:auto;flex:none;filter:{{ logoFilter }}">
+        <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:30px">
+          <button onClick="{{ goLanding }}" style="{{ ghostNavOn }}">{{ t.home }}</button>
+          <button onClick="{{ goMap }}" style="{{ ghostNav }}">{{ t.map }}</button>
+          <button onClick="{{ goAbout }}" style="{{ ghostNav }}">{{ t.about }}</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-inline-start:auto">
+          <button onClick="{{ toggleTheme }}" style="{{ ghostIcon }}"><dc-import name="Icon" hint-size="17px,17px" icon="{{ themeIcon }}" size="{{ 17 }}"></dc-import></button>
+          <button onClick="{{ toggleLang }}" style="{{ ghostIcon }}">{{ langShort }}</button>
+          <button onClick="{{ goLogin }}" style="{{ ghostNav }}">{{ t.signIn }}</button>
+          <button onClick="{{ goMap }}" style="{{ solidSm }}">{{ t.openMap }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;max-width:1180px;margin:0 auto;padding:64px 22px 70px">
+      <div style="position:absolute;inset:0 0 auto;height:520px;pointer-events:none;background-image:linear-gradient(var(--heroGrid) 1px,transparent 1px),linear-gradient(90deg,var(--heroGrid) 1px,transparent 1px);background-size:44px 44px;animation:gridDrift 18s linear infinite;mask-image:radial-gradient(60% 70% at 50% 10%,#000,transparent)"></div>
+
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;animation:rise .5s ease">
+        
+        <h1 style="margin:0 0 18px;font-size:58px;line-height:1.06;letter-spacing:-.05em;font-weight:600;max-width:22ch;background:{{ heroGradient }};-webkit-background-clip:text;background-clip:text;color:transparent">{{ t.dashTitle }}</h1>
+        
+
+        
+
+        <div style="position:relative;width:100%;max-width:620px;margin-top:10%;z-index:20">
+          <div style="display:flex;align-items:center;gap:8px;height:54px;padding:0 8px 0 18px;border-radius:14px;background:#2a2f38;border:1px solid var(--pane-line)">
+            <span style="color:var(--dim);flex:none"><dc-import name="Icon" hint-size="18px,18px" icon="search" size="{{ 18 }}"></dc-import></span>
+            <input value="{{ query }}" onChange="{{ setQuery }}" onFocus="{{ openSug }}" onKeyDown="{{ searchOnEnter }}" placeholder="{{ t.searchPh }}" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font:400 14.5px/1 var(--f)">
+            <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ clearQuery }}" style="display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:999px;background:none;border:none;color:var(--dim);cursor:pointer"><dc-import name="Icon" hint-size="15px,15px" icon="x" size="{{ 15 }}"></dc-import></button>
+            </sc-if>
+            <button onClick="{{ runSearch }}" style="height:40px;padding:0 18px;flex:none;border-radius:10px;background:var(--blue);color:#fff;border:none;font:500 13.5px/1 var(--f);cursor:pointer" style-hover="background:#1d4ed8">{{ t.search }}</button>
+          </div>
+          <sc-if value="{{ sugOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:62px;left:0;right:0;padding:8px;border-radius:14px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 18px 44px rgba(5,10,25,.4);animation:rise .16s ease;text-align:start">
+            <div style="padding:6px 10px 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)">{{ sugLabel }}</div>
+            <sc-for list="{{ suggestions }}" as="g" hint-placeholder-count="4">
+              <button onClick="{{ g.go }}" style="display:flex;align-items:center;gap:11px;width:100%;padding:10px;border-radius:10px;background:none;border:none;color:var(--ink);font:400 13.5px/1.3 var(--f);text-align:start;cursor:pointer" style-hover="background:var(--pane-2)">
+                <span style="color:var(--blue)"><dc-import name="Icon" hint-size="16px,16px" icon="{{ g.icon }}" size="{{ 16 }}"></dc-import></span>
+                <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ g.label }}</span>
+                <span style="font-size:11.5px;color:var(--dim);flex:none">{{ g.kind }}</span>
+              </button>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px">
+          <sc-for list="{{ quickAsks }}" as="q" hint-placeholder-count="4">
+            <button onClick="{{ q.go }}" style="height:30px;padding:0 12px;border-radius:99px;background:none;border:1px solid var(--pane-line);color:var(--dim);font:400 12.5px/1 var(--f);cursor:pointer;transition:all .15s" style-hover="border-color:var(--blue);color:var(--ink)">{{ q.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:relative;margin-top:52px">
+        <sc-if value="{{ laserOn }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;left:0;right:0;bottom:calc(100% - 60px);height:520px;pointer-events:none;z-index:0;overflow:hidden;mix-blend-mode:{{ laserBlend }}">
+          <x-import component="LaserFlow" from="./laser-flow.jsx" color="{{ laserColor }}" horizontal-beam-offset="{{ 0.29 }}" vertical-beam-offset="{{ -0.4 }}" horizontal-sizing="{{ 0.5 }}" vertical-sizing="{{ 2.6 }}" wisp-density="{{ 1 }}" wisp-speed="{{ 15 }}" wisp-intensity="{{ 5 }}" flow-speed="{{ 0.35 }}" flow-strength="{{ 0.25 }}" fog-intensity="{{ 0.42 }}" fog-scale="{{ 0.3 }}" fog-fall-speed="{{ 0.6 }}" decay="{{ 1.1 }}" falloff-start="{{ 1.2 }}" opacity="{{ laserOpacity }}" hint-size="100%,100%"></x-import>
+        </div>
+        </sc-if>
+        <div style="position:absolute;inset:14px 40px -10px;pointer-events:none;border-radius:24px;background:radial-gradient(closest-side,rgba(37,99,235,.3),transparent 75%);filter:blur(34px);animation:glowPulse 6s ease-in-out infinite"></div>
+        <button onClick="{{ goMap }}" style="position:relative;z-index:2;display:block;width:100%;margin-top:10%;padding:10px;border-radius:22px;background:var(--pane);border:1px solid rgba(91,157,255,.4);box-shadow:0 30px 70px rgba(5,10,25,.5),0 0 40px rgba(37,99,235,.22);cursor:pointer;animation:floatY 9s ease-in-out infinite;text-align:start" style-hover="border-color:var(--blue)">
+          <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 12px">
+            <span style="width:9px;height:9px;border-radius:999px;background:#f87171"></span>
+            <span style="width:9px;height:9px;border-radius:999px;background:#fbbf24"></span>
+            <span style="width:9px;height:9px;border-radius:999px;background:#34d399"></span>
+            <span style="margin-inline-start:10px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)">{{ t.previewLabel }}</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;margin-inline-start:auto;height:26px;padding:0 12px;border-radius:999px;background:var(--blue-soft);border:1px solid var(--blue-line);color:var(--blue);font-size:12px">
+              {{ t.openMap }}<dc-import name="Icon" hint-size="13px,13px" icon="right" size="{{ 13 }}"></dc-import>
+            </span>
+          </div>
+          <div style="position:relative;height:270px;border-radius:16px;overflow:hidden;border:1px solid var(--pane-line)">
+            <x-import component="GeoMap" from="./geo-map.jsx" basemap="{{ previewBasemap }}" markers="{{ previewPois }}" accent="{{ accentHex }}" zoom="{{ 11 }}" interactive="{{ false }}" hint-size="100%,100%"></x-import>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(5,10,25,.5));pointer-events:none"></div>
+            <div style="position:absolute;bottom:14px;inset-inline-start:14px;display:flex;gap:8px">
+              <sc-for list="{{ previewChips }}" as="p" hint-placeholder-count="3">
+                <span style="display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;background:rgba(12,18,32,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);color:#eaf2ff;font-size:12px;white-space:nowrap">{{ p }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      
+
+      
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <sc-for list="{{ landingCats }}" as="c" hint-placeholder-count="8">
+          
+        </sc-for>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-top:40px">
+        
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+
+  <sc-if value="{{ isMap }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;height:calc(100vh - 34px);background:var(--shell);animation:fade .3s ease">
+
+    <div style="display:flex;align-items:center;gap:18px;height:53px;padding:0 10px;flex:none">
+      <img src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:34px;width:auto;flex:none;filter:{{ logoFilter }}">
+
+      <div style="display:flex;align-items:center;gap:26px;margin:0 auto">
+        <button onClick="{{ goMap }}" style="{{ navMap }}">
+          <dc-import name="Icon" hint-size="17px,17px" icon="map" size="{{ 17 }}"></dc-import>{{ t.map }}
+        </button>
+        <button onClick="{{ goAbout }}" style="{{ navAbout }}">{{ t.about }}</button>
+      </div>
+
+      <button onClick="{{ toggleTheme }}" style="{{ sqBtn }}"><dc-import name="Icon" hint-size="18px,18px" icon="{{ themeIcon }}" size="{{ 18 }}"></dc-import></button><button onClick="{{ toggleLang }}" style="{{ sqBtn }}">{{ langShort }}</button><button onClick="{{ toggleMenu }}" style="display:grid;place-items:center;width:34px;height:34px;border-radius:999px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);border:none;color:#fff;cursor:pointer;flex:none;box-shadow:0 4px 14px rgba(37,99,235,.4)">
+            <dc-import name="Icon" hint-size="17px,17px" icon="user" size="{{ 17 }}" filled="{{ true }}"></dc-import>
+          </button><div style="display:flex;align-items:center;gap:10px">
+        
+        
+        <div style="position:relative;display:flex;align-items:center;gap:11px;margin-inline-start:10px">
+          <img src="assets/logo-adsd.png" alt="Abu Dhabi Spatial Data" style="height:32px;width:auto;flex:none;filter:{{ logoFilter }}">
+          
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:52px;inset-inline-end:0;width:250px;padding:8px;border-radius:14px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 20px 48px rgba(5,10,25,.4);z-index:600;animation:rise .18s ease">
+            <div style="padding:10px 12px 12px;border-bottom:1px solid var(--pane-line);margin-bottom:6px">
+              <div style="font-size:14px;font-weight:600">{{ userName }}</div>
+              <div style="font-size:12px;color:var(--dim);margin-top:3px">{{ userMeta }}</div>
+            </div>
+            <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="5">
+              <button onClick="{{ m.go }}" style="display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:10px;background:none;border:none;color:var(--ink);font:400 13.5px/1 var(--f);text-align:start;cursor:pointer" style-hover="background:var(--pane-2)">
+                <span style="color:var(--dim)"><dc-import name="Icon" hint-size="16px,16px" icon="{{ m.icon }}" size="{{ 16 }}"></dc-import></span>
+                <span style="flex:1">{{ m.label }}</span>
+                <span style="font-size:11.5px;color:var(--dim)">{{ m.hint }}</span>
+              </button>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <div style="{{ mapWrap }}">
+      <x-import component="GeoMap" from="./geo-map.jsx" basemap="{{ basemap }}" markers="{{ visiblePois }}" selected-id="{{ selId }}" on-select="{{ pickPoi }}" on-view="{{ onView }}" aoi="{{ aoi }}" buffer="{{ bufferOn }}" shape="{{ sketchShape }}" accent="{{ accentHex }}" hint-size="100%,100%"></x-import>
+
+      <sc-if value="{{ chatMin }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ expandChat }}" style="position:absolute;bottom:10px;inset-inline-start:10px;width:var(--chatW);display:flex;align-items:center;gap:4px;height:52px;padding:0 6px 0 14px;border-radius:14px;background:var(--pane-2);border:1px solid var(--pane-line);box-shadow:0 18px 44px rgba(5,10,25,.35);cursor:pointer;z-index:420;animation:rise .24s ease">
+        <span style="flex:1;min-width:0;color:var(--dim);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.askPh }}</span>
+        <span style="display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:999px;color:var(--ink)"><dc-import name="Icon" hint-size="23px,23px" icon="sendai" size="{{ 23 }}"></dc-import></span>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ chatOpen }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;top:10px;bottom:10px;inset-inline-start:10px;width:var(--chatW);display:flex;flex-direction:column;border-radius:16px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 24px 60px rgba(5,10,25,.35);overflow:hidden;z-index:420;animation:rise .26s ease">
+        <div style="display:flex;flex:none;border-bottom:1px solid var(--pane-line)">
+          <sc-for list="{{ chatTabs }}" as="c" hint-placeholder-count="3">
+            <button onClick="{{ c.go }}" title="{{ c.label }}" style="{{ c.style }}">
+              <dc-import name="Icon" hint-size="19px,19px" icon="{{ c.icon }}" size="{{ 19 }}"></dc-import>
+            </button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ tabAsk }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+          <div style="padding:12px 16px 0;flex:none">
+            <button onClick="{{ newChat }}" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:38px;border-radius:11px;background:var(--pane-2);border:1px solid var(--pane-line);color:var(--ink);font:500 14px/1 var(--f);cursor:pointer" style-hover="border-color:var(--blue)">
+              <span style="display:grid;place-items:center;width:20px;height:20px;border-radius:999px;background:var(--pane);border:1px solid var(--pane-line)"><dc-import name="Icon" hint-size="12px,12px" icon="plus" size="{{ 12 }}"></dc-import></span>
+              {{ t.newChat }}
+            </button>
+          </div>
+
+          <div style="flex:1 1 auto;min-height:150px;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+              <div style="max-width:82%;padding:12px 16px;border-radius:14px;background:var(--blue);color:#fff;font-size:14px;line-height:1.5">{{ askedText }}</div>
+              <span style="font-size:11px;color:var(--dim)">{{ stamp }}</span>
+            </div>
+
+            <sc-if value="{{ thinking }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:9px;color:var(--dim);font-size:13px">
+              <span style="display:flex;gap:4px">
+                <span style="width:6px;height:6px;border-radius:99px;background:var(--blue);animation:blink 1s infinite"></span>
+                <span style="width:6px;height:6px;border-radius:99px;background:var(--blue);animation:blink 1s .2s infinite"></span>
+                <span style="width:6px;height:6px;border-radius:99px;background:var(--blue);animation:blink 1s .4s infinite"></span>
+              </span>{{ t.thinking }}
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ hasAnswer }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:12px 14px;border-radius:14px;background:var(--pane-2);border:1px solid var(--pane-line)">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--blue)">
+                <dc-import name="Icon" hint-size="15px,15px" icon="sparkles" size="{{ 15 }}"></dc-import>
+                <span style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase">{{ t.geoAnswer }}</span>
+              </div>
+              <div style="font-size:13.5px;line-height:1.6;color:var(--ink)">{{ answerText }}</div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:14px;border-radius:14px;background:var(--pane-2);border:1px dashed var(--pane-line);font-size:13px;line-height:1.6;color:var(--dim)">{{ t.noResults }}</div>
+            </sc-if>
+
+            <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">{{ resultCount }}</div>
+            </sc-if>
+            <sc-for list="{{ results }}" as="r" hint-placeholder-count="4">
+              <div style="{{ r.cardStyle }}">
+                <div style="display:flex;align-items:flex-start;gap:10px;padding:14px 14px 12px">
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div>
+                    <div style="font-size:13px;color:var(--dim);direction:rtl;margin-top:3px">{{ r.ar }}</div>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;flex:none;max-width:104px">
+                    <button onClick="{{ r.fav }}" style="{{ r.favStyle }}"><dc-import name="Icon" hint-size="14px,14px" icon="heart" size="{{ 14 }}"></dc-import></button>
+                    <button onClick="{{ r.open }}" style="{{ iconGhostBlue }}"><dc-import name="Icon" hint-size="14px,14px" icon="info" size="{{ 14 }}"></dc-import></button>
+                    <button onClick="{{ r.zoom }}" style="{{ iconGhost }}"><dc-import name="Icon" hint-size="14px,14px" icon="search" size="{{ 14 }}"></dc-import></button>
+                    <button onClick="{{ r.open }}" style="{{ iconGhost }}"><dc-import name="Icon" hint-size="14px,14px" icon="{{ r.chev }}" size="{{ 14 }}"></dc-import></button>
+                  </div>
+                </div>
+
+                <sc-if value="{{ r.open2 }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 14px 14px">
+                  <div style="display:inline-flex;gap:2px;padding:3px;border-radius:10px;background:var(--pane);margin-bottom:14px">
+                    <sc-for list="{{ r.subTabs }}" as="st" hint-placeholder-count="2">
+                      <button onClick="{{ st.go }}" style="{{ st.style }}">{{ st.label }}</button>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:11px;font-size:13px;color:var(--ink)">
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <span style="color:var(--dim);flex:none;padding-top:1px"><dc-import name="Icon" hint-size="15px,15px" icon="pin" size="{{ 15 }}"></dc-import></span>
+                      <span style="line-height:1.5">{{ r.address }}</span>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center">
+                      <span style="color:var(--dim);flex:none"><dc-import name="Icon" hint-size="15px,15px" icon="globe" size="{{ 15 }}"></dc-import></span>
+                      <a href="#" onClick="{{ noop }}" style="color:var(--blue)">{{ r.url }}</a>
+                    </div>
+                    <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+                      <span style="display:flex;gap:9px;align-items:center"><span style="color:var(--dim)"><dc-import name="Icon" hint-size="15px,15px" icon="chat" size="{{ 15 }}"></dc-import></span>{{ r.email }}</span>
+                      <span style="display:flex;gap:9px;align-items:center"><span style="color:var(--dim)"><dc-import name="Icon" hint-size="15px,15px" icon="crosshair" size="{{ 15 }}"></dc-import></span>{{ r.phone }}</span>
+                    </div>
+                  </div>
+                  <div style="height:1px;background:var(--pane-line);margin:14px 0"></div>
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+                    <span style="color:var(--blue)"><dc-import name="Icon" hint-size="16px,16px" icon="sparkles" size="{{ 16 }}"></dc-import></span>
+                    <span style="font-size:13.5px;font-weight:500">{{ t.whyGood }}</span>
+                  </div>
+                  <div data-chips="1" style="display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);padding:0 4px">
+                    <sc-for list="{{ r.chips }}" as="ch" hint-placeholder-count="3">
+                      <span style="display:inline-flex;align-items:center;flex:none;height:34px;padding:0 13px;border-radius:9px;background:var(--pane);border:1px solid var(--pane-line);font-size:12.5px;color:var(--ink)">{{ ch }}</span>
+                    </sc-for>
+                  </div>
+                </div>
+                </sc-if>
+              </div>
+            </sc-for>
+
+            <span style="font-size:11px;color:var(--dim)">{{ stamp }}</span>
+          </div>
+
+          <div data-chips="1" style="flex:none;height:42px;padding:0 16px 10px;display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none">
+            <sc-for list="{{ quickAsks }}" as="q" hint-placeholder-count="3">
+              <button onClick="{{ q.go }}" style="height:30px;flex:none;padding:0 12px;border-radius:99px;background:rgba(37,99,235,.16);border:1px solid rgba(91,157,255,.34);color:#9dc0ee;font:500 12px/1 var(--f);white-space:nowrap;cursor:pointer" style-hover="background:var(--blue);border-color:var(--blue);color:#fff">{{ q.label }}</button>
+            </sc-for>
+          </div>
+
+          <div style="flex:none;padding:12px 16px 16px;border-top:1px solid var(--pane-line)">
+            <div style="position:relative;display:flex;align-items:center;gap:4px;height:50px;padding:0 6px 0 14px;border-radius:14px;background:var(--shell-2);border:1.5px solid rgba(125,180,255,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 6px 18px rgba(5,10,25,.3);overflow:hidden;transition:box-shadow .2s,border-color .2s" style-hover="border-color:rgba(125,180,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 26px rgba(37,99,235,.28)" style-before="content:'';position:absolute;top:0;bottom:0;width:38%;background:linear-gradient(90deg,transparent,rgba(125,180,255,.16),transparent);animation:shine 5s ease-in-out infinite;pointer-events:none">
+              <input value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ sendOnEnter }}" placeholder="{{ t.askPh }}" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font:400 14.5px/1 var(--f)">
+              <button onClick="{{ send }}" title="Send" style="display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:999px;border:none;background:none;color:var(--ink);cursor:pointer;transition:transform .16s,color .16s" style-hover="color:var(--blue);transform:scale(1.12)" style-active="transform:scale(.94)">
+                <dc-import name="Icon" hint-size="23px,23px" icon="sendai" size="{{ 23 }}"></dc-import>
+              </button>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ tabHistory }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+            <button onClick="{{ h.go }}" style="display:block;width:100%;padding:14px;border-radius:14px;background:var(--pane-2);border:1px solid var(--pane-line);text-align:start;cursor:pointer;color:var(--ink)" style-hover="border-color:var(--blue)">
+              <span style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim);margin-bottom:6px">
+                <dc-import name="Icon" hint-size="13px,13px" icon="clock" size="{{ 13 }}"></dc-import>{{ h.when }}
+              </span>
+              <span style="display:block;font-size:14px;line-height:1.45">{{ h.title }}</span>
+              <span style="display:block;font-size:12px;color:var(--dim);margin-top:5px">{{ h.turns }}</span>
+            </button>
+          </sc-for>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ tabMarks }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ favs }}" as="f" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;background:var(--pane-2);border:1px solid var(--pane-line)">
+              <span style="color:var(--blue)"><dc-import name="Icon" hint-size="17px,17px" icon="{{ f.icon }}" size="{{ 17 }}"></dc-import></span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:13.5px">{{ f.label }}</span>
+                <span style="display:block;font-size:11.5px;color:var(--dim);margin-top:2px">{{ f.kind }}</span>
+              </span>
+              <span style="color:var(--blue)"><dc-import name="Icon" hint-size="16px,16px" icon="heart" size="{{ 16 }}"></dc-import></span>
+            </div>
+          </sc-for>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ chatVisible }}" hint-placeholder-val="{{ true }}">
+      <video onClick="{{ toggleChatMin }}" title="Minimise chat" ref="{{ orbRef }}" src="assets/orb.mp4" autoPlay="{{ true }}" loop="{{ true }}" muted="{{ true }}" playsInline="{{ true }}" style="position:absolute;bottom:10px;inset-inline-start:calc(var(--chatW) + 18px);width:40px;height:40px;object-fit:cover;mix-blend-mode:exclusion;cursor:pointer;z-index:426"></video>
+      </sc-if>
+
+      <div style="position:absolute;bottom:16px;inset-inline-end:{{ ctrlInset }};display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;max-width:calc(100% - var(--gutL) - var(--gutR) - 60px);z-index:430;transition:inset-inline-end .24s ease">
+        <button onClick="{{ zoomIn }}" style="{{ mapBtn }}"><dc-import name="Icon" hint-size="19px,19px" icon="plus" size="{{ 19 }}"></dc-import></button>
+        <button onClick="{{ zoomOut }}" style="{{ mapBtn }}"><dc-import name="Icon" hint-size="19px,19px" icon="minus" size="{{ 19 }}"></dc-import></button>
+        <button onClick="{{ zoomHome }}" style="{{ mapBtn }}"><dc-import name="Icon" hint-size="18px,18px" icon="home" size="{{ 18 }}"></dc-import></button>
+        <button onClick="{{ zoomHome }}" style="{{ mapBtn }}"><dc-import name="Icon" hint-size="18px,18px" icon="crosshair" size="{{ 18 }}"></dc-import></button>
+        <button onClick="{{ openSketch }}" style="{{ mapBtnSketch }}"><dc-import name="Icon" hint-size="18px,18px" icon="sketch" size="{{ 18 }}"></dc-import></button>
+      </div>
+
+      <sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;top:10px;bottom:10px;inset-inline-end:10px;width:var(--panW);display:flex;flex-direction:column;gap:10px;z-index:425;animation:rise .24s ease;pointer-events:none;overflow:auto">
+        <div style="{{ panelShell }}">
+          <div style="display:flex;align-items:center;gap:10px;padding:18px 20px 12px;flex:none">
+            <h4 style="margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em;color:{{ panelInk }}">{{ panelTitle }}</h4>
+            <sc-if value="{{ brTags }}" hint-placeholder-val="{{ false }}"><span style="{{ brBadge }}">{{ panelBr }}</span></sc-if>
+            <button onClick="{{ closePanel }}" style="{{ panelClose }}"><dc-import name="Icon" hint-size="16px,16px" icon="x" size="{{ 16 }}"></dc-import></button>
+          </div>
+          <div style="flex:1;min-height:0;overflow:auto;padding:0 20px 20px">
+
+            <sc-if value="{{ isFilters }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:22px">
+              <div>
+                <div style="{{ label }}">{{ t.fCategory }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:9px">
+                  <sc-for list="{{ filterCats }}" as="f" hint-placeholder-count="6">
+                    <button onClick="{{ f.toggle }}" style="{{ f.style }}">{{ f.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="{{ label }}">{{ t.fDistance }}</div>
+                <div onPointerDown="{{ barDown }}" onPointerMove="{{ barMove }}" onPointerUp="{{ barUp }}" style="position:relative;height:26px;border-radius:99px;background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e4e8f0 6px 12px);cursor:pointer;touch-action:none;overflow:visible">
+                  <div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:{{ barPct }};border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#3b82f6)"></div>
+                  <div style="position:absolute;top:50%;inset-inline-start:{{ barPct }};transform:translate(-50%,-50%);width:34px;height:34px;border-radius:999px;background:#fff;border:1px solid #dbe2ee;box-shadow:0 4px 12px rgba(16,24,40,.18);display:grid;place-items:center;color:#98a2b3">
+                    <dc-import name="Icon" hint-size="14px,14px" icon="grid" size="{{ 14 }}"></dc-import>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px;color:var(--card-dim)">
+                  <sc-for list="{{ distStops }}" as="d" hint-placeholder-count="4"><span style="{{ d.style }}">{{ d.label }}</span></sc-for>
+                </div>
+              </div>
+              <sc-if value="{{ statusCardIn }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <div style="{{ label }}">{{ t.fStatus }}</div>
+                <div style="display:flex;gap:10px">
+                  <sc-for list="{{ statusOpts }}" as="s" hint-placeholder-count="3">
+                    <button onClick="{{ s.toggle }}" style="{{ s.tileStyle }}">
+                      <span style="{{ s.dialStyle }}"><dc-import name="Icon" hint-size="18px,18px" icon="{{ s.icon }}" size="{{ 18 }}" stroke="{{ 2 }}"></dc-import></span>
+                      <span style="font-size:12px;line-height:1.3;text-align:center">{{ s.label }}</span>
+                      <span style="{{ s.pillStyle }}">{{ s.state }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+              </sc-if>
+              <div>
+                <div style="{{ label }}">{{ t.fArea }}</div>
+                <select value="{{ area }}" onChange="{{ setArea }}" style="width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--card-line);background:var(--card);color:var(--card-ink);font:400 14px/1 var(--f);outline:none">
+                  <option>Abu Dhabi Island</option>
+                  <option>Al Reem Island</option>
+                  <option>Saadiyat Island</option>
+                  <option>Yas Island</option>
+                  <option>Khalifa City</option>
+                  <option>Al Ain Region</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
+                <button onClick="{{ applyFilters }}" style="height:52px;border-radius:12px;background:var(--blue);color:#fff;border:none;font:600 15px/1 var(--f);cursor:pointer;box-shadow:0 10px 24px rgba(37,99,235,.28)" style-hover="background:#1d4ed8">{{ t.apply }}</button>
+                <button onClick="{{ clearFilters }}" style="height:44px;border-radius:12px;background:none;border:none;color:var(--card-dim);font:400 14px/1 var(--f);cursor:pointer" style-hover="color:var(--card-ink)">{{ t.clearAll }}</button>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isCats }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--card-line);margin-bottom:14px">
+                <span style="color:var(--card-dim)"><dc-import name="Icon" hint-size="16px,16px" icon="search" size="{{ 16 }}"></dc-import></span>
+                <input placeholder="{{ t.filterCats }}" style="flex:1;min-width:0;border:none;outline:none;background:transparent;color:var(--card-ink);font:400 14px/1 var(--f)">
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span style="font-size:12px;color:var(--card-dim)">{{ activeCount }} {{ t.selected }}</span>
+                <button onClick="{{ clearLayers }}" style="background:none;border:none;color:var(--blue);font:400 13px/1 var(--f);cursor:pointer;padding:0">{{ t.clearAll }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ tree }}" as="g" hint-placeholder-count="5">
+                  <div style="border-radius:14px;border:1px solid var(--card-line);overflow:hidden">
+                    <button onClick="{{ g.toggle }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;background:{{ g.headBg }};border:none;cursor:pointer;color:var(--card-ink);text-align:start">
+                      <span style="color:var(--blue)"><dc-import name="Icon" hint-size="18px,18px" icon="{{ g.icon }}" size="{{ 18 }}"></dc-import></span>
+                      <span style="flex:1;font-size:14.5px;font-weight:500">{{ g.label }}</span>
+                      <span style="font-size:12px;color:var(--card-dim)">{{ g.n }}</span>
+                      <span style="color:var(--card-dim);transform:{{ g.rot }};transition:transform .18s"><dc-import name="Icon" hint-size="15px,15px" icon="down" size="{{ 15 }}"></dc-import></span>
+                    </button>
+                    <sc-if value="{{ g.open }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:2px 14px 12px;display:flex;flex-direction:column;gap:2px">
+                      <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+                        <button onClick="{{ it.toggle }}" style="display:flex;align-items:center;gap:11px;padding:9px 0;background:none;border:none;cursor:pointer;color:var(--card-ink);text-align:start">
+                          <span style="{{ it.boxStyle }}"><sc-if value="{{ it.on }}" hint-placeholder-val="{{ false }}"><dc-import name="Icon" hint-size="12px,12px" icon="check" size="{{ 12 }}" stroke="{{ 2.6 }}"></dc-import></sc-if></span>
+                          <span style="flex:1;font-size:13.5px">{{ it.label }}</span>
+                          <span style="font-size:11.5px;color:var(--card-dim)">{{ it.n }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isLegend }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <div style="padding-bottom:18px;border-bottom:1px solid var(--card-line)">
+                <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
+                  <span style="font-size:30px;font-weight:700;line-height:1;color:var(--card-ink)">{{ legendTotal }}</span>
+                  <span style="font-size:15px;font-weight:600;color:var(--card-ink)">{{ t.activeLayers }}</span>
+                </div>
+                <div style="position:relative;height:26px;border-radius:99px;background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e4e8f0 6px 12px);overflow:hidden">
+                  <div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:{{ legendPct }};border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#3b82f6);transition:width .3s ease"></div>
+                </div>
+                <div style="margin-top:10px;font-size:12.5px;color:var(--card-dim)">{{ legendMeta }}</div>
+              </div>
+
+              <sc-for list="{{ legend }}" as="lg" hint-placeholder-count="3">
+                <div style="{{ groupStyle }}">
+                  <div style="{{ groupHead }}">
+                    <span style="flex:1;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--card-ink)">{{ lg.group }}</span>
+                    <span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:99px;background:var(--card-soft);font-size:11px;font-weight:600;color:var(--card-dim);font-variant-numeric:tabular-nums">{{ lg.count }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column">
+                    <sc-for list="{{ lg.items }}" as="li" hint-placeholder-count="3">
+                      <button onClick="{{ li.toggle }}" style="{{ li.rowStyle }}">
+                        <span style="{{ li.dialStyle }}">
+                          <span style="width:12px;height:12px;border-radius:4px;border:1.5px solid {{ li.dot }};background:{{ li.fill2 }}"></span>
+                        </span>
+                        <span style="flex:1;min-width:0;text-align:start">
+                          <span style="display:block;font-size:13.5px;font-weight:{{ li.weight }};color:{{ li.ink }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ li.label }}</span>
+                          <span style="display:block;font-size:11px;color:{{ li.stateInk }};margin-top:2px">{{ li.n }} · {{ li.pill }}</span>
+                        </span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isBasemap }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <sc-for list="{{ basemaps }}" as="b" hint-placeholder-count="4">
+                <button onClick="{{ b.go }}" style="{{ b.style }}">
+                  <span style="display:block;height:78px;background:{{ b.swatch }}"></span>
+                  <span style="display:block;padding:10px 12px;font-size:13.5px;font-weight:500;text-align:start">{{ b.label }}</span>
+                </button>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isSketch }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:20px">
+              <div>
+                <div style="{{ label }}">{{ t.drawTool }}</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                  <sc-for list="{{ sketchTools }}" as="k" hint-placeholder-count="4">
+                    <button onClick="{{ k.go }}" style="{{ k.style }}">
+                      <dc-import name="Icon" hint-size="18px,18px" icon="{{ k.icon }}" size="{{ 18 }}"></dc-import>
+                      <span style="font-size:11px">{{ k.label }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="{{ label }}">{{ t.buffer }}</div>
+                <div onPointerDown="{{ bufDown }}" onPointerMove="{{ bufMove }}" onPointerUp="{{ bufUp }}" style="position:relative;height:26px;border-radius:99px;background:repeating-linear-gradient(135deg,#eef1f6 0 6px,#e4e8f0 6px 12px);cursor:pointer;touch-action:none">
+                  <div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:{{ bufPct }};border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#3b82f6)"></div>
+                  <div style="position:absolute;top:50%;inset-inline-start:{{ bufPct }};transform:translate(-50%,-50%);width:34px;height:34px;border-radius:999px;background:#fff;border:1px solid #dbe2ee;box-shadow:0 4px 12px rgba(16,24,40,.18);display:grid;place-items:center;color:#98a2b3">
+                    <dc-import name="Icon" hint-size="14px,14px" icon="grid" size="{{ 14 }}"></dc-import>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px;color:var(--card-dim)">
+                  <sc-for list="{{ bufStops }}" as="b" hint-placeholder-count="4"><span style="{{ b.style }}">{{ b.label }}</span></sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="{{ label }}">{{ t.measure }}</div>
+                <div style="display:flex;gap:8px;margin-bottom:12px">
+                  <sc-for list="{{ measureTools }}" as="m" hint-placeholder-count="2">
+                    <button onClick="{{ m.go }}" style="{{ m.style }}">
+                      <dc-import name="Icon" hint-size="16px,16px" icon="{{ m.icon }}" size="{{ 16 }}"></dc-import>{{ m.label }}
+                    </button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ measureOn }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px;border-radius:12px;background:var(--card-soft)">
+                  <div style="font-size:26px;font-weight:700;line-height:1;color:var(--card-ink)">{{ measureValue }}</div>
+                  <div style="font-size:12.5px;color:var(--card-dim);margin-top:8px;line-height:1.5">{{ t.measureHint }}</div>
+                </div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ aoi }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:16px;border-radius:14px;background:var(--blue-soft);border:1px solid var(--blue-line)">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px;color:var(--blue)">
+                  <dc-import name="Icon" hint-size="16px,16px" icon="sparkles" size="{{ 16 }}"></dc-import>
+                  <span style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600">{{ t.smartInsights }}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;margin-bottom:12px">
+                  <sc-for list="{{ aoiStats }}" as="st" hint-placeholder-count="4">
+                    <div>
+                      <div style="font-size:24px;font-weight:700;line-height:1;color:var(--card-ink)">{{ st.v }}</div>
+                      <div style="font-size:11.5px;color:var(--card-dim);margin-top:4px">{{ st.k }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <p style="margin:0;font-size:13px;line-height:1.6;color:var(--card-dim)">{{ t.aoiSummary }}</p>
+              </div>
+              </sc-if>
+              <div style="display:flex;gap:10px">
+                <button onClick="{{ toggleAoi }}" style="flex:1;height:46px;border-radius:12px;background:var(--blue);color:#fff;border:none;font:600 14px/1 var(--f);cursor:pointer">{{ aoiBtnLabel }}</button>
+                <button onClick="{{ clearAoi }}" style="height:46px;padding:0 18px;border-radius:12px;background:none;border:1px solid var(--card-line);color:var(--card-dim);font:400 14px/1 var(--f);cursor:pointer">{{ t.clear }}</button>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isPrint }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:20px">
+              <div>
+                <div style="{{ label }}">{{ t.title }}</div>
+                <input value="Abu Dhabi — Education Facilities" style="width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--card-line);background:var(--card);color:var(--card-ink);font:400 14px/1 var(--f);outline:none">
+              </div>
+              <div>
+                <div style="{{ label }}">{{ t.layout }}</div>
+                <div style="display:flex;gap:8px">
+                  <sc-for list="{{ layouts }}" as="l" hint-placeholder-count="3"><button onClick="{{ l.go }}" style="{{ l.style }}">{{ l.label }}</button></sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="{{ label }}">{{ t.include }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{ printParts }}" as="p" hint-placeholder-count="4">
+                    <span style="display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:9px;background:var(--blue-soft);border:1px solid var(--blue-line);color:var(--blue);font-size:12.5px">
+                      <dc-import name="Icon" hint-size="13px,13px" icon="check" size="{{ 13 }}"></dc-import>{{ p }}
+                    </span>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="{{ label }}">{{ t.format }}</div>
+                <div style="display:flex;gap:8px">
+                  <sc-for list="{{ formats }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.go }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+                </div>
+              </div>
+              <button style="display:flex;align-items:center;justify-content:center;gap:10px;height:52px;border-radius:12px;background:var(--blue);color:#fff;border:none;font:600 15px/1 var(--f);cursor:pointer">
+                <dc-import name="Icon" hint-size="16px,16px" icon="download" size="{{ 16 }}"></dc-import>{{ t.exportMap }}
+              </button>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isFav }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ favs }}" as="f" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;border:1px solid var(--card-line)">
+                  <span style="color:var(--blue)"><dc-import name="Icon" hint-size="17px,17px" icon="{{ f.icon }}" size="{{ 17 }}"></dc-import></span>
+                  <span style="flex:1;min-width:0">
+                    <span style="display:block;font-size:13.5px">{{ f.label }}</span>
+                    <span style="display:block;font-size:11.5px;color:var(--card-dim);margin-top:2px">{{ f.kind }}</span>
+                  </span>
+                  <span style="color:var(--blue)"><dc-import name="Icon" hint-size="16px,16px" icon="heart" size="{{ 16 }}"></dc-import></span>
+                </div>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isHelp }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ helpItems }}" as="h" hint-placeholder-count="6">
+                <button onClick="{{ h.toggle }}" style="display:flex;align-items:flex-start;gap:12px;width:100%;padding:14px;border-radius:14px;background:{{ h.bg }};border:1px solid var(--card-line);cursor:pointer;text-align:start;color:var(--card-ink)">
+                  <span style="color:var(--blue);padding-top:1px"><dc-import name="Icon" hint-size="17px,17px" icon="{{ h.icon }}" size="{{ 17 }}"></dc-import></span>
+                  <span style="flex:1">
+                    <span style="display:block;font-size:14px;font-weight:500">{{ h.q }}</span>
+                    <sc-if value="{{ h.open }}" hint-placeholder-val="{{ false }}">
+                      <span style="display:block;font-size:13px;line-height:1.6;color:var(--card-dim);margin-top:8px">{{ h.a }}</span>
+                    </sc-if>
+                  </span>
+                  <span style="color:var(--card-dim);transform:{{ h.rot }};transition:transform .18s"><dc-import name="Icon" hint-size="15px,15px" icon="down" size="{{ 15 }}"></dc-import></span>
+                </button>
+              </sc-for>
+            </div>
+            </sc-if>
+
+          </div>
+        </div>
+
+        <sc-if value="{{ statusCardOut }}" hint-placeholder-val="{{ false }}">
+        <div style="pointer-events:auto;flex:none;padding:16px 18px 18px;border-radius:16px;background:var(--card);color:var(--card-ink);box-shadow:0 22px 55px rgba(8,15,35,.28)">
+          <div style="{{ label }}">{{ t.fStatus }}</div>
+          <div style="display:flex;gap:10px">
+            <sc-for list="{{ statusOpts }}" as="s" hint-placeholder-count="3">
+              <button onClick="{{ s.toggle }}" style="{{ s.tileStyle }}">
+                <span style="{{ s.dialStyle }}"><dc-import name="Icon" hint-size="19px,19px" icon="{{ s.icon }}" size="{{ 19 }}" stroke="{{ 2 }}"></dc-import></span>
+                <span style="font-size:12.5px;line-height:1.3;text-align:center">{{ s.label }}</span>
+                <span style="{{ s.pillStyle }}">{{ s.state }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ copied }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);height:36px;display:flex;align-items:center;padding:0 16px;border-radius:99px;background:var(--blue);color:#fff;font-size:13px;z-index:440;animation:fade .2s">{{ t.copied }}</div>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;height:64px;flex:none;padding:0 9px">
+      <sc-for list="{{ rail }}" as="r" hint-placeholder-count="7">
+        <button onClick="{{ r.go }}" style="{{ r.style }}">
+          <span style="{{ r.glowStyle }}"></span>
+          <span style="{{ r.barStyle }}"></span>
+          <span style="{{ r.iconStyle }}"><dc-import name="Icon" hint-size="21px,21px" icon="{{ r.icon }}" size="{{ 21 }}" filled="{{ true }}"></dc-import></span>
+        </button>
+      </sc-for>
+      <span style="width:1px;height:28px;background:var(--line);margin:0 4px"></span>
+      <button onClick="{{ openHelp }}" style="{{ railHelp }}">
+        <span style="{{ railHelpGlow }}"></span>
+        <span style="{{ railHelpBar }}"></span>
+        <span style="{{ railHelpIcon }}"><dc-import name="Icon" hint-size="21px,21px" icon="help" size="{{ 21 }}" filled="{{ true }}"></dc-import></span>
+      </button>
+      <button onClick="{{ toggleChat }}" style="{{ chatToggle }}">
+        <span style="{{ chatToggleGlow }}"></span>
+        <span style="{{ chatToggleBar }}"></span>
+        <span style="{{ chatToggleIcon }}"><dc-import name="Icon" hint-size="21px,21px" icon="sparkles" size="{{ 21 }}" filled="{{ true }}"></dc-import></span>
+      </button>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:calc(100vh - 34px);background:var(--shell);animation:fade .3s ease">
+    <div style="display:flex;align-items:center;gap:18px;height:76px;padding:0 26px">
+      <img src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:34px;width:auto;flex:none;filter:{{ logoFilter }}">
+      <div style="display:flex;align-items:center;gap:26px;margin:0 auto">
+        <button onClick="{{ goMap }}" style="{{ navMapIdle }}"><dc-import name="Icon" hint-size="17px,17px" icon="map" size="{{ 17 }}"></dc-import>{{ t.map }}</button>
+        <button onClick="{{ goAbout }}" style="{{ navAboutActive }}">{{ t.about }}</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onClick="{{ toggleLang }}" style="{{ sqBtn }}">{{ langShort }}</button>
+        <button onClick="{{ toggleTheme }}" style="{{ sqBtn }}"><dc-import name="Icon" hint-size="18px,18px" icon="{{ themeIcon }}" size="{{ 18 }}"></dc-import></button>
+        <button onClick="{{ toggleMenu }}" style="display:grid;place-items:center;width:34px;height:34px;border-radius:999px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);border:none;color:#fff;cursor:pointer;flex:none;box-shadow:0 4px 14px rgba(37,99,235,.4)">
+          <dc-import name="Icon" hint-size="17px,17px" icon="user" size="{{ 17 }}" filled="{{ true }}"></dc-import>
+        </button>
+        <div style="position:relative;display:flex;align-items:center;gap:11px;margin-inline-start:10px">
+          <img src="assets/logo-adsd.png" alt="Abu Dhabi Spatial Data" style="height:32px;width:auto;flex:none;filter:{{ logoFilter }}">
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:52px;inset-inline-end:0;width:250px;padding:8px;border-radius:14px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 20px 48px rgba(5,10,25,.4);z-index:600;animation:rise .18s ease">
+            <div style="padding:10px 12px 12px;border-bottom:1px solid var(--pane-line);margin-bottom:6px">
+              <div style="font-size:14px;font-weight:600">{{ userName }}</div>
+              <div style="font-size:12px;color:var(--dim);margin-top:3px">{{ userMeta }}</div>
+            </div>
+            <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="5">
+              <button onClick="{{ m.go }}" style="display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:10px;background:none;border:none;color:var(--ink);font:400 13.5px/1 var(--f);text-align:start;cursor:pointer" style-hover="background:var(--pane-2)">
+                <span style="color:var(--dim)"><dc-import name="Icon" hint-size="16px,16px" icon="{{ m.icon }}" size="{{ 16 }}"></dc-import></span>
+                <span style="flex:1">{{ m.label }}</span>
+                <span style="font-size:11.5px;color:var(--dim)">{{ m.hint }}</span>
+              </button>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;max-width:1080px;margin:0 auto;padding:56px 26px 30px">
+      <div style="position:absolute;inset:0 0 auto;height:440px;pointer-events:none;background-image:linear-gradient(var(--heroGrid) 1px,transparent 1px),linear-gradient(90deg,var(--heroGrid) 1px,transparent 1px);background-size:44px 44px;animation:gridDrift 18s linear infinite;mask-image:radial-gradient(60% 70% at 50% 0%,#000,transparent)"></div>
+
+      
+      <h1 style="position:relative;font-size:52px;line-height:1.06;letter-spacing:-.025em;margin:0 0 18px;max-width:18ch;animation:rise .5s ease .05s both">{{ t.aboutTitle }}</h1>
+      <p style="position:relative;font-size:16.5px;line-height:1.7;color:var(--dim);max-width:64ch;margin:0 0 34px;animation:rise .5s ease .1s both">{{ t.aboutBody }}</p>
+
+      <div style="position:relative;border-radius:28px;overflow:hidden;background:linear-gradient(160deg,#2563eb 0%,#1d4ed8 45%,#0d1a45 100%);box-shadow:0 40px 90px rgba(15,40,120,.35);animation:rise .55s ease .15s both">
+        <div style="position:absolute;inset:0;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.35) 1px,transparent 1px);background-size:26px 26px;mix-blend-mode:overlay"></div>
+        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px);background-size:56px 56px;animation:gridDrift 22s linear infinite"></div>
+        <div style="position:absolute;width:340px;height:340px;border-radius:999px;top:-140px;right:-80px;background:radial-gradient(closest-side,rgba(147,197,253,.5),transparent 70%);filter:blur(10px);animation:glowPulse 7s ease-in-out infinite"></div>
+        <div style="position:relative;padding:52px 44px 34px;text-align:center">
+          <div style="display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#dce8ff;margin-bottom:22px">
+            <dc-import name="Icon" hint-size="12px,12px" icon="pin" size="{{ 12 }}"></dc-import>Abu Dhabi, UAE
+          </div>
+          <div style="width:64px;height:64px;margin:0 auto 20px;border-radius:18px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);display:grid;place-items:center;animation:floatY 6s ease-in-out infinite">
+            <dc-import name="Icon" hint-size="30px,30px" icon="map" size="{{ 30 }}" color="#fff"></dc-import>
+          </div>
+          <div style="font-size:22px;font-weight:600;color:#fff;max-width:26ch;margin:0 auto">GeoVision</div>
+        </div>
+        <div style="position:relative;display:flex;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.16);background:rgba(8,16,42,.35)">
+          <sc-for list="{{ aboutStats }}" as="s" hint-placeholder-count="4">
+            <div style="flex:1 1 0;min-width:130px;padding:22px 16px;text-align:center;border-inline-start:1px solid rgba(255,255,255,.14)">
+              <div style="font-size:30px;font-weight:700;line-height:1;color:#fff">{{ s.v }}</div>
+              <div style="font-size:11.5px;color:#b9caf0;margin-top:8px;letter-spacing:.02em">{{ s.k }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:1080px;margin:0 auto;padding:44px 26px 80px">
+      <h2 style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:center;margin:0 0 34px">{{ t.objectives }} &amp; {{ t.help }}</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
+        <div style="padding:32px;border-radius:24px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 20px 50px rgba(5,10,25,.18)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+            <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--blue-soft);color:var(--blue)"><dc-import name="Icon" hint-size="18px,18px" icon="target" size="{{ 18 }}"></dc-import></span>
+            <h2 style="font-size:22px;margin:0">{{ t.objectives }}</h2>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <sc-for list="{{ objectives }}" as="o" hint-placeholder-count="4">
+              <div style="display:flex;gap:14px">
+                <span style="font-size:13px;font-weight:600;color:var(--blue);padding-top:3px">{{ o.n }}</span>
+                <span style="flex:1;font-size:14.5px;line-height:1.65;color:var(--dim)">{{ o.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:32px;border-radius:24px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 20px 50px rgba(5,10,25,.18)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+            <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--blue-soft);color:var(--blue)"><dc-import name="Icon" hint-size="18px,18px" icon="help" size="{{ 18 }}"></dc-import></span>
+            <h2 style="font-size:22px;margin:0">{{ t.help }}</h2>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ helpItems }}" as="h" hint-placeholder-count="6">
+              <button onClick="{{ h.toggle }}" style="display:flex;align-items:flex-start;gap:12px;width:100%;padding:14px;border-radius:14px;background:var(--pane-2);border:1px solid var(--pane-line);cursor:pointer;text-align:start;color:var(--ink)">
+                <span style="color:var(--blue);padding-top:1px"><dc-import name="Icon" hint-size="17px,17px" icon="{{ h.icon }}" size="{{ 17 }}"></dc-import></span>
+                <span style="flex:1">
+                  <span style="display:block;font-size:14px;font-weight:500">{{ h.q }}</span>
+                  <sc-if value="{{ h.open }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:block;font-size:13px;line-height:1.6;color:var(--dim);margin-top:8px">{{ h.a }}</span>
+                  </sc-if>
+                </span>
+                <span style="color:var(--dim);transform:{{ h.rot }};transition:transform .18s"><dc-import name="Icon" hint-size="15px,15px" icon="down" size="{{ 15 }}"></dc-import></span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Presentation&quot;},&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Presentation&quot;},&quot;device&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;desktop&quot;,&quot;mobile&quot;],&quot;default&quot;:&quot;desktop&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Presentation&quot;},&quot;showBrIds&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Presentation&quot;}}">
+const POIS = [
+  { id: 'p1', cat: 'health', name: 'Sheikh Khalifa Medical City', ar: 'مدينة الشيخ خليفة الطبية', lat: 24.4692, lng: 54.3690, area: 'Al Karamah', status: 'Operational', ds: 'health.hospitals' },
+  { id: 'p2', cat: 'health', name: 'Cleveland Clinic Abu Dhabi', ar: 'كليفلاند كلينك أبوظبي', lat: 24.5015, lng: 54.3800, area: 'Al Maryah Island', status: 'Operational', ds: 'health.hospitals' },
+  { id: 'p3', cat: 'education', name: 'Khalifa University', ar: 'جامعة خليفة', lat: 24.4423, lng: 54.6100, area: 'Masdar City', status: 'Operational', ds: 'edu.universities' },
+  { id: 'p4', cat: 'education', name: 'Abu Dhabi Vocational Institute', ar: 'معهد أبوظبي المهني', lat: 24.4290, lng: 54.4480, area: 'Mohammed Bin Zayed City', status: 'Operational', ds: 'edu.schools' },
+  { id: 'p5', cat: 'government', name: 'Qasr Al Watan', ar: 'قصر الوطن', lat: 24.4620, lng: 54.3050, area: 'Ras Al Akhdar', status: 'Operational', ds: 'gov.offices' },
+  { id: 'p6', cat: 'government', name: 'DGE Customer Happiness Centre', ar: 'مركز سعادة المتعاملين', lat: 24.4501, lng: 54.3960, area: 'Al Danah', status: 'Operational', ds: 'gov.services' },
+  { id: 'p7', cat: 'parks', name: 'Umm Al Emarat Park', ar: 'حديقة أم الإمارات', lat: 24.4570, lng: 54.3760, area: 'Al Mushrif', status: 'Operational', ds: 'parks.public' },
+  { id: 'p8', cat: 'parks', name: 'Corniche Beach', ar: 'شاطئ الكورنيش', lat: 24.4750, lng: 54.3220, area: 'Al Khalidiyah', status: 'Operational', ds: 'parks.beaches' },
+  { id: 'p10', cat: 'transport', name: 'Abu Dhabi Central Bus Station', ar: 'محطة الحافلات المركزية', lat: 24.4477, lng: 54.3805, area: 'Al Wahdah', status: 'Operational', ds: 'transport.bus' },
+  { id: 'p11', cat: 'recreation', name: 'Louvre Abu Dhabi', ar: 'اللوفر أبوظبي', lat: 24.5339, lng: 54.3981, area: 'Saadiyat Island', status: 'Operational', ds: 'rec.culture' },
+  { id: 'p13', cat: 'recreation', name: 'Emirates Palace', ar: 'قصر الإمارات', lat: 24.4617, lng: 54.3170, area: 'Ras Al Akhdar', status: 'Operational', ds: 'rec.culture' },
+  { id: 'p14', cat: 'utilities', name: 'Mussafah Substation 220kV', ar: 'محطة مصفح الفرعية', lat: 24.3600, lng: 54.5000, area: 'Mussafah', status: 'Under maintenance', ds: 'util.power' },
+  { id: 'p16', cat: 'health', name: 'Burjeel Medical City', ar: 'برجيل ميديكال سيتي', lat: 24.4230, lng: 54.4740, area: 'Mohammed Bin Zayed City', status: 'Operational', ds: 'health.clinics' },
+];
+
+const RESULTS = [
+  { id: 's1', name: 'International School Of Choueifat — Al Mushrif', short: 'International School Of Choueifat - M…', ar: 'مدرسة الشويفات الدولية- المشرف',
+    lat: 24.4562, lng: 54.3688, ds: 'edu.private',
+    address: 'W24_02, AL MUSHRIF, Abu Dhabi أبوظبي، المشرف، W24_02',
+    url: 'https://iscabudhabi.sabis.net', email: '9059@adek.gov.ae', phone: '24461444',
+    chips: ['Academic Year: 2024', 'IRTQAA Result: Very Good', 'Average Tuition Fee: 28,912'] },
+  { id: 's2', name: 'Al Mushrif Private School', short: 'Al Mushrif Private School', ar: 'مدرسة المشرف الخاصة',
+    lat: 24.4489, lng: 54.3820, ds: 'edu.private',
+    address: 'W24_01, AL MUSHRIF, Abu Dhabi أبوظبي، المشرف، W24_01',
+    url: 'https://mushrifschool.ae', email: '4127@adek.gov.ae', phone: '24487777',
+    chips: ['Academic Year: 2024', 'IRTQAA Result: Good', 'Average Tuition Fee: 21,450'] },
+  { id: 's3', name: 'Al Manhal International Private School', short: 'Al Manhal International Private Sch…', ar: 'مدرسة المنهل الدولية الخاصة',
+    lat: 24.4657, lng: 54.3592, ds: 'edu.private',
+    address: 'W10_04, AL MANHAL, Abu Dhabi أبوظبي، المنهل، W10_04',
+    url: 'https://almanhalschool.ae', email: '3318@adek.gov.ae', phone: '24455222',
+    chips: ['Academic Year: 2024', 'IRTQAA Result: Very Good', 'Average Tuition Fee: 25,300'] },
+  { id: 's4', name: 'Al Bateen Secondary School', short: 'Al Bateen Secondary School', ar: 'مدرسة البطين الثانوية',
+    lat: 24.4527, lng: 54.3402, ds: 'edu.schools',
+    address: 'W16_03, AL BATEEN, Abu Dhabi أبوظبي، البطين، W16_03',
+    url: 'https://adek.gov.ae', email: '2210@adek.gov.ae', phone: '24443311',
+    chips: ['Academic Year: 2024', 'IRTQAA Result: Good', 'Government school'] },
+];
+
+const MORE = [
+  { id: 'm1', name: 'Al Rabeeh School', ar: 'مدرسة الربيع', lat: 24.4396, lng: 54.4187, area: 'Al Mushrif', ds: 'edu.private',
+    address: 'W24_05, AL MUSHRIF, Abu Dhabi', url: 'https://alrabeehschool.ae', email: '3980@adek.gov.ae', phone: '24478000',
+    chips: ['Academic Year: 2024', 'IRTQAA Result: Good', 'Average Tuition Fee: 30,100'] },
+  { id: 'm2', name: 'Sheikh Khalifa Medical City', ar: 'مدينة الشيخ خليفة الطبية', lat: 24.4692, lng: 54.3690, area: 'Al Karamah', ds: 'health.hospitals',
+    address: 'Al Karamah Street, Abu Dhabi', url: 'https://skmc.seha.ae', email: 'info@skmc.ae', phone: '28190000',
+    chips: ['586 beds', 'Emergency: 24/7', 'Trauma centre'] },
+  { id: 'm3', name: 'Cleveland Clinic Abu Dhabi', ar: 'كليفلاند كلينك أبوظبي', lat: 24.5015, lng: 54.3800, area: 'Al Maryah Island', ds: 'health.hospitals',
+    address: 'Al Maryah Island, Abu Dhabi', url: 'https://clevelandclinicabudhabi.ae', email: 'contact@ccad.ae', phone: '28000000',
+    chips: ['394 beds', 'Emergency: 24/7', 'JCI accredited'] },
+  { id: 'm4', name: 'Burjeel Medical City', ar: 'برجيل ميديكال سيتي', lat: 24.4230, lng: 54.4740, area: 'Mohammed Bin Zayed City', ds: 'health.clinics',
+    address: 'Mohammed Bin Zayed City, Abu Dhabi', url: 'https://burjeel.com', email: 'info@burjeel.com', phone: '25085555',
+    chips: ['Multi-speciality', 'Emergency: 24/7', 'Oncology centre'] },
+  { id: 'm5', name: 'Khalifa University', ar: 'جامعة خليفة', lat: 24.4423, lng: 54.6100, area: 'Masdar City', ds: 'edu.universities',
+    address: 'Masdar City, Abu Dhabi', url: 'https://ku.ac.ae', email: 'info@ku.ac.ae', phone: '24018000',
+    chips: ['Public university', 'Research intensive', 'Est. 2007'] },
+  { id: 'm6', name: 'Zayed University — Abu Dhabi', ar: 'جامعة زايد', lat: 24.4160, lng: 54.5480, area: 'Khalifa City', ds: 'edu.universities',
+    address: 'Khalifa City, Abu Dhabi', url: 'https://zu.ac.ae', email: 'info@zu.ac.ae', phone: '24021111',
+    chips: ['Public university', 'Est. 1998', 'Two campuses'] },
+  { id: 'm7', name: 'Umm Al Emarat Park', ar: 'حديقة أم الإمارات', lat: 24.4570, lng: 54.3760, area: 'Al Mushrif', ds: 'parks.public',
+    address: '15th Street, Al Mushrif, Abu Dhabi', url: 'https://ummalemaratpark.ae', email: 'info@ummalemaratpark.ae', phone: '24141115',
+    chips: ['Open 08:00–24:00', 'Amphitheatre', 'Botanical garden'] },
+  { id: 'm8', name: 'Corniche Beach', ar: 'شاطئ الكورنيش', lat: 24.4750, lng: 54.3220, area: 'Al Khalidiyah', ds: 'parks.beaches',
+    address: 'Corniche Road, Abu Dhabi', url: 'https://visitabudhabi.ae', email: 'info@adm.gov.ae', phone: '800555',
+    chips: ['Blue Flag beach', 'Lifeguards on duty', 'Family section'] },
+  { id: 'm9', name: 'DGE Customer Happiness Centre', ar: 'مركز سعادة المتعاملين', lat: 24.4501, lng: 54.3960, area: 'Al Danah', ds: 'gov.services',
+    address: 'Al Danah, Abu Dhabi', url: 'https://dge.gov.ae', email: 'care@dge.gov.ae', phone: '800555',
+    chips: ['Open Sat–Thu', '07:30–15:30', 'Walk-in service'] },
+  { id: 'm10', name: 'Qasr Al Watan', ar: 'قصر الوطن', lat: 24.4620, lng: 54.3050, area: 'Ras Al Akhdar', ds: 'gov.offices',
+    address: 'Ras Al Akhdar, Abu Dhabi', url: 'https://qasralwatan.ae', email: 'info@qasralwatan.ae', phone: '28115500',
+    chips: ['Presidential palace', 'Open to visitors', 'Guided tours'] },
+  { id: 'm11', name: 'Abu Dhabi Central Bus Station', ar: 'محطة الحافلات المركزية', lat: 24.4477, lng: 54.3805, area: 'Al Wahdah', ds: 'transport.bus',
+    address: 'Al Wahdah, Abu Dhabi', url: 'https://itc.gov.ae', email: 'info@itc.gov.ae', phone: '600535353',
+    chips: ['Intercity routes', 'Open 24/7', '42 bays'] },
+  { id: 'm12', name: 'Louvre Abu Dhabi', ar: 'اللوفر أبوظبي', lat: 24.5339, lng: 54.3981, area: 'Saadiyat Island', ds: 'rec.culture',
+    address: 'Saadiyat Cultural District, Abu Dhabi', url: 'https://louvreabudhabi.ae', email: 'info@louvreabudhabi.ae', phone: '600565566',
+    chips: ['Open Tue–Sun', 'Museum', '23 galleries'] },
+  { id: 'm13', name: 'Yas Mall', ar: 'ياس مول', lat: 24.4880, lng: 54.6070, area: 'Yas Island', ds: 'rec.retail',
+    address: 'Yas Island, Abu Dhabi', url: 'https://yasmall.ae', email: 'info@yasmall.ae', phone: '24143000',
+    chips: ['370 stores', 'Open 10:00–22:00', 'Cinema'] },
+  { id: 'm14', name: 'Mussafah Substation 220kV', ar: 'محطة مصفح الفرعية', lat: 24.3600, lng: 54.5000, area: 'Mussafah', ds: 'util.power',
+    address: 'Mussafah Industrial Area, Abu Dhabi', url: 'https://transco.ae', email: 'info@transco.ae', phone: '25555000',
+    chips: ['220 kV', 'Under maintenance', 'TRANSCO asset'] },
+];
+
+const CATDEF = [
+  { id: 'education', icon: 'school', en: 'Education', ar: 'التعليم' },
+  { id: 'health', icon: 'health', en: 'Healthcare', ar: 'الرعاية الصحية' },
+  { id: 'transport', icon: 'bus', en: 'Transport', ar: 'النقل' },
+  { id: 'government', icon: 'gov', en: 'Government', ar: 'الجهات الحكومية' },
+  { id: 'parks', icon: 'park', en: 'Parks', ar: 'الحدائق' },
+  { id: 'utilities', icon: 'utility', en: 'Utilities', ar: 'المرافق' },
+];
+
+const TREE = [
+  { id: 'education', icon: 'school', en: 'Education', ar: 'التعليم', items: [
+    { id: 'edu.schools', en: 'Public schools', ar: 'المدارس الحكومية', n: '312' },
+    { id: 'edu.private', en: 'Private schools', ar: 'المدارس الخاصة', n: '189' },
+    { id: 'edu.universities', en: 'Universities & colleges', ar: 'الجامعات والكليات', n: '24' },
+    { id: 'edu.nursery', en: 'Nurseries', ar: 'الحضانات', n: '146' } ] },
+  { id: 'health', icon: 'health', en: 'Healthcare', ar: 'الرعاية الصحية', items: [
+    { id: 'health.hospitals', en: 'Hospitals', ar: 'المستشفيات', n: '46' },
+    { id: 'health.clinics', en: 'Clinics & health centres', ar: 'العيادات', n: '288' },
+    { id: 'health.pharmacy', en: 'Pharmacies', ar: 'الصيدليات', n: '741' } ] },
+  { id: 'transport', icon: 'bus', en: 'Transport', ar: 'النقل', items: [
+    { id: 'transport.bus', en: 'Bus stations & stops', ar: 'محطات الحافلات', n: '1,204' },
+    { id: 'transport.park', en: 'Public parking (Mawaqif)', ar: 'مواقف عامة', n: '892' } ] },
+  { id: 'government', icon: 'gov', en: 'Government', ar: 'الجهات الحكومية', items: [
+    { id: 'gov.offices', en: 'Government entities', ar: 'الجهات الحكومية', n: '87' },
+    { id: 'gov.services', en: 'Service centres', ar: 'مراكز الخدمة', n: '64' },
+    { id: 'gov.police', en: 'Police stations', ar: 'مراكز الشرطة', n: '39' } ] },
+  { id: 'parks', icon: 'park', en: 'Parks & open space', ar: 'الحدائق والمساحات', items: [
+    { id: 'parks.public', en: 'Public parks', ar: 'الحدائق العامة', n: '158' },
+    { id: 'parks.beaches', en: 'Beaches', ar: 'الشواطئ', n: '21' } ] },
+  { id: 'utilities', icon: 'utility', en: 'Utilities', ar: 'المرافق', items: [
+    { id: 'util.power', en: 'Power network', ar: 'شبكة الكهرباء', n: '410' },
+    { id: 'util.water', en: 'Water network', ar: 'شبكة المياه', n: '378' } ] },
+  { id: 'recreation', icon: 'ticket', en: 'Recreation & culture', ar: 'الترفيه والثقافة', items: [
+    { id: 'rec.culture', en: 'Museums & cultural sites', ar: 'المتاحف', n: '33' },
+    { id: 'rec.retail', en: 'Malls & retail', ar: 'المراكز التجارية', n: '52' } ] },
+];
+
+const T = {
+  en: {
+    map: 'Map', about: 'About us', help: 'Help', askAi: 'Ask AI', newChat: 'New Chat',
+    search: 'Search', searchPh: 'Search places, datasets or ask a question…', activeLayers: 'Active layers',
+    home: 'Home', loginTitle: 'Sign in to GeoVision', loginSub: 'Use your DGE account to reach saved layers, favourites and conversation history.',
+    email: 'Email', password: 'Password', remember: 'Remember me', forgot: 'Forgot password?',
+    signIn: 'Sign in', guest: 'Continue as guest', noAccount: 'No account yet?', signUp: 'Sign up',
+    dashKicker: 'Abu Dhabi spatial data platform', dashTitle: 'Ask Abu Dhabi’s spatial data anything.',
+    dashSub: 'Search government facilities, services and datasets by name or in plain language, then open them on the interactive map.',
+    readMore: 'Read more', announce: 'GeoVision AI is live for all Abu Dhabi layers', previewLabel: 'Map workspace preview',
+    browseCats: 'Browse categories', allCats: 'All categories', datasets: 'datasets', openMap: 'Open the map workspace',
+    geoAnswer: 'GeoVision AI', noResults: 'Nothing matched that in the published Abu Dhabi layers. Try a facility type — schools, hospitals, clinics, universities, parks, government centres, transport or utilities — optionally with a district.',
+    measure: 'Measure', measureHint: 'Click the map to add vertices; double-click to finish.',
+    askPh: 'Ask a question…', thinking: 'Reading spatial layers…', whyGood: "Here's why this is a good option for you",
+    overview: 'Overview', details: 'Details', history: 'History', bookmarks: 'Book marks', saved: 'Saved',
+    fCategory: 'Category', fDistance: 'Distance from the centre', fArea: 'Area / District', fStatus: 'Status',
+    apply: 'Apply Filters', clearAll: 'Clear all', filterCats: 'Search categories and datasets', selected: 'selected',
+    drawTool: 'Draw area of interest', buffer: 'Buffer distance', smartInsights: 'Smart insights', clear: 'Clear',
+    aoiSummary: 'The selected 42 km² area on Abu Dhabi Island contains a dense cluster of health and education facilities, with the highest facility density along Al Khaleej Al Arabi Street.',
+    title: 'Map title', layout: 'Layout', include: 'Include', format: 'Format', exportMap: 'Export map',
+    copied: 'Coordinates copied',
+    aboutTitle: 'A single spatial view of Abu Dhabi’s government data.',
+    aboutBody: 'GeoVision is the Spatial Data Infrastructure platform of the Department of Government Enablement. It brings authoritative spatial datasets from across Abu Dhabi entities into one interactive workspace, and adds an AI layer that lets any resident, visitor or public servant ask for what they need in plain language — in English or Arabic — instead of learning GIS.',
+    objectives: 'Objectives',
+  },
+  ar: {
+    map: 'الخريطة', about: 'من نحن', help: 'المساعدة', askAi: 'اسأل الذكاء', newChat: 'محادثة جديدة',
+    search: 'بحث', searchPh: 'ابحث عن مكان أو بيانات أو اطرح سؤالاً…', activeLayers: 'الطبقات المعروضة',
+    home: 'الرئيسية', loginTitle: 'تسجيل الدخول إلى جيوفيجن', loginSub: 'استخدم حساب الدائرة للوصول إلى الطبقات المحفوظة والمفضلة وسجل المحادثات.',
+    email: 'البريد الإلكتروني', password: 'كلمة المرور', remember: 'تذكرني', forgot: 'نسيت كلمة المرور؟',
+    signIn: 'تسجيل الدخول', guest: 'المتابعة كزائر', noAccount: 'ليس لديك حساب؟', signUp: 'إنشاء حساب',
+    dashKicker: 'منصة البيانات المكانية لأبوظبي', dashTitle: 'اسأل بيانات أبوظبي المكانية عن أي شيء.',
+    dashSub: 'ابحث عن المنشآت والخدمات والبيانات الحكومية بالاسم أو بلغة طبيعية، ثم اعرضها على الخريطة التفاعلية.',
+    readMore: 'اقرأ المزيد', announce: 'جيوفيجن الذكي متاح لجميع طبقات أبوظبي', previewLabel: 'معاينة مساحة العمل',
+    browseCats: 'تصفح الفئات', allCats: 'جميع الفئات', datasets: 'مجموعة بيانات', openMap: 'افتح مساحة العمل',
+    geoAnswer: 'جيوفيجن الذكي', noResults: 'لم يتم العثور على نتائج في الطبقات المنشورة. جرّب نوع المنشأة — مدارس، مستشفيات، عيادات، جامعات، حدائق، مراكز حكومية، نقل أو مرافق — مع اسم المنطقة.',
+    measure: 'القياس', measureHint: 'انقر على الخريطة لإضافة النقاط، وانقر مرتين للإنهاء.',
+    askPh: 'اطرح سؤالاً…', thinking: 'يقرأ الطبقات المكانية…', whyGood: 'لماذا هذا الخيار مناسب لك',
+    overview: 'نظرة عامة', details: 'التفاصيل', history: 'السجل', bookmarks: 'المحفوظات', saved: 'المحفوظات',
+    fCategory: 'الفئة', fDistance: 'المسافة من المركز', fArea: 'المنطقة', fStatus: 'الحالة',
+    apply: 'تطبيق الفلاتر', clearAll: 'مسح الكل', filterCats: 'ابحث في الفئات', selected: 'مُحدد',
+    drawTool: 'ارسم منطقة الاهتمام', buffer: 'مسافة النطاق', smartInsights: 'رؤى ذكية', clear: 'مسح',
+    aoiSummary: 'تحتوي المنطقة المحددة البالغة ٤٢ كم² في جزيرة أبوظبي على تجمع كثيف من مرافق الصحة والتعليم.',
+    title: 'عنوان الخريطة', layout: 'التخطيط', include: 'العناصر', format: 'الصيغة', exportMap: 'تصدير الخريطة',
+    copied: 'تم نسخ الإحداثيات',
+    aboutTitle: 'رؤية مكانية موحدة لبيانات حكومة أبوظبي.',
+    aboutBody: 'جيوفيجن هي منصة البنية التحتية للبيانات المكانية في دائرة التمكين الحكومي. تجمع المنصة مجموعات البيانات المكانية المعتمدة من جهات أبوظبي في مساحة عمل تفاعلية واحدة، وتضيف طبقة ذكاء اصطناعي تتيح لأي مقيم أو زائر أو موظف حكومي طلب ما يحتاجه بلغة طبيعية.',
+    objectives: 'الأهداف',
+  },
+};
+
+const HELP = [
+  { icon: 'book', q: 'Getting started with GeoVision', a: 'Sign in and you land straight in the map workspace. Ask AI, browse layers, filter, sketch an area and print — favourites and conversation history are kept against your account.' },
+  { icon: 'search', q: 'How AI search and voice search work', a: 'Type or speak a question in English or Arabic. GeoVision interprets the intent, resolves it against the published spatial layers, opens the matching datasets on the map and returns results you can expand for detail.' },
+  { icon: 'layers', q: 'Browsing categories and datasets', a: 'The Layers panel lists every thematic category. Expand a category to see its datasets and select several at once — the map updates as you select.' },
+  { icon: 'sketch', q: 'Drawing an area of interest', a: 'Sketch a polygon, rectangle or circle, or pick an existing boundary. GeoVision runs a spatial search inside the area and returns statistics and an AI summary for it.' },
+  { icon: 'printer', q: 'Printing and exporting a map', a: 'Print Map produces the current extent with title, legend, north arrow and scale bar, as PDF, PNG or JPEG.' },
+  { icon: 'play', q: 'Video tutorials', a: 'Short walkthroughs cover search, filtering, the identify tool, buffers and Smart Insights, and open inside the application.' },
+];
+
+const OBJ = [
+  'Publish authoritative Abu Dhabi spatial data through one governed, public-facing platform.',
+  'Remove the GIS skills barrier with multilingual natural-language and voice search.',
+  'Give decision-makers AI-assisted spatial analysis over trusted government datasets.',
+  'Keep government spatial information inside DGE-approved infrastructure at all times.',
+];
+
+const HISTORY = [
+  { when: 'Today · 21:32', title: 'Find schools within 2km', turns: '4 results · Education layers opened' },
+  { when: 'Today · 09:24', title: 'Schools within 5 km of Al Reem Island', turns: '6 turns · 3 datasets opened' },
+  { when: 'Yesterday · 16:02', title: 'Health facility coverage in Mussafah', turns: '4 turns · buffer analysis' },
+  { when: '10 Aug', title: 'مواقف عامة قريبة من الكورنيش', turns: '3 turns · 1 dataset opened' },
+];
+
+const ALL = RESULTS.concat(MORE);
+const STOPS = [2, 5, 10, 20];
+
+const LEGEND = [
+  { en: 'Education', ar: 'التعليم', items: [
+    { id: 'edu.private', en: 'Private schools', ar: 'المدارس الخاصة', n: '189', color: '#e0313f', solid: true },
+    { id: 'edu.schools', en: 'Public schools', ar: 'المدارس الحكومية', n: '312', color: '#e0313f' },
+    { id: 'edu.universities', en: 'Universities', ar: 'الجامعات', n: '24', color: '#f97316', solid: true } ] },
+  { en: 'Healthcare', ar: 'الرعاية الصحية', items: [
+    { id: 'health.hospitals', en: 'Hospitals', ar: 'المستشفيات', n: '46', color: '#3b82f6', solid: true },
+    { id: 'health.clinics', en: 'Clinics', ar: 'العيادات', n: '288', color: '#3b82f6' } ] },
+  { en: 'Mobility & utilities', ar: 'النقل والمرافق', items: [
+    { id: 'transport.bus', en: 'Bus network', ar: 'شبكة الحافلات', n: '1,204', color: '#22d3ee' },
+    { id: 'util.power', en: 'Power network', ar: 'شبكة الكهرباء', n: '410', color: '#a855f7' } ] },
+];
+const LEGEND_N = LEGEND.reduce((a, g) => a + g.items.length, 0);
+
+const SUGGEST = [
+  { icon: 'sparkles', label: 'Find schools within 2km', kind: 'AI query' },
+  { icon: 'health', label: 'Hospitals near Mussafah', kind: 'AI query' },
+  { icon: 'park', label: 'Parks on Saadiyat Island', kind: 'AI query' },
+  { icon: 'school', label: 'Private schools', kind: 'Dataset', ds: 'edu.private' },
+  { icon: 'health', label: 'Hospitals', kind: 'Dataset', ds: 'health.hospitals' },
+  { icon: 'pin', label: 'Al Mushrif, Abu Dhabi', kind: 'Place', lat: 24.4525, lng: 54.3735 },
+  { icon: 'pin', label: 'Al Reem Island', kind: 'Place', lat: 24.4988, lng: 54.4028 },
+];
+
+const KINDS = [
+  { id: 'school', ds: ['edu.private', 'edu.schools'], en: 'schools', ar: 'مدارس',
+    words: ['school', 'schools', 'educat', 'kindergarten', 'nursery', 'مدرس', 'مدارس', 'تعليم'] },
+  { id: 'university', ds: ['edu.universities'], en: 'universities', ar: 'جامعات',
+    words: ['universit', 'college', 'campus', 'جامع', 'كلية'] },
+  { id: 'hospital', ds: ['health.hospitals'], en: 'hospitals', ar: 'مستشفيات',
+    words: ['hospital', 'emergency', 'medical city', 'مستشف', 'طوارئ'] },
+  { id: 'clinic', ds: ['health.clinics'], en: 'clinics & health centres', ar: 'عيادات ومراكز صحية',
+    words: ['clinic', 'health cent', 'pharmac', 'doctor', 'عياد', 'صحة', 'صيدلي'] },
+  { id: 'park', ds: ['parks.public', 'parks.beaches'], en: 'parks & beaches', ar: 'حدائق وشواطئ',
+    words: ['park', 'beach', 'garden', 'corniche', 'حديق', 'شاطئ', 'كورنيش'] },
+  { id: 'gov', ds: ['gov.offices', 'gov.services'], en: 'government facilities', ar: 'جهات حكومية',
+    words: ['government', 'service cent', 'municipal', 'authority', 'police', 'حكوم', 'خدمة', 'شرطة'] },
+  { id: 'transport', ds: ['transport.bus', 'transport.park'], en: 'transport facilities', ar: 'مرافق النقل',
+    words: ['bus', 'station', 'parking', 'mawaqif', 'airport', 'metro', 'حافل', 'مواقف', 'مطار'] },
+  { id: 'culture', ds: ['rec.culture', 'rec.retail'], en: 'cultural & retail destinations', ar: 'مواقع ثقافية وتجارية',
+    words: ['museum', 'mall', 'louvre', 'culture', 'palace', 'shopping', 'متحف', 'مول', 'قصر'] },
+  { id: 'utility', ds: ['util.power', 'util.water'], en: 'utility assets', ar: 'أصول المرافق',
+    words: ['power', 'substation', 'water', 'electric', 'utility', 'كهرب', 'مياه', 'محطة'] },
+];
+
+const AREAS = [
+  { en: 'Al Mushrif', ar: 'المشرف', words: ['mushrif', 'المشرف'] },
+  { en: 'Al Bateen', ar: 'البطين', words: ['bateen', 'البطين'] },
+  { en: 'Saadiyat Island', ar: 'جزيرة السعديات', words: ['saadiyat', 'السعديات'] },
+  { en: 'Yas Island', ar: 'جزيرة ياس', words: ['yas', 'ياس'] },
+  { en: 'Khalifa City', ar: 'مدينة خليفة', words: ['khalifa city', 'خليفة'] },
+  { en: 'Mussafah', ar: 'مصفح', words: ['mussafah', 'مصفح'] },
+  { en: 'Al Maryah Island', ar: 'جزيرة المارية', words: ['maryah', 'المارية'] },
+  { en: 'Ras Al Akhdar', ar: 'رأس الأخضر', words: ['akhdar', 'الأخضر'] },
+  { en: 'Masdar City', ar: 'مدينة مصدر', words: ['masdar', 'مصدر'] },
+];
+
+function parseQuery(q) {
+  const low = (q || '').toLowerCase();
+  const kinds = KINDS.filter((k) => k.words.some((w) => low.includes(w)));
+  const area = AREAS.find((a) => a.words.some((w) => low.includes(w)));
+  const radius = (low.match(/(\d+(?:\.\d+)?)\s*(km|كم|kilomet)/) || [])[1];
+  return { kinds, area, radius: radius ? Number(radius) : null, raw: q };
+}
+
+function searchFacilities(q) {
+  const p = parseQuery(q);
+  let hits = ALL.slice();
+  if (p.kinds.length) {
+    const ds = p.kinds.reduce((a, k) => a.concat(k.ds), []);
+    hits = hits.filter((r) => ds.includes(r.ds));
+  }
+  if (p.area) hits = hits.filter((r) => ((r.area || '') + ' ' + (r.address || '')).toLowerCase().includes(p.area.words[0]));
+  if (!p.kinds.length && !p.area) {
+    const low = (q || '').toLowerCase().trim();
+    if (low) hits = ALL.filter((r) => (r.name + ' ' + r.ar + ' ' + (r.area || '')).toLowerCase().includes(low));
+  }
+  return { parsed: p, hits };
+}
+
+class Component extends DCLogic {
+  state = {
+    screen: 'map', theme: 'dark', lang: 'en', device: 'desktop', brTags: false,
+    panel: 'filters', chat: true, chatMin: false, chatTab: 'ask', resultOpen: 's1', resultTab: 'overview',
+    asked: 'Find schools within 2km', draft: '', thinking: false, listening: false,
+    sel: 's1', active: ['edu.private', 'edu.schools'], expanded: ['education'],
+    basemapChoice: null, aoi: false, bufferKm: 0, dist: 10, area: 'Abu Dhabi Island',
+    filterCats: ['government'], status: ['op', 'mt'], sketch: 'poly', layout: 'a4l', format: 'pdf',
+    helpOpen: [0], favs: ['s1'], copied: false,
+    query: '', sugOpen: false, menuOpen: false, signedIn: true, measure: null,
+    email: 'f.almansoori@dge.gov.ae', pwd: '••••••••', pwShow: false, remember: true,
+    view: { lat: 24.4539, lng: 54.3773, zoom: 12, scale: 144447 },
+  };
+
+  componentDidMount() {
+    this.setState({
+      theme: this.props.theme || 'dark',
+      lang: this.props.lang || 'en',
+      device: this.props.device || 'desktop',
+      brTags: this.props.showBrIds ?? false,
+    });
+  }
+
+  componentDidUpdate() {
+    document.body.style.background = this.state.theme === 'dark' ? '#0d1424' : '#e9edf4';
+    document.documentElement.dir = this.state.lang === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  set(k, v) { this.setState({ [k]: v }); }
+
+  orb = (el) => {
+    this._orb = el;
+    if (el) { el.muted = true; el.loop = true; const p = el.play(); if (p && p.catch) p.catch(() => {}); }
+  };
+
+  loginVid = (el) => {
+    this._loginVid = el;
+    if (el) { el.muted = true; el.volume = 0; el.loop = true; el.playbackRate = 0.7; const p = el.play(); if (p && p.catch) p.catch(() => {}); }
+  };
+
+  toggleIn(key, id) {
+    const arr = this.state[key];
+    this.setState({ [key]: arr.includes(id) ? arr.filter((x) => x !== id) : arr.concat(id) });
+  }
+
+  liveMaps() {
+    return (window.__gvMaps || []).filter((m) => m && m._container && document.body.contains(m._container));
+  }
+
+  cmd(c) { this.liveMaps().forEach((m) => m.__gvCmd && m.__gvCmd(c)); }
+
+  flyTo(r) {
+    const s = this.state;
+    const padL = s.chat ? 200 : 0;
+    const padR = s.panel ? 200 : 0;
+    this.liveMaps().forEach((m) => {
+      const p = m.project([r.lat, r.lng], 15).add(window.L.point((padR - padL) / 2, 0));
+      m.setView(m.unproject(p, 15), 15, { animate: false });
+    });
+    this.setState({ sel: r.id });
+  }
+
+  ask(q) {
+    if (!q || !q.trim()) return;
+    this.setState({ screen: 'map', asked: q, draft: '', thinking: true, chat: true, chatMin: false, chatTab: 'ask', sugOpen: false, menuOpen: false });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => {
+      const { parsed, hits } = searchFacilities(q);
+      const ds = parsed.kinds.reduce((a, k) => a.concat(k.ds), []);
+      this.setState((st) => ({
+        thinking: false,
+        active: ds.length ? Array.from(new Set(st.active.concat(ds))) : st.active,
+        resultOpen: hits[0] ? hits[0].id : null,
+        sel: hits[0] ? hits[0].id : null,
+      }));
+      if (hits[0]) this.flyTo(hits[0]);
+    }, 900);
+  }
+
+  frac(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    let p = (e.clientX - r.left) / r.width;
+    if (this.state.lang === 'ar') p = 1 - p;
+    return Math.max(0, Math.min(1, p));
+  }
+
+  barSet(e) {
+    const v = Math.round(2 + this.frac(e) * 18);
+    if (v !== this.state.dist) this.setState({ dist: v });
+  }
+
+  bufSet(e) {
+    const v = Math.round(this.frac(e) * 10);
+    if (v !== this.state.bufferKm) this.setState({ bufferKm: v });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const t = T[s.lang];
+    const L = (o) => (s.lang === 'ar' ? o.ar : o.en);
+    const dark = s.theme === 'dark';
+
+    const chip = (on) => 'height:44px;padding:0 20px;border-radius:12px;background:' + (on ? 'var(--blue)' : 'var(--card-soft)') +
+      ';color:' + (on ? '#fff' : 'var(--card-ink)') + ';border:1px solid ' + (on ? 'var(--blue)' : 'transparent') +
+      ';font:400 14.5px/1 var(--f);cursor:pointer;transition:all .15s';
+    const smallChip = (on) => 'height:38px;padding:0 15px;border-radius:10px;background:' + (on ? 'var(--blue)' : 'var(--card-soft)') +
+      ';color:' + (on ? '#fff' : 'var(--card-ink)') + ';border:none;font:400 13.5px/1 var(--f);cursor:pointer';
+    const box = (on) => 'display:grid;place-items:center;width:19px;height:19px;flex:none;border-radius:6px;border:1.5px solid ' +
+      (on ? 'var(--blue)' : 'var(--card-line)') + ';background:' + (on ? 'var(--blue)' : 'transparent') + ';color:#fff';
+    const railStyle = (on) => 'position:relative;display:flex;align-items:center;justify-content:center;width:52px;height:56px;border-radius:10px;background:' +
+      (on ? 'rgba(37,99,235,.12)' : 'transparent') + ';border:none;overflow:visible;color:' +
+      (on ? 'var(--blue)' : (dark ? 'var(--dim)' : '#475467')) + ';cursor:pointer;transition:background .18s';
+    const legendDark = false;
+    const railIcon = (on) => 'position:relative;z-index:2;display:grid;place-items:center;color:' +
+      (on ? '#eaf2ff' : (dark ? '#c3d2e8' : '#475467')) +
+      ';filter:drop-shadow(0 0 ' + (on ? '10px rgba(120,180,255,.9)' : '0px transparent') + ')';
+    const railGlow = (on) => 'position:absolute;inset:-18px 0 0 0;z-index:0;pointer-events:none;opacity:' + (on ? 1 : 0) +
+      ';transition:opacity .2s;background:radial-gradient(ellipse 60% 100% at 50% 0%, rgba(96,165,250,.55), rgba(96,165,250,.12) 45%, transparent 75%)';
+    const railBar = (on) => 'position:absolute;top:0;left:50%;transform:translateX(-50%);width:' + (on ? '26px' : '0px') +
+      ';height:3px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,#3b82f6,#60a5fa,#3b82f6);box-shadow:0 0 10px rgba(96,165,250,.9);transition:width .18s;z-index:3';
+    const navStyle = (on) => 'display:flex;align-items:center;gap:9px;padding:0 2px 5px;background:none;border:none;border-bottom:2px solid ' +
+      (on ? 'var(--ink)' : 'transparent') + ';color:' + (on ? 'var(--ink)' : 'var(--dim)') + ';font:500 15.5px/1 var(--f);cursor:pointer';
+    const topTab = (on) => 'height:22px;padding:0 10px;border-radius:6px;background:' + (on ? 'rgba(96,165,250,.18)' : 'transparent') +
+      ';color:' + (on ? '#93c5fd' : '#8b98ae') + ';border:none;font:400 11px/1 var(--f);cursor:pointer';
+
+    const railDef = [
+      { id: 'categories', icon: 'layers', label: 'Layers', short: s.lang === 'ar' ? 'الطبقات' : 'Layers' },
+      { id: 'filters', icon: 'filter', label: 'Smart Filters', short: s.lang === 'ar' ? 'الفلاتر' : 'Filters' },
+      { id: 'legend', icon: 'list', label: 'Legend', short: s.lang === 'ar' ? 'المفتاح' : 'Legend' },
+      { id: 'basemap', icon: 'image', label: 'Basemap', short: s.lang === 'ar' ? 'الأساس' : 'Basemap' },
+      { id: 'sketch', icon: 'sketch', label: 'Sketch AOI', short: s.lang === 'ar' ? 'رسم' : 'Sketch' },
+      { id: 'print', icon: 'printer', label: 'Print Map', short: s.lang === 'ar' ? 'طباعة' : 'Print' },
+      { id: 'favorites', icon: 'heart', label: 'Saved', short: s.lang === 'ar' ? 'المفضلة' : 'Saved' },
+    ];
+    const titles = {
+      categories: s.lang === 'ar' ? 'الطبقات' : 'Layers', filters: s.lang === 'ar' ? 'الفلاتر الذكية' : 'Smart Filters',
+      legend: s.lang === 'ar' ? 'مفتاح الخريطة' : 'Map Legend', basemap: s.lang === 'ar' ? 'خريطة الأساس' : 'Basemap',
+      sketch: s.lang === 'ar' ? 'منطقة الاهتمام' : 'Sketch AOI', print: s.lang === 'ar' ? 'طباعة الخريطة' : 'Print Map',
+      favorites: s.lang === 'ar' ? 'مفضلاتي' : 'Saved', help: s.lang === 'ar' ? 'المساعدة' : 'Help & Tutorials',
+    };
+    const brOf = { categories: 'BR-13/15', filters: 'BR-31', legend: 'BR-22', basemap: 'BR-21', sketch: 'BR-27', print: 'BR-26', favorites: 'BR-12', help: 'BR-03' };
+
+    const activeBasemap = s.basemapChoice || (dark ? 'dark' : 'gray');
+    const found = searchFacilities(s.asked);
+    const one = found.hits.length === 1;
+    const sing = { schools: 'school', universities: 'university', hospitals: 'hospital', 'clinics & health centres': 'clinic', 'parks & beaches': 'park', 'government facilities': 'government facility', 'transport facilities': 'transport facility', 'cultural & retail destinations': 'destination', 'utility assets': 'utility asset', facilities: 'facility' };
+    const kindRaw = found.parsed.kinds.length
+      ? found.parsed.kinds.map((k) => (s.lang === 'ar' ? k.ar : k.en)).join(s.lang === 'ar' ? ' و' : ' and ')
+      : (s.lang === 'ar' ? 'مواقع' : 'facilities');
+    const kindLabel = (one && s.lang !== 'ar' && sing[kindRaw]) ? sing[kindRaw] : kindRaw;
+    const areaLabel = found.parsed.area
+      ? (s.lang === 'ar' ? found.parsed.area.ar : found.parsed.area.en)
+      : (s.lang === 'ar' ? 'أبوظبي' : 'Abu Dhabi');
+    const answer = s.lang === 'ar'
+      ? 'وجدت ' + found.hits.length + ' من ' + kindLabel + ' في ' + areaLabel +
+        (found.parsed.radius ? ' ضمن ' + found.parsed.radius + ' كم من مركز الخريطة' : '') +
+        '. تم تشغيل الطبقات المطابقة على الخريطة، وأقرب موقع محدد بالفعل.'
+      : 'I found ' + found.hits.length + ' ' + kindLabel + ' in ' + areaLabel +
+        (found.parsed.radius ? ' within ' + found.parsed.radius + ' km of the map centre' : '') +
+        '. The matching layers are switched on and the nearest match is selected on the map.';
+    const pins = found.hits.concat(POIS.filter((p) => s.active.includes(p.ds)));
+    const pct = ((s.dist - 2) / 18) * 100;
+
+    return {
+      t, dir: s.lang === 'ar' ? 'rtl' : 'ltr', theme: s.theme, brTags: s.brTags,
+      accentHex: '#2563eb',
+      isMap: s.screen === 'map', isAbout: s.screen === 'about',
+      isLogin: s.screen === 'login', isLanding: s.screen === 'landing',
+      goLogin: () => this.setState({ screen: 'login', menuOpen: false }),
+      goLanding: () => this.setState({ screen: 'landing', menuOpen: false }),
+      tabLogin: topTab(s.screen === 'login'), tabLanding: topTab(s.screen === 'landing'),
+      email: s.email, setEmail: (e) => this.set('email', e.target.value),
+      pwd: s.pwd, setPwd: (e) => this.set('pwd', e.target.value),
+      pwType: s.pwShow ? 'text' : 'password',
+      togglePw: () => this.set('pwShow', !s.pwShow),
+      remember: s.remember, toggleRemember: () => this.set('remember', !s.remember),
+      rememberBox: box(s.remember),
+      loginVidRef: this.loginVid,
+      doLogin: () => this.setState({ screen: 'landing', signedIn: true }),
+      loginOnEnter: (e) => { if (e.key === 'Enter') this.setState({ screen: 'landing', signedIn: true }); },
+      guestIn: () => this.setState({ screen: 'landing', signedIn: false }),
+      laserOn: dark,
+      laserBlend: 'screen',
+      laserColor: '#3b82f6',
+      laserOpacity: 1,
+      navGlass: dark ? 'rgba(13,20,36,.72)' : 'rgba(255,255,255,.78)',
+      ghostNav: 'background:none;border:none;padding:6px 2px;color:var(--dim);font:400 14px/1 var(--f);cursor:pointer;transition:color .15s',
+      ghostNavOn: 'background:none;border:none;padding:6px 2px;color:var(--ink);font:500 14px/1 var(--f);cursor:pointer',
+      ghostIcon: 'display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:none;border:1px solid var(--pane-line);color:var(--ink);font:500 13px/1 var(--f);cursor:pointer',
+      solidSm: 'height:34px;padding:0 15px;border-radius:10px;background:var(--blue);color:#fff;border:none;font:500 13px/1 var(--f);cursor:pointer',
+      heroCta: 'display:inline-flex;align-items:center;justify-content:center;gap:10px;height:50px;padding:0 26px;border-radius:12px;background:linear-gradient(180deg,#3b82f6,#2563eb 60%,#1d4ed8);color:#fff;border:none;font:600 15px/1 var(--f);cursor:pointer;box-shadow:0 14px 32px rgba(37,99,235,.34);transition:transform .16s,box-shadow .16s',
+      heroGradient: dark
+        ? 'linear-gradient(100deg,#ffffff 8%,#bcd4ff 46%,#5b9dff 96%)'
+        : 'linear-gradient(100deg,#0b1220 8%,#254b91 48%,#2563eb 96%)',
+      previewBasemap: activeBasemap,
+      previewPois: ALL.slice(0, 9),
+      previewChips: [
+        s.lang === 'ar' ? '٨٨ مجموعة بيانات' : '88 datasets',
+        s.lang === 'ar' ? 'جيوفيجن الذكي' : 'GeoVision AI',
+        s.lang === 'ar' ? 'فلاتر ذكية' : 'Smart filters',
+      ],
+      dashStats: [
+        { v: '88', k: s.lang === 'ar' ? 'مجموعة بيانات منشورة' : 'Published datasets' },
+        { v: '4,312', k: s.lang === 'ar' ? 'منشأة مسجلة' : 'Mapped facilities' },
+        { v: '61', k: s.lang === 'ar' ? 'منطقة' : 'Districts covered' },
+        { v: '2', k: s.lang === 'ar' ? 'لغتان' : 'Languages' },
+      ],
+      landingCats: TREE.map((g) => ({
+        label: L(g), icon: g.icon, n: g.items.length,
+        go: () => this.setState({ screen: 'map', panel: 'categories', expanded: [g.id] }),
+      })),
+      frameStyle: s.device === 'mobile'
+        ? 'width:430px;margin:16px auto;border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)'
+        : 'display:block',
+      goMap: () => this.set('screen', 'map'), goAbout: () => this.set('screen', 'about'),
+      tabMap: topTab(s.screen === 'map'), tabAbout: topTab(s.screen === 'about'),
+      tabBr: topTab(s.brTags), tabDev: topTab(s.device === 'mobile'),
+      toggleBr: () => this.set('brTags', !s.brTags),
+      toggleDevice: () => this.set('device', s.device === 'mobile' ? 'desktop' : 'mobile'),
+      deviceLabel: s.device === 'mobile' ? 'Mobile' : 'Desktop',
+      navMap: navStyle(true), navAbout: navStyle(false),
+      navMapIdle: navStyle(false), navAboutActive: navStyle(true),
+      toggleLang: () => this.set('lang', s.lang === 'ar' ? 'en' : 'ar'),
+      langShort: s.lang === 'ar' ? 'EN' : 'ع',
+      toggleTheme: () => this.set('theme', dark ? 'light' : 'dark'),
+      themeIcon: dark ? 'sun' : 'moon',
+      logoFilter: dark ? 'none' : 'invert(1) brightness(.35) saturate(1.1)',
+      sqBtn: 'display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--shell-2);border:1px solid var(--line);color:var(--ink);font:500 14px/1 var(--f);cursor:pointer;transition:border-color .15s',
+      brBadge: 'display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:6px;background:var(--blue);color:#fff;font:600 10px/1 var(--f);letter-spacing:.06em',
+      label: 'font-size:16px;font-weight:600;color:var(--card-ink);margin-bottom:12px',
+
+      orbRef: this.orb,
+      chatOpen: s.chat && !s.chatMin,
+      chatMin: s.chat && s.chatMin,
+      chatVisible: s.chat,
+      collapseChat: () => this.set('chatMin', true),
+      expandChat: () => this.set('chatMin', false),
+      toggleChatMin: () => this.set('chatMin', !s.chatMin),
+      toggleChat: () => this.setState({ chat: !s.chat, chatMin: false }),
+      chatToggle: railStyle(s.chat),
+      chatTabs: [
+        { id: 'ask', icon: 'sparkles', label: t.askAi },
+        { id: 'history', icon: 'history', label: t.history },
+        { id: 'marks', icon: 'book', label: t.saved },
+      ].map((c) => ({
+        label: c.label, icon: c.icon, go: () => this.set('chatTab', c.id),
+        style: 'display:flex;flex:1;min-width:0;align-items:center;justify-content:center;height:48px;background:' +
+          (s.chatTab === c.id ? 'var(--pane-2)' : 'transparent') + ';border:none;border-bottom:2px solid ' +
+          (s.chatTab === c.id ? 'var(--blue)' : 'transparent') + ';color:' + (s.chatTab === c.id ? 'var(--ink)' : 'var(--dim)') +
+          ';font:500 12.5px/1 var(--f);cursor:pointer;transition:all .15s',
+      })),
+      tabAsk: s.chatTab === 'ask', tabHistory: s.chatTab === 'history', tabMarks: s.chatTab === 'marks',
+      newChat: () => this.setState({ asked: '', resultOpen: null, draft: '' }),
+      askedText: s.asked || (s.lang === 'ar' ? 'ابدأ محادثة جديدة' : 'New conversation'),
+      stamp: '21:32', thinking: s.thinking,
+      noop: (e) => e.preventDefault(),
+      draft: s.draft, setDraft: (e) => this.set('draft', e.target.value),
+      send: () => this.ask(s.draft),
+      sendOnEnter: (e) => { if (e.key === 'Enter') this.ask(s.draft); },
+      toggleMic: () => this.set('listening', !s.listening),
+      micBtn: 'display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:none;border:none;color:' +
+        (s.listening ? 'var(--blue)' : 'var(--dim)') + ';cursor:pointer',
+      micBtnSm: 'display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:999px;background:none;border:none;color:' +
+        (s.listening ? 'var(--blue)' : 'var(--dim)') + ';cursor:pointer',
+      iconGhost: 'display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:none;border:none;color:var(--dim);cursor:pointer',
+      iconGhostBlue: 'display:grid;place-items:center;width:26px;height:26px;border-radius:999px;background:var(--blue);border:none;color:#fff;cursor:pointer',
+
+      query: s.query, hasQuery: !!s.query, sugOpen: s.sugOpen,
+      setQuery: (e) => this.setState({ query: e.target.value, sugOpen: true }),
+      openSug: () => this.set('sugOpen', true),
+      clearQuery: () => this.setState({ query: '', sugOpen: false }),
+      searchOnEnter: (e) => { if (e.key === 'Enter') this.ask(s.query); if (e.key === 'Escape') this.set('sugOpen', false); },
+      runSearch: () => this.ask(s.query || 'Find schools within 2km'),
+      sugLabel: s.query ? (s.lang === 'ar' ? 'نتائج مقترحة' : 'Matches') : (s.lang === 'ar' ? 'عمليات بحث شائعة' : 'Recent & popular'),
+      suggestions: SUGGEST
+        .filter((g) => !s.query || g.label.toLowerCase().includes(s.query.toLowerCase()))
+        .slice(0, 6)
+        .map((g) => ({
+          label: g.label, icon: g.icon, kind: g.kind,
+          go: () => {
+            this.setState({ query: g.label, sugOpen: false });
+            if (g.ds) {
+              this.setState({ screen: 'map', active: Array.from(new Set(s.active.concat(g.ds))), panel: 'categories' });
+            } else if (g.lat) {
+              this.setState({ screen: 'map' });
+              setTimeout(() => this.liveMaps().forEach((m) => m.setView([g.lat, g.lng], 14, { animate: false })), 260);
+            } else {
+              this.ask(g.label);
+            }
+          },
+        })),
+
+      menuOpen: s.menuOpen, toggleMenu: () => this.setState({ menuOpen: !s.menuOpen, sugOpen: false }),
+      userName: s.signedIn ? 'Fatima Al Mansoori' : (s.lang === 'ar' ? 'زائر' : 'Guest'),
+      userMeta: s.signedIn ? 'Spatial Data Infrastructure · DGE' : (s.lang === 'ar' ? 'غير مسجل' : 'Not signed in'),
+      menuItems: [
+        { icon: 'heart', label: s.lang === 'ar' ? 'مفضلاتي' : 'My Favorites', hint: String(s.favs.length), go: () => this.setState({ panel: 'favorites', menuOpen: false }) },
+        { icon: 'history', label: s.lang === 'ar' ? 'سجل المحادثات' : 'Conversation history', hint: String(HISTORY.length), go: () => this.setState({ chat: true, chatMin: false, chatTab: 'history', menuOpen: false }) },
+        { icon: 'globe', label: s.lang === 'ar' ? 'اللغة' : 'Language', hint: s.lang === 'ar' ? 'عربي' : 'EN', go: () => this.setState({ lang: s.lang === 'ar' ? 'en' : 'ar' }) },
+        { icon: dark ? 'sun' : 'moon', label: s.lang === 'ar' ? 'المظهر' : 'Theme', hint: dark ? 'Dark' : 'Light', go: () => this.set('theme', dark ? 'light' : 'dark') },
+        { icon: 'chat', label: s.lang === 'ar' ? 'ملاحظاتك' : 'Feedback', hint: '', go: () => this.setState({ screen: 'about', menuOpen: false }) },
+        { icon: s.signedIn ? 'logout' : 'login', label: s.signedIn ? (s.lang === 'ar' ? 'تسجيل الخروج' : 'Log out') : (s.lang === 'ar' ? 'تسجيل الدخول' : 'Log in'), hint: '', go: () => this.setState({ signedIn: false, menuOpen: false, screen: 'login' }) },
+      ],
+
+      hasResults: !s.thinking && found.hits.length > 0,
+      noResults: !s.thinking && found.hits.length === 0,
+      hasAnswer: !s.thinking && !!s.asked && found.hits.length > 0,
+      answerText: answer,
+      resultCount: found.hits.length + (s.lang === 'ar' ? ' نتيجة' : one ? ' result' : ' results'),
+      quickAsks: [
+        { label: s.lang === 'ar' ? 'مدارس في المشرف' : 'Schools in Al Mushrif', q: 'schools in Al Mushrif' },
+        { label: s.lang === 'ar' ? 'مستشفيات' : 'Hospitals', q: 'hospitals' },
+        { label: s.lang === 'ar' ? 'حدائق وشواطئ' : 'Parks & beaches', q: 'parks and beaches' },
+        { label: s.lang === 'ar' ? 'جامعات' : 'Universities', q: 'universities' },
+      ].map((k) => ({ label: k.label, go: () => this.ask(k.q) })),
+      results: found.hits.map((r) => {
+        const open = s.resultOpen === r.id;
+        return {
+          name: r.short || r.name, ar: r.ar, address: r.address, url: r.url, email: r.email, phone: r.phone, chips: r.chips,
+          open2: open, chev: open ? 'down' : 'right',
+          cardStyle: 'border-radius:16px;background:var(--pane-2);border:1px solid ' + (open ? 'rgba(59,130,246,.35)' : 'var(--pane-line)') + ';transition:border-color .15s',
+          open: () => this.setState({ resultOpen: open ? null : r.id, sel: r.id }),
+          zoom: () => this.flyTo(r),
+          fav: () => this.toggleIn('favs', r.id),
+          favStyle: 'display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:none;border:none;color:' +
+            (s.favs.includes(r.id) ? '#f87171' : 'var(--dim)') + ';cursor:pointer',
+          subTabs: [
+            { id: 'overview', label: t.overview }, { id: 'details', label: t.details },
+          ].map((k) => ({
+            label: k.label, go: () => this.set('resultTab', k.id),
+            style: 'height:32px;padding:0 15px;border-radius:8px;background:' + (s.resultTab === k.id ? 'var(--pane-2)' : 'transparent') +
+              ';color:' + (s.resultTab === k.id ? 'var(--ink)' : 'var(--dim)') + ';border:none;font:500 13px/1 var(--f);cursor:pointer',
+          })),
+        };
+      }),
+      history: HISTORY.map((h) => ({ ...h, go: () => this.setState({ chatTab: 'ask', asked: h.title }) })),
+      favs: [
+        { icon: 'school', label: 'International School Of Choueifat', kind: s.lang === 'ar' ? 'موقع' : 'Location' },
+        { icon: 'health', label: 'Hospitals — Abu Dhabi Island', kind: s.lang === 'ar' ? 'مجموعة بيانات' : 'Dataset' },
+        { icon: 'sketch', label: 'Corniche AOI — 42 km²', kind: s.lang === 'ar' ? 'منطقة اهتمام' : 'Area of interest' },
+        { icon: 'sparkles', label: 'Find schools within 2km', kind: s.lang === 'ar' ? 'محادثة' : 'AI conversation' },
+      ],
+
+      rail: railDef.map((r) => ({
+        icon: r.icon, short: r.short, style: railStyle(s.panel === r.id),
+        iconStyle: railIcon(s.panel === r.id), glowStyle: railGlow(s.panel === r.id), barStyle: railBar(s.panel === r.id),
+        go: () => this.setState({ panel: r.id }),
+      })),
+      railHelp: railStyle(s.panel === 'help'), railHelpIcon: railIcon(s.panel === 'help'),
+      railHelpGlow: railGlow(s.panel === 'help'), railHelpBar: railBar(s.panel === 'help'),
+      chatToggleIcon: railIcon(s.chat), chatToggleGlow: railGlow(s.chat), chatToggleBar: railBar(s.chat),
+      openHelp: () => this.set('panel', 'help'),
+      panelShell: 'pointer-events:auto;display:flex;flex:1 1 auto;flex-direction:column;min-height:0;border-radius:16px;overflow:hidden;box-shadow:0 22px 55px rgba(8,15,35,.28);' +
+        (legendDark
+          ? 'background:linear-gradient(160deg,#0a1020,#101a2c);border:1px solid rgba(96,165,250,.24);color:#eaf2ff'
+          : 'background:var(--card);color:var(--card-ink)'),
+      panelInk: legendDark ? '#eaf2ff' : 'var(--card-ink)',
+      panelClose: 'margin-inline-start:auto;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:none;border:none;cursor:pointer;color:' +
+        (legendDark ? '#8fa6c6' : 'var(--card-dim)'),
+      panelOpen: !!s.panel, panelTitle: titles[s.panel] || '', panelBr: brOf[s.panel] || '',
+      closePanel: () => this.set('panel', null),
+      statusCardIn: s.panel === 'filters', statusCardOut: false,
+      isFilters: s.panel === 'filters', isCats: s.panel === 'categories', isLegend: s.panel === 'legend',
+      isBasemap: s.panel === 'basemap', isSketch: s.panel === 'sketch', isPrint: s.panel === 'print',
+      isFav: s.panel === 'favorites', isHelp: s.panel === 'help',
+
+      mapWrap: 'position:relative;flex:1;min-height:0;margin:0 9px;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--shell-2);' +
+        '--chatW:min(323px,26vw);--panW:min(314px,25vw);' +
+        '--gutL:' + (s.chat ? 'calc(var(--chatW) + 24px)' : '76px') +
+        ';--gutR:' + (s.panel ? 'calc(var(--panW) + 24px)' : '76px'),
+      ctrlInset: s.panel ? 'calc(var(--panW) + 20px)' : '14px',
+      mapBtn: 'display:grid;place-items:center;width:46px;height:46px;border-radius:999px;background:#0f1729;border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;box-shadow:0 8px 22px rgba(8,14,28,.35)',
+      mapBtnSketch: 'display:grid;place-items:center;width:46px;height:46px;border-radius:999px;background:' +
+        (s.panel === 'sketch' ? 'var(--blue)' : '#0f1729') + ';border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;box-shadow:0 8px 22px rgba(8,14,28,.35)',
+      openSketch: () => this.set('panel', 'sketch'),
+      zoomIn: () => this.cmd('in'), zoomOut: () => this.cmd('out'), zoomHome: () => this.cmd('home'),
+      onView: (v) => this.setState({ view: v }),
+      copied: s.copied,
+
+      filterCats: CATDEF.map((c) => ({
+        label: L(c), style: chip(s.filterCats.includes(c.id)), toggle: () => this.toggleIn('filterCats', c.id),
+      })),
+      barPct: pct.toFixed(1) + '%',
+      barDown: (e) => { this._drag = true; e.currentTarget.setPointerCapture(e.pointerId); this.barSet(e); },
+      barMove: (e) => { if (this._drag) this.barSet(e); },
+      barUp: () => { this._drag = false; },
+      distStops: STOPS.map((v) => ({
+        label: v + 'km',
+        style: 'font-size:13px;color:' + (s.dist >= v ? 'var(--card-ink)' : 'var(--card-dim)') + ';font-weight:' + (s.dist >= v ? '600' : '400'),
+      })),
+      area: s.area, setArea: (e) => this.set('area', e.target.value),
+      applyFilters: () => this.setState({ panel: 'filters' }),
+      clearFilters: () => this.setState({ filterCats: [], status: [], dist: 10 }),
+      statusOpts: [
+        { id: 'op', icon: 'check', label: s.lang === 'ar' ? 'تعمل' : 'Operational' },
+        { id: 'mt', icon: 'utility', label: s.lang === 'ar' ? 'تحت الصيانة' : 'Under maintenance' },
+        { id: 'pl', icon: 'clock', label: s.lang === 'ar' ? 'مخطط لها' : 'Planned' },
+      ].map((o) => {
+        const on = s.status.includes(o.id);
+        return {
+          label: o.label, icon: o.icon, toggle: () => this.toggleIn('status', o.id),
+          state: on ? 'ON' : 'OFF',
+          tileStyle: 'display:flex;flex:1;flex-direction:column;align-items:center;gap:10px;padding:16px 8px 14px;border-radius:14px;background:' +
+            (on ? 'var(--blue-soft)' : 'var(--card)') + ';border:1px solid ' + (on ? 'var(--blue-line)' : 'var(--card-line)') +
+            ';color:var(--card-ink);cursor:pointer;transition:all .16s',
+          dialStyle: 'display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:' +
+            (on ? 'var(--blue)' : 'var(--card-soft)') + ';color:' + (on ? '#fff' : 'var(--card-dim)') +
+            ';box-shadow:' + (on ? '0 6px 16px rgba(37,99,235,.3)' : 'none') + ';transition:all .16s',
+          pillStyle: 'display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:99px;font:700 10px/1 var(--f);letter-spacing:.08em;background:' +
+            (on ? 'var(--blue)' : 'var(--card-soft)') + ';color:' + (on ? '#fff' : 'var(--card-dim)'),
+        };
+      }),
+
+      tree: TREE.map((g) => ({
+        label: L(g), icon: g.icon, n: g.items.length, open: s.expanded.includes(g.id),
+        rot: s.expanded.includes(g.id) ? 'rotate(180deg)' : 'none',
+        headBg: s.expanded.includes(g.id) ? 'var(--card-soft)' : 'transparent',
+        toggle: () => this.toggleIn('expanded', g.id),
+        items: g.items.map((it) => ({
+          label: L(it), n: it.n, on: s.active.includes(it.id),
+          boxStyle: box(s.active.includes(it.id)), toggle: () => this.toggleIn('active', it.id),
+        })),
+      })),
+      activeCount: s.active.length, clearLayers: () => this.setState({ active: [] }),
+
+      legend: LEGEND.map((g) => ({
+        group: s.lang === 'ar' ? g.ar : g.en,
+        count: g.items.filter((i) => s.active.includes(i.id)).length + '/' + g.items.length,
+        items: g.items.map((i) => {
+          const on = s.active.includes(i.id);
+          return {
+            label: s.lang === 'ar' ? i.ar : i.en, n: i.n, color: i.color,
+            fill: i.solid ? i.color : 'transparent',
+            glow: on ? '0 0 10px ' + i.color : 'none',
+            ink: on ? 'var(--card-ink)' : '#98a2b3',
+            weight: on ? '600' : '400',
+            dot: on ? '#fff' : i.color,
+            fill2: on ? (i.solid ? '#fff' : 'transparent') : (i.solid ? i.color : 'transparent'),
+            pill: on ? 'ON' : 'OFF',
+            stateInk: on ? 'var(--blue)' : 'var(--card-dim)',
+            dialStyle: 'display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:999px;background:' +
+              (on ? 'var(--blue)' : 'var(--card-soft)') + ';box-shadow:' + (on ? '0 5px 14px rgba(37,99,235,.3)' : 'none') +
+              ';transition:all .16s',
+            pillStyle: 'display:inline-flex;align-items:center;height:20px;flex:none;padding:0 8px;border-radius:99px;font:700 9.5px/1 var(--f);letter-spacing:.08em;background:' +
+              (on ? 'var(--blue)' : 'var(--card-soft)') + ';color:' + (on ? '#fff' : 'var(--card-dim)'),
+            state: on ? (s.lang === 'ar' ? 'ظاهرة' : 'Visible') : (s.lang === 'ar' ? 'مخفية' : 'Hidden'),
+            eye: on ? 'var(--blue)' : '#c0c8d6',
+            rowStyle: 'display:flex;align-items:center;gap:9px;padding:10px 11px;text-align:start;background:' +
+              (on ? 'var(--blue-soft)' : 'transparent') +
+              ';border:none;border-top:1px solid var(--card-line);border-inline-start:3px solid ' +
+              (on ? 'var(--blue)' : 'transparent') + ';cursor:pointer;transition:background .15s',
+            toggle: () => this.toggleIn('active', i.id),
+          };
+        }),
+      })),
+      groupStyle: 'border-radius:14px;overflow:hidden;background:var(--card);border:1px solid var(--card-line)',
+      groupHead: 'display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--card-soft)',
+      tokenStyle: 'position:relative;display:grid;place-items:center;width:26px;height:26px;flex:none;border-radius:8px;background:var(--card-soft);border:1px solid var(--card-line)',
+      legendTotal: s.active.length,
+      legendPct: Math.round((s.active.length / LEGEND_N) * 100) + '%',
+      legendMeta: s.active.length + ' / ' + LEGEND_N + (s.lang === 'ar' ? ' طبقة معروضة على الخريطة' : ' datasets drawn on the map'),
+
+      basemap: activeBasemap,
+      basemaps: [
+        { id: 'gray', label: s.lang === 'ar' ? 'الافتراضية' : 'Voyager', swatch: 'repeating-linear-gradient(45deg,#eceef1 0 8px,#e3e6ea 8px 16px)' },
+        { id: 'streets', label: s.lang === 'ar' ? 'الشوارع' : 'Streets', swatch: 'repeating-linear-gradient(45deg,#efeade 0 8px,#e4dfd1 8px 16px)' },
+        { id: 'dark', label: s.lang === 'ar' ? 'داكن' : 'Dark Canvas', swatch: 'repeating-linear-gradient(45deg,#242c33 0 8px,#1b2229 8px 16px)' },
+        { id: 'blueprint', label: s.lang === 'ar' ? 'مخطط' : 'Blueprint', swatch: 'repeating-linear-gradient(45deg,#22384d 0 8px,#1b2d3e 8px 16px)' },
+      ].map((b) => ({
+        ...b, go: () => this.set('basemapChoice', b.id),
+        style: 'padding:0;border-radius:14px;overflow:hidden;background:var(--card);border:1px solid ' +
+          (activeBasemap === b.id ? 'var(--blue)' : 'var(--card-line)') + ';color:var(--card-ink);cursor:pointer',
+      })),
+
+      sketchTools: [
+        { id: 'poly', icon: 'sketch', label: s.lang === 'ar' ? 'مضلع' : 'Polygon' },
+        { id: 'rect', icon: 'grid', label: s.lang === 'ar' ? 'مستطيل' : 'Rect' },
+        { id: 'circ', icon: 'crosshair', label: s.lang === 'ar' ? 'دائرة' : 'Circle' },
+        { id: 'bnd', icon: 'gov', label: s.lang === 'ar' ? 'حدود' : 'Boundary' },
+      ].map((k) => ({
+        ...k, go: () => this.setState({ sketch: k.id, aoi: true }),
+        style: 'display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px;border-radius:12px;background:' +
+          (s.sketch === k.id ? 'var(--blue-soft)' : 'var(--card)') + ';border:1px solid ' +
+          (s.sketch === k.id ? 'var(--blue-line)' : 'var(--card-line)') + ';color:' +
+          (s.sketch === k.id ? 'var(--blue)' : 'var(--card-dim)') + ';cursor:pointer',
+      })),
+      sketchShape: s.sketch,
+      measureTools: [
+        { id: 'dist', icon: 'ruler', label: s.lang === 'ar' ? 'مسافة' : 'Distance' },
+        { id: 'area', icon: 'grid', label: s.lang === 'ar' ? 'مساحة' : 'Area' },
+      ].map((k) => ({
+        ...k, go: () => this.set('measure', s.measure === k.id ? null : k.id),
+        style: 'display:flex;flex:1;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:12px;background:' +
+          (s.measure === k.id ? 'var(--blue-soft)' : 'var(--card)') + ';border:1px solid ' +
+          (s.measure === k.id ? 'var(--blue-line)' : 'var(--card-line)') + ';color:' +
+          (s.measure === k.id ? 'var(--blue)' : 'var(--card-dim)') + ';font:500 13.5px/1 var(--f);cursor:pointer',
+      })),
+      measureOn: !!s.measure,
+      measureValue: s.measure === 'area' ? '3.42 km²' : '4.18 km',
+      aoi: s.aoi, toggleAoi: () => this.set('aoi', !s.aoi), clearAoi: () => this.setState({ aoi: false, bufferKm: 0 }),
+      aoiBtnLabel: s.aoi ? (s.lang === 'ar' ? 'إعادة الرسم' : 'Redraw AOI') : (s.lang === 'ar' ? 'ارسم على الخريطة' : 'Draw on map'),
+      bufferKm: s.bufferKm, bufferOn: s.bufferKm > 0,
+      bufPct: (s.bufferKm * 10).toFixed(1) + '%',
+      bufDown: (e) => { this._dragB = true; e.currentTarget.setPointerCapture(e.pointerId); this.bufSet(e); },
+      bufMove: (e) => { if (this._dragB) this.bufSet(e); },
+      bufUp: () => { this._dragB = false; },
+      bufStops: [0, 2, 5, 10].map((v) => ({
+        label: v + ' km',
+        style: 'font-size:13px;color:' + (s.bufferKm >= v ? 'var(--card-ink)' : 'var(--card-dim)') + ';font-weight:' + (s.bufferKm >= v ? '600' : '400'),
+      })),
+      aoiStats: [
+        { v: '42 km²', k: s.lang === 'ar' ? 'المساحة' : 'Area' },
+        { v: '118', k: s.lang === 'ar' ? 'منشأة' : 'Facilities' },
+        { v: '9', k: s.lang === 'ar' ? 'طبقات' : 'Layers hit' },
+        { v: '3', k: s.lang === 'ar' ? 'مناطق' : 'Districts' },
+      ],
+
+      layouts: [{ id: 'a4l', label: 'A4 Landscape' }, { id: 'a4p', label: 'A4 Portrait' }, { id: 'a3l', label: 'A3' }]
+        .map((l) => ({ ...l, go: () => this.set('layout', l.id), style: smallChip(s.layout === l.id) })),
+      printParts: ['Title', 'Legend', 'North arrow', 'Scale bar', 'Date'],
+      formats: [{ id: 'pdf', label: 'PDF' }, { id: 'png', label: 'PNG' }, { id: 'jpeg', label: 'JPEG' }]
+        .map((f) => ({ ...f, go: () => this.set('format', f.id), style: smallChip(s.format === f.id) })),
+
+      visiblePois: pins, selId: s.sel,
+      pickPoi: (p) => this.setState({ sel: p.id, resultOpen: RESULTS.some((r) => r.id === p.id) ? p.id : s.resultOpen }),
+
+      helpItems: HELP.map((h, i) => ({
+        ...h, open: s.helpOpen.includes(i), rot: s.helpOpen.includes(i) ? 'rotate(180deg)' : 'none',
+        bg: s.helpOpen.includes(i) ? 'var(--card-soft)' : 'transparent',
+        toggle: () => this.toggleIn('helpOpen', i),
+      })),
+      aboutStats: [
+        { v: '31', k: s.lang === 'ar' ? 'متطلب أعمال' : 'Business requirements' },
+        { v: '88', k: s.lang === 'ar' ? 'مجموعة بيانات' : 'Published datasets' },
+        { v: '2', k: s.lang === 'ar' ? 'لغتان' : 'Languages' },
+        { v: '3–5s', k: s.lang === 'ar' ? 'زمن الاستجابة' : 'AI response target' },
+      ],
+      objectives: OBJ.map((o, i) => ({ n: '0' + (i + 1), text: o })),
+    };
+  }
+}
+</script>
+</body>
+</html>
