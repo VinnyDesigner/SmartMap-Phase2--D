@@ -643,6 +643,89 @@ a{color:var(--blue);text-decoration:none}
 a:hover{color:var(--card-ink)}
 spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #spline-logo,spline-viewer::shadow [href*="spline"]{display:none!important;opacity:0!important;visibility:hidden!important}
 
+/* ==========================================
+   macOS GENIE MINIMIZE & MAXIMIZE ANIMATION (EXACT BUTTON DESTINATION)
+   ========================================== */
+@keyframes macGenieMinimizeExact {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1, 1) skew(0deg, 0deg);
+    opacity: 1;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    filter: blur(0px);
+  }
+  30% {
+    transform: translate3d(calc(var(--target-x, -140px) * 0.3), calc(var(--target-y, 80px) * 0.25), 0) scale(0.72, 0.55) skew(8deg, -3deg);
+    opacity: 0.98;
+    clip-path: polygon(10% 0%, 90% 0%, 80% 100%, 0% 100%);
+  }
+  65% {
+    transform: translate3d(calc(var(--target-x, -140px) * 0.75), calc(var(--target-y, 80px) * 0.7), 0) scale(0.28, 0.15) skew(18deg, -7deg);
+    opacity: 0.85;
+    clip-path: polygon(30% 0%, 75% 0%, 55% 100%, 0% 100%);
+  }
+  100% {
+    transform: translate3d(var(--target-x, -140px), var(--target-y, 80px), 0) scale(0.01, 0.01) skew(28deg, -10deg);
+    opacity: 0;
+    clip-path: polygon(48% 0%, 52% 0%, 52% 100%, 48% 100%);
+    filter: blur(2px);
+  }
+}
+
+@keyframes macGenieMaximizeExact {
+  0% {
+    transform: translate3d(var(--target-x, -140px), var(--target-y, 80px), 0) scale(0.01, 0.01) skew(28deg, -10deg);
+    opacity: 0;
+    clip-path: polygon(48% 0%, 52% 0%, 52% 100%, 48% 100%);
+    filter: blur(2px);
+  }
+  35% {
+    transform: translate3d(calc(var(--target-x, -140px) * 0.75), calc(var(--target-y, 80px) * 0.7), 0) scale(0.28, 0.15) skew(18deg, -7deg);
+    opacity: 0.85;
+    clip-path: polygon(30% 0%, 75% 0%, 55% 100%, 0% 100%);
+  }
+  70% {
+    transform: translate3d(calc(var(--target-x, -140px) * 0.3), calc(var(--target-y, 80px) * 0.25), 0) scale(0.72, 0.55) skew(8deg, -3deg);
+    opacity: 0.98;
+    clip-path: polygon(10% 0%, 90% 0%, 80% 100%, 0% 100%);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1, 1) skew(0deg, 0deg);
+    opacity: 1;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    filter: blur(0px);
+  }
+}
+
+.gv-genie-minimizing {
+  animation: macGenieMinimizeExact 400ms cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+  transform-origin: 50% 50% !important;
+  pointer-events: none !important;
+  will-change: transform, opacity, clip-path !important;
+}
+
+.gv-genie-maximizing {
+  animation: macGenieMaximizeExact 420ms cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+  transform-origin: 50% 50% !important;
+  will-change: transform, opacity, clip-path !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gv-genie-minimizing {
+    animation: macSimpleFadeOut 300ms ease forwards !important;
+  }
+  .gv-genie-maximizing {
+    animation: macSimpleFadeIn 300ms ease forwards !important;
+  }
+  @keyframes macSimpleFadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.95); }
+  }
+  @keyframes macSimpleFadeIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+}
+
 @media (max-width: 640px) {
   /* 1. Landing Top Navigation Header */
   .gv-landing-nav-wrap {
@@ -1160,7 +1243,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
       <!-- Right Column Multi-card Stack -->
       <sc-if value="{{ rightCardsShow }}" hint-placeholder-val="{{ true }}">
-      <div class="gv-right-side-panel custom-scroll" style="position:absolute;top:70px;bottom:20px;inset-inline-end:16px;width:var(--panW);max-width:var(--panW);box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:4px 6px 36px 4px;z-index:425;overflow-y:auto;overflow-x:hidden;pointer-events:auto;-webkit-overflow-scrolling:touch" data-chips="1">
+      <div class="gv-right-side-panel custom-scroll {{ genieClass }}" style="position:absolute;top:70px;bottom:20px;inset-inline-end:16px;width:var(--panW);max-width:var(--panW);box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:4px 6px 36px 4px;z-index:425;overflow-y:auto;overflow-x:hidden;pointer-events:auto;-webkit-overflow-scrolling:touch" data-chips="1">
 
         <!-- Card 1: Map Title -->
         <div style="{{ glassCard }}">
@@ -1436,7 +1519,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
         </div>
 
         <!-- 3. Right Hide Icon (Outside bottom section, 16px gap) -->
-        <button onClick="{{ toggleRightPanel }}" style="{{ hideButtonGlass }}" title="{{ hideButtonTitle }}" style-hover="transform:scale(1.06)">
+        <button id="gvHidePanelBtn" onClick="{{ toggleRightPanel }}" style="{{ hideButtonGlass }}" title="{{ hideButtonTitle }}" style-hover="transform:scale(1.06)">
           <svg viewBox="0 0 24 24" width="20" height="20" style="{{ hideButtonImgStyle }}">
             <path d="M7 2h7.5a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5ZM6.8 8.3a1.2 1.2 0 0 0 0 1.7L9.2 12l-2.4 2.4a1.2 1.2 0 1 0 1.7 1.7l3.2-3.2a1.2 1.2 0 0 0 0-1.7L8.5 8.3a1.2 1.2 0 0 0-1.7 0ZM17 2h0.5a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H17a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/>
           </svg>
@@ -1880,6 +1963,7 @@ class Component extends DCLogic {
     rightLegendOpen: false,
     uiCollapsed: false,
     rightPanelShow: true,
+    genieState: 'expanded',
   };
 
   componentDidMount() {
@@ -2151,8 +2235,45 @@ class Component extends DCLogic {
       uiCollapseIcon: s.uiCollapsed ? 'left' : 'right',
       uiCollapseTitle: s.uiCollapsed ? 'Expand UI' : 'Collapse UI',
       bottomToolbarShow: !s.uiCollapsed,
-      rightCardsShow: (s.rightPanelShow !== false) && !s.uiCollapsed,
-      toggleRightPanel: () => this.setState({ rightPanelShow: s.rightPanelShow === false ? true : false }),
+      rightCardsShow: (s.rightPanelShow !== false || s.genieState === 'minimizing') && !s.uiCollapsed,
+      genieClass: s.genieState === 'minimizing' ? 'gv-genie-minimizing' : (s.genieState === 'maximizing' ? 'gv-genie-maximizing' : ''),
+      toggleRightPanel: () => {
+        if (s.genieState === 'minimizing' || s.genieState === 'maximizing') return;
+        const btn = document.getElementById('gvHidePanelBtn');
+        const pan = document.querySelector('.gv-right-side-panel');
+        if (btn && pan) {
+          const btnRect = btn.getBoundingClientRect();
+          const panRect = pan.getBoundingClientRect();
+          const dx = (btnRect.left + btnRect.width / 2) - (panRect.left + panRect.width / 2);
+          const dy = (btnRect.top + btnRect.height / 2) - (panRect.top + panRect.height / 2);
+          pan.style.setProperty('--target-x', `${dx}px`);
+          pan.style.setProperty('--target-y', `${dy}px`);
+        }
+        if (s.rightPanelShow !== false) {
+          this.setState({ genieState: 'minimizing' });
+          setTimeout(() => {
+            this.setState({ rightPanelShow: false, genieState: 'collapsed' });
+          }, 390);
+        } else {
+          this.setState({ rightPanelShow: true, genieState: 'maximizing', chat: (window.innerWidth <= 640) ? false : s.chat }, () => {
+            setTimeout(() => {
+              const b = document.getElementById('gvHidePanelBtn');
+              const p = document.querySelector('.gv-right-side-panel');
+              if (b && p) {
+                const bR = b.getBoundingClientRect();
+                const pR = p.getBoundingClientRect();
+                const dx = (bR.left + bR.width / 2) - (pR.left + pR.width / 2);
+                const dy = (bR.top + bR.height / 2) - (pR.top + pR.height / 2);
+                p.style.setProperty('--target-x', `${dx}px`);
+                p.style.setProperty('--target-y', `${dy}px`);
+              }
+            }, 10);
+          });
+          setTimeout(() => {
+            this.setState({ genieState: 'expanded' });
+          }, 410);
+        }
+      },
       aiButtonTitle: (s.chat && !s.chatMin) ? (s.lang === 'ar' ? 'إخفاء محادثة الذكاء الاصطناعي' : 'Deactivate AI Chat') : (s.lang === 'ar' ? 'تفعيل محادثة الذكاء الاصطناعي' : 'Activate AI Chat'),
       aiBotImg: (s.chat && !s.chatMin) ? 'assets/Active AI bot.gif' : 'assets/Deactive AI bot.png',
       aiButtonGlass: 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;background:none;border:none;box-shadow:none;cursor:pointer;outline:none;padding:0;margin:0;box-sizing:border-box;transition:all 0.2s',
