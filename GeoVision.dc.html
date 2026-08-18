@@ -735,7 +735,9 @@ a:hover{color:var(--card-ink)}
 
         <!-- 3. Right Hide Icon (Outside bottom section, 16px gap) -->
         <button onClick="{{ toggleRightPanel }}" style="{{ hideButtonGlass }}" title="{{ hideButtonTitle }}" style-hover="transform:scale(1.06)">
-          <img src="assets/sidepanel-icon.png" alt="Hide Right Menu" style="{{ hideButtonImgStyle }}">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="{{ hideButtonImgStyle }}">
+            <path d="M7 2h7.5a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5ZM6.8 8.3a1.2 1.2 0 0 0 0 1.7L9.2 12l-2.4 2.4a1.2 1.2 0 1 0 1.7 1.7l3.2-3.2a1.2 1.2 0 0 0 0-1.7L8.5 8.3a1.2 1.2 0 0 0-1.7 0ZM17 2h0.5a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H17a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/>
+          </svg>
         </button>
       </div>
       </sc-if>
@@ -1441,7 +1443,7 @@ class Component extends DCLogic {
       aiButtonGlass: 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;background:none;border:none;box-shadow:none;cursor:pointer;outline:none;padding:0;margin:0;box-sizing:border-box;transition:all 0.2s',
       hideButtonIcon: (s.rightPanelShow !== false) ? 'sidepanel' : 'sidepanelleft',
       hideButtonTitle: (s.rightPanelShow !== false) ? (s.lang === 'ar' ? 'إخفاء القائمة اليمنى' : 'Hide Right Menu') : (s.lang === 'ar' ? 'إظهار القائمة اليمنى' : 'Show Right Menu'),
-      hideButtonImgStyle: 'display:block;width:20px;height:20px;object-fit:contain;' + ((s.rightPanelShow === false) ? 'transform:scaleX(-1);' : ''),
+      hideButtonImgStyle: 'display:block;width:20px;height:20px;flex:none;transition:transform 0.2s ease;' + ((s.rightPanelShow === false) ? 'transform:scaleX(-1);' : ''),
       hideButtonGlass: 'position:relative;display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:' +
         (dark ? 'rgba(30,41,59,0.92)' : '#e2e8f0') + ';border:1px solid ' +
         (dark ? 'rgba(255,255,255,0.12)' : '#cbd5e1') + ';color:' + (dark ? '#f8fafc' : '#334155') + ';cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.12);transition:all 0.2s ease',
