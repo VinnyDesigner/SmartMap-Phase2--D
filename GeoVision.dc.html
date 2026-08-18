@@ -34,19 +34,23 @@
   };
   setInterval(cleanSplineLinks, 100);
 
-  const resetRobotLookForward = () => {
+  const resetRobotToDefaultPose = () => {
     const container = document.getElementById('robot3dContainer');
     if (!container) return;
+    container.style.pointerEvents = 'none';
     const viewer = container.querySelector('spline-viewer');
     if (!viewer) return;
     const rect = viewer.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height * 0.35;
-    const evtOptions = { clientX: centerX, clientY: centerY, bubbles: true, cancelable: true };
+    const defaultX = rect.left + rect.width / 2;
+    const defaultY = rect.top + rect.height * 0.42;
+    const evtOptions = { clientX: defaultX, clientY: defaultY, screenX: defaultX, screenY: defaultY, bubbles: true, cancelable: true };
     viewer.dispatchEvent(new MouseEvent('mousemove', evtOptions));
     if (viewer.shadowRoot) {
       const canvas = viewer.shadowRoot.querySelector('canvas');
-      if (canvas) canvas.dispatchEvent(new MouseEvent('mousemove', evtOptions));
+      if (canvas) {
+        canvas.dispatchEvent(new MouseEvent('mousemove', evtOptions));
+        canvas.dispatchEvent(new MouseEvent('mouseleave', evtOptions));
+      }
     }
   };
 
@@ -55,11 +59,16 @@
     if (!container) return;
     const rect = container.getBoundingClientRect();
     const top40Boundary = rect.top + rect.height * 0.4;
-    // If mouse exits the top 40% interactive area
-    if (e.clientY > top40Boundary || e.clientY < rect.top || e.clientX < rect.left || e.clientX > rect.right) {
-      resetRobotLookForward();
+    const isInsideTop40 = e.clientY >= rect.top && e.clientY <= top40Boundary && e.clientX >= rect.left && e.clientX <= rect.right;
+
+    if (isInsideTop40) {
+      container.style.pointerEvents = 'auto';
+    } else {
+      resetRobotToDefaultPose();
     }
   });
+
+  window.addEventListener('load', () => setTimeout(resetRobotToDefaultPose, 400));
 
   document.addEventListener('click', (e) => {
     if (e.target && (e.target.tagName === 'SPLINE-VIEWER' || e.target.closest('spline-viewer'))) {
