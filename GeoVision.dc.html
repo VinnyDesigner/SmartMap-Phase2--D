@@ -15,6 +15,34 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
+<script>
+  const cleanSplineLinks = () => {
+    document.querySelectorAll('spline-viewer').forEach((v) => {
+      if (v.shadowRoot) {
+        v.shadowRoot.querySelectorAll('a').forEach((a) => {
+          a.removeAttribute('href');
+          a.removeAttribute('target');
+          a.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important;visibility:hidden!important';
+          a.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+        });
+        const logo = v.shadowRoot.querySelector('#logo') || v.shadowRoot.querySelector('#spline-logo') || v.shadowRoot.querySelector('.watermark');
+        if (logo) {
+          logo.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important';
+        }
+      }
+    });
+  };
+  setInterval(cleanSplineLinks, 100);
+  document.addEventListener('click', (e) => {
+    if (e.target && (e.target.tagName === 'SPLINE-VIEWER' || e.target.closest('spline-viewer'))) {
+      const href = e.target.href || (e.target.closest('a') && e.target.closest('a').href);
+      if (href && href.includes('spline.design')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  }, true);
+</script>
 <style>
 :root{
   --f:'Plus Jakarta Sans','IBM Plex Sans Arabic',system-ui,sans-serif;
