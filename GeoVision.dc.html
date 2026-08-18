@@ -362,6 +362,72 @@ button,input,select,textarea{font-family:var(--f)}
 a{color:var(--blue);text-decoration:none}
 a:hover{color:var(--card-ink)}
 spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #spline-logo,spline-viewer::shadow [href*="spline"]{display:none!important;opacity:0!important;visibility:hidden!important}
+
+@media (max-width: 640px) {
+  .gv-top-left-logo { display: none !important; }
+  .gv-top-center-nav {
+    top: 10px !important;
+    left: 10px !important;
+    transform: none !important;
+    gap: 8px !important;
+  }
+  .gv-top-right-controls {
+    top: 10px !important;
+    inset-inline-end: 10px !important;
+    gap: 4px !important;
+  }
+  .gv-left-ai-panel {
+    position: fixed !important;
+    top: 54px !important;
+    bottom: 74px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: none !important;
+    z-index: 900 !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.65) !important;
+  }
+  .gv-right-side-panel {
+    position: fixed !important;
+    top: 54px !important;
+    bottom: 74px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: none !important;
+    z-index: 900 !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.65) !important;
+  }
+  .gv-floating-map-tools {
+    top: 54px !important;
+    inset-inline-end: 10px !important;
+  }
+  .gv-bottom-dock {
+    bottom: 12px !important;
+    left: 10px !important;
+    right: 10px !important;
+    transform: none !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: calc(100% - 20px) !important;
+  }
+  .gv-central-toolbar {
+    overflow-x: auto !important;
+    max-width: calc(100vw - 110px) !important;
+    padding: 0 6px !important;
+  }
+  .gv-central-toolbar::-webkit-scrollbar { display: none !important; }
+  .gv-hero-logo {
+    width: 90% !important;
+    max-width: 320px !important;
+    height: 70px !important;
+  }
+  .gv-3d-robot-wrap {
+    top: -120px !important;
+    width: 300px !important;
+    height: 220px !important;
+  }
+}
 </style>
 </helmet>
 
@@ -527,18 +593,18 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
     <div style="{{ mapWrap }}">
       <!-- Floating Branding (top-left) -->
-      <div style="position:absolute;top:16px;left:16px;z-index:500;display:flex;align-items:center;gap:10px;pointer-events:none">
+      <div class="gv-top-left-logo" style="position:absolute;top:16px;left:16px;z-index:500;display:flex;align-items:center;gap:10px;pointer-events:none">
         <img src="assets/logo-dge.png" alt="DGE" style="height:25px;width:auto;filter:{{ logoFilter }}">
       </div>
 
       <!-- Floating Navigation (top-center) -->
-      <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px">
+      <div class="gv-top-center-nav" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px">
         <!-- Solid Home Icon Button (16px left of toggle) -->
         <button onClick="{{ goLanding }}" style="{{ navHomeBtnGlass }}" title="{{ t.home }}" style-hover="transform:scale(1.06)">
           <dc-import name="Icon" hint-size="15px,15px" icon="home" size="{{ 15 }}" filled="{{ true }}"></dc-import>
         </button>
 
-        <div style="display:flex;align-items:center;gap:3px;padding:3px;border-radius:99px;background:{{ navContainerBg }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ navContainerBorder }};box-shadow:{{ navContainerShadow }};transition:all 0.25s">
+        <div style="display:flex;align-items:center;gap:3px;padding:3px;border-radius:999px;background:{{ navContainerBg }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ navContainerBorder }};box-shadow:{{ navContainerShadow }};transition:all 0.25s">
           <button onClick="{{ goMap }}" style="{{ navMapPill }}">
             <dc-import name="Icon" hint-size="11px,11px" icon="map" size="{{ 11 }}"></dc-import>
             <span style="font-weight:600;font-size:11px">{{ t.map }}</span>
@@ -550,7 +616,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       </div>
 
       <!-- Floating Controls (top-right) -->
-      <div style="position:absolute;top:16px;inset-inline-end:16px;z-index:500;display:flex;align-items:center;gap:8px">
+      <div class="gv-top-right-controls" style="position:absolute;top:16px;inset-inline-end:16px;z-index:500;display:flex;align-items:center;gap:8px">
         <button onClick="{{ toggleUiCollapse }}" style="{{ floatSqBtn }}" title="{{ uiCollapseTitle }}">
           <dc-import name="Icon" hint-size="15px,15px" icon="{{ uiCollapseIcon }}" size="{{ 15 }}" stroke="{{ 1.8 }}"></dc-import>
         </button>
@@ -589,7 +655,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       </sc-if>
  
       <sc-if value="{{ chatOpenShow }}" hint-placeholder-val="{{ true }}">
-      <div style="position:absolute;top:70px;bottom:20px;inset-inline-start:16px;width:var(--chatW);display:flex;flex-direction:column;border-radius:16px;background:{{ chatBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ chatBorder }};box-shadow:{{ chatShadow }};overflow:hidden;z-index:420;animation:rise .26s ease">
+      <div class="gv-left-ai-panel" style="position:absolute;top:70px;bottom:20px;inset-inline-start:16px;width:var(--chatW);display:flex;flex-direction:column;border-radius:16px;background:{{ chatBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ chatBorder }};box-shadow:{{ chatShadow }};overflow:hidden;z-index:420;animation:rise .26s ease">
         <div style="display:flex;flex:none;padding:6px 6px 0;background:{{ dark ? 'rgba(11,18,32,0.6)' : 'rgba(240,244,248,0.7)' }};border-bottom:1px solid {{ dark ? 'rgba(255,255,255,0.08)' : '#e2e8f0' }};gap:4px">
           <sc-for list="{{ chatTabs }}" as="c" hint-placeholder-count="3">
             <button onClick="{{ c.go }}" style="{{ c.style }}" title="{{ c.title }}">
@@ -744,7 +810,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       <video onClick="{{ toggleChatMin }}" title="Minimise chat" ref="{{ orbRef }}" src="assets/orb.mp4" autoPlay="{{ true }}" loop="{{ true }}" muted="{{ true }}" playsInline="{{ true }}" style="display:none"></video>
       </sc-if>
 
-      <div style="position:absolute;top:74px;inset-inline-end:{{ ctrlInset }};display:flex;flex-direction:column;align-items:center;gap:10px;z-index:430;transition:inset-inline-end .24s ease">
+      <div class="gv-floating-map-tools" style="position:absolute;top:74px;inset-inline-end:{{ ctrlInset }};display:flex;flex-direction:column;align-items:center;gap:10px;z-index:430;transition:inset-inline-end .24s ease">
         <div style="{{ mapZoomWrap }}">
           <button onClick="{{ zoomIn }}" style="{{ mapBtnZoomTop }}" style-hover="{{ mapBtnZoomHover }}"><dc-import name="Icon" hint-size="16px,16px" icon="plus" size="{{ 16 }}"></dc-import></button>
           <div style="height:1px;background:{{ mapZoomDivider }};margin:0 6px"></div>
@@ -757,7 +823,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
       <!-- Right Column Multi-card Stack -->
       <sc-if value="{{ rightCardsShow }}" hint-placeholder-val="{{ true }}">
-      <div class="custom-scroll" style="position:absolute;top:70px;bottom:20px;inset-inline-end:16px;width:var(--panW);max-width:var(--panW);box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:4px 6px 36px 4px;z-index:425;overflow-y:auto;overflow-x:hidden;pointer-events:auto;-webkit-overflow-scrolling:touch" data-chips="1">
+      <div class="gv-right-side-panel custom-scroll" style="position:absolute;top:70px;bottom:20px;inset-inline-end:16px;width:var(--panW);max-width:var(--panW);box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:4px 6px 36px 4px;z-index:425;overflow-y:auto;overflow-x:hidden;pointer-events:auto;-webkit-overflow-scrolling:touch" data-chips="1">
 
         <!-- Card 1: Map Title -->
         <div style="{{ glassCard }}">
@@ -1013,14 +1079,14 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
       <!-- Floating Bottom Control Dock -->
       <sc-if value="{{ bottomToolbarShow }}" hint-placeholder-val="{{ true }}">
-      <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px;height:44px;pointer-events:auto;box-sizing:border-box">
+      <div class="gv-bottom-dock" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px;height:44px;pointer-events:auto;box-sizing:border-box">
         <!-- 1. Left AI Chat Icon (Outside bottom section, 16px gap) -->
         <button onClick="{{ toggleChat }}" style="{{ aiButtonGlass }}" title="{{ aiButtonTitle }}">
           <img src="{{ aiBotImg }}" alt="AI Chat" style="display:block;width:62px;height:62px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.22))">
         </button>
 
         <!-- 2. Central Toolbar Section -->
-        <div style="display:flex;align-items:center;gap:6px;height:44px;padding:0 10px;border-radius:999px;background:{{ bottomToolbarBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ bottomToolbarBorder }};box-shadow:0 12px 40px rgba(0,0,0,0.08);box-sizing:border-box">
+        <div class="gv-central-toolbar" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 10px;border-radius:999px;background:{{ bottomToolbarBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ bottomToolbarBorder }};box-shadow:0 12px 40px rgba(0,0,0,0.08);box-sizing:border-box">
           <sc-for list="{{ rail }}" as="r" hint-placeholder-count="7">
             <button onClick="{{ r.go }}" style="{{ r.styleGlass }}" style-hover="background:{{ bottomToolbarHoverBg }};transform:scale(1.05)">
               <dc-import name="Icon" hint-size="16px,16px" icon="{{ r.icon }}" size="{{ 16 }}" stroke="{{ 1.8 }}" filled="{{ false }}"></dc-import>
