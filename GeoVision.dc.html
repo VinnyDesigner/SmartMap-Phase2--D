@@ -91,6 +91,34 @@
       }
     }, true);
   });
+
+  // 4. Forward global window mousemove/pointermove events to 3D Spline canvas across the entire screen
+  window.addEventListener('mousemove', (e) => {
+    document.querySelectorAll('spline-viewer').forEach((v) => {
+      const target = (v.shadowRoot && v.shadowRoot.querySelector('canvas')) || v;
+      if (target) {
+        const evInit = {
+          bubbles: true,
+          cancelable: true,
+          clientX: e.clientX,
+          clientY: e.clientY,
+          screenX: e.screenX,
+          screenY: e.screenY,
+          movementX: e.movementX,
+          movementY: e.movementY
+        };
+        target.dispatchEvent(new MouseEvent('mousemove', evInit));
+        try {
+          target.dispatchEvent(new PointerEvent('pointermove', {
+            ...evInit,
+            pointerId: 1,
+            pointerType: 'mouse',
+            isPrimary: true
+          }));
+        } catch(err){}
+      }
+    });
+  }, { passive: true });
 </script>
 <style>
 :root{
