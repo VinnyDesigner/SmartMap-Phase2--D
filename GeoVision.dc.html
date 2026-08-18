@@ -452,51 +452,135 @@ function initParticleLogoAnimation() {
 }
 setInterval(initParticleLogoAnimation, 300);
 
-function initStrokeTextLogoAnimation() {
-  const container = document.getElementById('strokeLogoContainer');
-  if (!container || container._strokeActive) return;
-  container._strokeActive = true;
+function initDepthTextEffect() {
+  const container = document.getElementById('aboutDepthTextContainer');
+  if (!container) return;
+  const titleText = container.getAttribute('data-text') || 'A single spatial view of Abu Dhabi’s government data.';
+  if (container._depthText === titleText) return;
+  container._depthText = titleText;
+  container._depthInit = true;
+  container.innerHTML = '';
 
-  container.innerHTML = `
-    <svg class="gv-stroke-logo-svg" viewBox="0 0 480 120" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;display:block">
-      <defs>
-        <clipPath id="strokeLogoWipeClip">
-          <rect id="strokeLogoWipeRect" x="0" y="0" width="0" height="120" />
-        </clipPath>
-      </defs>
-      <image id="strokeLogoImgStroke" href="assets/logo-geovision.png" x="0" y="0" width="480" height="120" style="opacity:0;transition:opacity 0.4s ease;filter:drop-shadow(0 0 12px #6e8eff)" />
-      <image id="strokeLogoImgFill" href="assets/logo-geovision.png" x="0" y="0" width="480" height="120" clip-path="url(#strokeLogoWipeClip)" style="opacity:0;transition:opacity 0.4s ease" />
-    </svg>
-  `;
+  const root = document.createElement('span');
+  root.className = 'depth-text';
 
-  const imgStroke = document.getElementById('strokeLogoImgStroke');
-  const imgFill = document.getElementById('strokeLogoImgFill');
-  const wipeRect = document.getElementById('strokeLogoWipeRect');
+  const stage = document.createElement('span');
+  stage.className = 'depth-text__stage';
 
-  const playAnimation = () => {
-    if (wipeRect) wipeRect.setAttribute('width', '0');
-    if (imgStroke) imgStroke.style.opacity = '0.4';
-    if (imgFill) imgFill.style.opacity = '0';
+  const safeLayers = 22;
+  const safeDepth = 1.6;
+  const safeTilt = 7.5;
+  const safeSmoothing = 0.14;
+  const safeOrbitSpeed = 0.35;
+  const baseRotation = { x: -safeTilt * 0.32, y: safeTilt * 0.42 };
 
-    setTimeout(() => {
-      if (imgStroke) imgStroke.style.opacity = '1';
-    }, 100);
+  for (let layerIndex = 0; layerIndex < safeLayers; layerIndex++) {
+    const index = safeLayers - layerIndex;
+    const layer = document.createElement('span');
+    layer.className = 'depth-text__layer';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.textContent = titleText;
+    const progress = index / safeLayers;
+    const faceMix = Math.round((1 - progress * progress) * 72 + 4);
+    layer.style.color = `color-mix(in srgb, var(--ink) ${faceMix}%, #2563eb)`;
+    layer.style.transform = `translateZ(${-index * safeDepth}px)`;
+    stage.appendChild(layer);
+  }
 
-    setTimeout(() => {
-      if (imgFill) imgFill.style.opacity = '1';
-      if (wipeRect) {
-        wipeRect.style.transition = 'width 1.4s cubic-bezier(0.25, 1, 0.5, 1)';
-        wipeRect.setAttribute('width', '480');
-      }
-    }, 300);
+  const face = document.createElement('span');
+  face.className = 'depth-text__face';
+  face.textContent = titleText;
+  stage.appendChild(face);
+
+  root.appendChild(stage);
+  container.appendChild(root);
+
+  let activePointer = false;
+  let startTime = performance.now();
+  const current = { ...baseRotation };
+  const target = { ...baseRotation };
+
+  const handlePointerMove = (event) => {
+    const rect = container.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    activePointer = true;
+    const x = Math.min(Math.max((event.clientX - (rect.left + rect.width / 2)) / (rect.width * 0.8), -1), 1);
+    const y = Math.min(Math.max((event.clientY - (rect.top + rect.height / 2)) / (rect.height * 0.8), -1), 1);
+    target.x = baseRotation.x - y * safeTilt;
+    target.y = baseRotation.y + x * safeTilt;
   };
 
-  playAnimation();
-  container.addEventListener('pointerenter', playAnimation);
+  const handlePointerLeave = () => {
+    activePointer = false;
+    target.x = baseRotation.x;
+    target.y = baseRotation.y;
+  };
+
+  window.addEventListener('pointermove', handlePointerMove);
+  window.addEventListener('pointerleave', handlePointerLeave);
+
+  function tick(now) {
+    if (!activePointer) {
+      const elapsed = (now - startTime) / 1000;
+      const orbit = elapsed * safeOrbitSpeed * Math.PI * 2;
+      target.x = baseRotation.x + Math.sin(orbit) * safeTilt * 0.35;
+      target.y = baseRotation.y + Math.cos(orbit * 0.85) * safeTilt * 0.35;
+    }
+    current.x += (target.x - current.x) * safeSmoothing;
+    current.y += (target.y - current.y) * safeSmoothing;
+    stage.style.transform = `rotateX(${current.x.toFixed(3)}deg) rotateY(${current.y.toFixed(3)}deg)`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
-setInterval(initStrokeTextLogoAnimation, 300);
+setInterval(initDepthTextEffect, 300);
 </script>
 <style>
+.depth-text {
+  display: inline-block;
+  perspective: 900px;
+  perspective-origin: 50% 48%;
+  isolation: isolate;
+  user-select: none;
+}
+.depth-text__stage {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  transform: rotateX(-2.4deg) rotateY(3.15deg);
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.depth-text__layer,
+.depth-text__face {
+  grid-area: 1 / 1;
+  display: inline-block;
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  white-space: normal;
+  user-select: none;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  font-kerning: normal;
+  text-rendering: geometricPrecision;
+}
+.depth-text__layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: saturate(0.95) brightness(0.92);
+  pointer-events: none;
+}
+.depth-text__face {
+  position: relative;
+  z-index: 1;
+  color: var(--ink);
+  text-shadow: 0 14px 28px rgba(37,99,235,0.4), 0 4px 8px rgba(0,0,0,0.28);
+  transform: translateZ(0.6px);
+}
 :root{
   --f:'Plus Jakarta Sans','IBM Plex Sans Arabic',system-ui,sans-serif;
   --shell:#080d17; --shell-2:#0c1322; --line:rgba(255,255,255,.09);
@@ -704,7 +788,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
           <spline-viewer url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style="width:100%;height:100%"></spline-viewer>
         </div>
 
-        <div id="strokeLogoContainer" class="gv-hero-logo" style="position:relative;z-index:5;width:480px;height:120px;margin:0 0 12px;cursor:pointer"></div>
+        <h1 style="position:relative;z-index:5;width:480px;height:120px;margin:0 0 12px;background:{{ heroGradient }};-webkit-mask-image:url('assets/logo-geovision.png');mask-image:url('assets/logo-geovision.png');-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;font-size:0;line-height:0;color:transparent;overflow:hidden">GeoVision</h1>
         
 
         
@@ -1364,7 +1448,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       <div style="position:absolute;inset:0 0 auto;height:350px;pointer-events:none;background-image:linear-gradient(var(--heroGrid) 1px,transparent 1px),linear-gradient(90deg,var(--heroGrid) 1px,transparent 1px);background-size:44px 44px;animation:gridDrift 18s linear infinite;mask-image:radial-gradient(60% 70% at 50% 0%,#000,transparent)"></div>
 
       
-      <h1 style="position:relative;font-size:44px;line-height:1.06;letter-spacing:-.025em;margin:0 0 14px;max-width:18ch;animation:rise .5s ease .05s both">{{ t.aboutTitle }}</h1>
+      <h1 id="aboutDepthTextContainer" data-text="{{ t.aboutTitle }}" style="position:relative;margin:0 0 18px;max-width:24ch;animation:rise .5s ease .05s both">{{ t.aboutTitle }}</h1>
       <p style="position:relative;font-size:14px;line-height:1.65;color:var(--dim);max-width:64ch;margin:0 0 27px;animation:rise .5s ease .1s both">{{ t.aboutBody }}</p>
 
       <div style="position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#2563eb 0%,#1d4ed8 45%,#0d1a45 100%);box-shadow:0 40px 90px rgba(15,40,120,.35);animation:rise .55s ease .15s both">
