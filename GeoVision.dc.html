@@ -451,6 +451,50 @@ function initParticleLogoAnimation() {
   };
 }
 setInterval(initParticleLogoAnimation, 300);
+
+function initStrokeTextLogoAnimation() {
+  const container = document.getElementById('strokeLogoContainer');
+  if (!container || container._strokeActive) return;
+  container._strokeActive = true;
+
+  container.innerHTML = `
+    <svg class="gv-stroke-logo-svg" viewBox="0 0 480 120" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;display:block">
+      <defs>
+        <clipPath id="strokeLogoWipeClip">
+          <rect id="strokeLogoWipeRect" x="0" y="0" width="0" height="120" />
+        </clipPath>
+      </defs>
+      <image id="strokeLogoImgStroke" href="assets/logo-geovision.png" x="0" y="0" width="480" height="120" style="opacity:0;transition:opacity 0.4s ease;filter:drop-shadow(0 0 12px #6e8eff)" />
+      <image id="strokeLogoImgFill" href="assets/logo-geovision.png" x="0" y="0" width="480" height="120" clip-path="url(#strokeLogoWipeClip)" style="opacity:0;transition:opacity 0.4s ease" />
+    </svg>
+  `;
+
+  const imgStroke = document.getElementById('strokeLogoImgStroke');
+  const imgFill = document.getElementById('strokeLogoImgFill');
+  const wipeRect = document.getElementById('strokeLogoWipeRect');
+
+  const playAnimation = () => {
+    if (wipeRect) wipeRect.setAttribute('width', '0');
+    if (imgStroke) imgStroke.style.opacity = '0.4';
+    if (imgFill) imgFill.style.opacity = '0';
+
+    setTimeout(() => {
+      if (imgStroke) imgStroke.style.opacity = '1';
+    }, 100);
+
+    setTimeout(() => {
+      if (imgFill) imgFill.style.opacity = '1';
+      if (wipeRect) {
+        wipeRect.style.transition = 'width 1.4s cubic-bezier(0.25, 1, 0.5, 1)';
+        wipeRect.setAttribute('width', '480');
+      }
+    }, 300);
+  };
+
+  playAnimation();
+  container.addEventListener('pointerenter', playAnimation);
+}
+setInterval(initStrokeTextLogoAnimation, 300);
 </script>
 <style>
 :root{
@@ -660,7 +704,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
           <spline-viewer url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style="width:100%;height:100%"></spline-viewer>
         </div>
 
-        <h1 style="position:relative;z-index:5;width:480px;height:120px;margin:0 0 12px;background:{{ heroGradient }};-webkit-mask-image:url('assets/logo-geovision.png');mask-image:url('assets/logo-geovision.png');-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;font-size:0;line-height:0;color:transparent;overflow:hidden">GeoVision</h1>
+        <div id="strokeLogoContainer" class="gv-hero-logo" style="position:relative;z-index:5;width:480px;height:120px;margin:0 0 12px;cursor:pointer"></div>
         
 
         
