@@ -1268,7 +1268,7 @@ class Component extends DCLogic {
     const s = this.state;
     const t = T[s.lang];
     const L = (o) => (s.lang === 'ar' ? o.ar : o.en);
-    const dark = s.theme === 'dark' || s.basemapChoice === 'dark';
+    const dark = s.theme === 'dark';
 
     const chip = (on) => 'display:inline-flex;align-items:center;height:32px;padding:0 14px;border-radius:99px;font:600 13px/1 var(--f);cursor:pointer;transition:all 0.2s;' +
       (on
@@ -1417,7 +1417,7 @@ class Component extends DCLogic {
       navMapIdle: navStyle(false), navAboutActive: navStyle(true, '400'),
       toggleLang: () => this.set('lang', s.lang === 'ar' ? 'en' : 'ar'),
       langShort: s.lang === 'ar' ? 'EN' : 'ع',
-      toggleTheme: () => { const next = dark ? 'light' : 'dark'; this.setState({ theme: next, basemapChoice: next === 'dark' ? 'dark' : (s.basemapChoice === 'dark' ? 'gray' : s.basemapChoice) }); },
+      toggleTheme: () => this.set('theme', dark ? 'light' : 'dark'),
       themeIcon: dark ? 'sun' : 'moon',
       logoFilter: dark ? 'none' : 'invert(1) brightness(.35) saturate(1.1)',
       sqBtn: 'display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--shell-2);border:1px solid var(--line);color:var(--ink);font:500 14px/1 var(--f);cursor:pointer;transition:border-color .15s',
@@ -1660,7 +1660,7 @@ class Component extends DCLogic {
         { id: 'dark', label: s.lang === 'ar' ? 'داكن' : 'Dark Canvas', swatch: 'repeating-linear-gradient(45deg,#242c33 0 8px,#1b2229 8px 16px)' },
         { id: 'blueprint', label: s.lang === 'ar' ? 'مخطط' : 'Blueprint', swatch: 'repeating-linear-gradient(45deg,#22384d 0 8px,#1b2d3e 8px 16px)' },
       ].map((b) => ({
-        ...b, go: () => this.setState({ basemapChoice: b.id, theme: b.id === 'dark' ? 'dark' : (s.basemapChoice === 'dark' ? 'light' : s.theme) }),
+        ...b, go: () => this.setState({ basemapChoice: b.id }),
         styleGlass: 'padding:8px;border-radius:14px;overflow:hidden;background:' +
           (activeBasemap === b.id ? 'var(--blue-soft)' : (dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)')) + ';border:1px solid ' +
           (activeBasemap === b.id ? 'var(--blue)' : (dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)')) + ';color:var(--card-ink);cursor:pointer;transition:all 0.2s;outline:none',
@@ -1784,7 +1784,7 @@ class Component extends DCLogic {
         { id: 'dark', label: s.lang === 'ar' ? 'داكن' : 'Dark Canvas', swatch: 'repeating-linear-gradient(45deg,#242c33 0 8px,#1b2229 8px 16px)' },
         { id: 'blueprint', label: s.lang === 'ar' ? 'مخطط' : 'Blueprint', swatch: 'repeating-linear-gradient(45deg,#22384d 0 8px,#1b2d3e 8px 16px)' },
       ].map((b) => ({
-        ...b, go: () => this.setState({ basemapChoice: b.id, theme: b.id === 'dark' ? 'dark' : (s.basemapChoice === 'dark' ? 'light' : s.theme) }),
+        ...b, go: () => this.setState({ basemapChoice: b.id }),
         style: 'padding:0;border-radius:10px;overflow:hidden;background:var(--card);border:1px solid ' +
           (activeBasemap === b.id ? 'var(--blue)' : 'var(--card-line)') + ';color:var(--card-ink);cursor:pointer',
       })),
