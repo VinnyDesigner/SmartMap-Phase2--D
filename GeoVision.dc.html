@@ -34,23 +34,19 @@
   };
   setInterval(cleanSplineLinks, 100);
 
-  const resetRobotToDefaultPose = () => {
+  const resetRobotLookForward = () => {
     const container = document.getElementById('robot3dContainer');
     if (!container) return;
-    container.style.pointerEvents = 'none';
     const viewer = container.querySelector('spline-viewer');
     if (!viewer) return;
     const rect = viewer.getBoundingClientRect();
-    const defaultX = rect.left + rect.width / 2;
-    const defaultY = rect.top + rect.height * 0.42;
-    const evtOptions = { clientX: defaultX, clientY: defaultY, screenX: defaultX, screenY: defaultY, bubbles: true, cancelable: true };
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height * 0.35;
+    const evtOptions = { clientX: centerX, clientY: centerY, bubbles: true, cancelable: true };
     viewer.dispatchEvent(new MouseEvent('mousemove', evtOptions));
     if (viewer.shadowRoot) {
       const canvas = viewer.shadowRoot.querySelector('canvas');
-      if (canvas) {
-        canvas.dispatchEvent(new MouseEvent('mousemove', evtOptions));
-        canvas.dispatchEvent(new MouseEvent('mouseleave', evtOptions));
-      }
+      if (canvas) canvas.dispatchEvent(new MouseEvent('mousemove', evtOptions));
     }
   };
 
@@ -59,16 +55,11 @@
     if (!container) return;
     const rect = container.getBoundingClientRect();
     const top40Boundary = rect.top + rect.height * 0.4;
-    const isInsideTop40 = e.clientY >= rect.top && e.clientY <= top40Boundary && e.clientX >= rect.left && e.clientX <= rect.right;
-
-    if (isInsideTop40) {
-      container.style.pointerEvents = 'auto';
-    } else {
-      resetRobotToDefaultPose();
+    // If mouse exits the top 40% interactive area
+    if (e.clientY > top40Boundary || e.clientY < rect.top || e.clientX < rect.left || e.clientX > rect.right) {
+      resetRobotLookForward();
     }
   });
-
-  window.addEventListener('load', () => setTimeout(resetRobotToDefaultPose, 400));
 
   document.addEventListener('click', (e) => {
     if (e.target && (e.target.tagName === 'SPLINE-VIEWER' || e.target.closest('spline-viewer'))) {
@@ -788,7 +779,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       <sc-if value="{{ bottomToolbarShow }}" hint-placeholder-val="{{ true }}">
       <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px;height:44px;pointer-events:auto;box-sizing:border-box">
         <!-- 1. Left AI Chat Icon (Outside bottom section, 16px gap) -->
-        <button onClick="{{ toggleChat }}" style="{{ aiButtonGlass }}" title="{{ aiButtonTitle }}" style-hover="transform:scale(1.08)">
+        <button onClick="{{ toggleChat }}" style="{{ aiButtonGlass }}" title="{{ aiButtonTitle }}">
           <img src="{{ aiBotImg }}" alt="AI Chat" style="display:block;width:62px;height:62px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.22))">
         </button>
 
