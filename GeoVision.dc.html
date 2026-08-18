@@ -37,7 +37,7 @@
     };
   } catch(e){}
 
-  // 2. Inject CSS directly into spline-viewer shadowRoot and strip all anchor tags
+  // 2. Inject CSS directly into spline-viewer shadowRoot and completely delete <a id="logo"> element
   const killSplineLinks = () => {
     document.querySelectorAll('spline-viewer').forEach((v) => {
       if (v.shadowRoot) {
@@ -45,13 +45,14 @@
           const st = document.createElement('style');
           st.id = 'spline-kill-style';
           st.textContent = `
-            #logo, #spline-logo, a, [href*="spline"], .watermark, div[class*="logo"], canvas + a, canvas + div {
+            #logo, #spline-logo, a[id="logo"], a[href*="spline"], .watermark, div[class*="logo"], svg path[d*="0.966"] {
               display: none !important;
               visibility: hidden !important;
               pointer-events: none !important;
               opacity: 0 !important;
               width: 0 !important;
               height: 0 !important;
+              clip: rect(0,0,0,0) !important;
               position: absolute !important;
               left: -9999px !important;
               top: -9999px !important;
@@ -59,16 +60,18 @@
           `;
           v.shadowRoot.appendChild(st);
         }
-        v.shadowRoot.querySelectorAll('a, [href]').forEach((a) => {
-          a.removeAttribute('href');
-          a.removeAttribute('target');
-          a.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important;visibility:hidden!important';
-          a.onclick = (e) => { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; };
+        // Physically remove <a id="logo"> and all anchor elements from DOM
+        v.shadowRoot.querySelectorAll('a, #logo, [href]').forEach((el) => {
+          el.removeAttribute('href');
+          el.removeAttribute('target');
+          el.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important;visibility:hidden!important';
+          el.onclick = (e) => { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; };
+          try { el.remove(); } catch(e){}
         });
       }
     });
   };
-  setInterval(killSplineLinks, 30);
+  setInterval(killSplineLinks, 20);
 
   // 3. Intercept all click, auxclick and mousedown events targeted at spline links
   ['click', 'auxclick', 'mousedown', 'contextmenu'].forEach((evtType) => {
