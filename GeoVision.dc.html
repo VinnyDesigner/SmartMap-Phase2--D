@@ -299,6 +299,158 @@
     requestAnimationFrame(render);
   }
   setInterval(initTopographyShader, 300);
+
+function initParticleLogoAnimation() {
+  const container = document.getElementById('particleLogoContainer');
+  if (!container || container._particleActive) return;
+  container._particleActive = true;
+
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none';
+  container.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const img = new Image();
+  img.src = 'assets/logo-dge-white.png';
+  img.onload = () => {
+    let width = container.clientWidth || 465;
+    let height = container.clientHeight || 117;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const offscreen = document.createElement('canvas');
+    offscreen.width = width;
+    offscreen.height = height;
+    const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
+    if (!offCtx) return;
+
+    const aspect = img.naturalWidth / img.naturalHeight;
+    let drawW = width;
+    let drawH = width / aspect;
+    if (drawH > height) {
+      drawH = height;
+      drawW = height * aspect;
+    }
+    const drawX = (width - drawW) / 2;
+    const drawY = (height - drawH) / 2;
+    offCtx.drawImage(img, drawX, drawY, drawW, drawH);
+
+    const imageData = offCtx.getImageData(0, 0, width, height);
+    const targets = [];
+    const step = 4;
+
+    for (let y = 0; y < height; y += step) {
+      for (let x = 0; x < width; x += step) {
+        const alpha = imageData.data[(y * width + x) * 4 + 3];
+        if (alpha > 40) {
+          targets.push({ x, y, alpha: alpha / 255 });
+        }
+      }
+    }
+
+    const scatter = 190;
+    const stagger = 420;
+    const gatherDuration = 1600;
+    const repelRadius = 120;
+    const pointerRepel = 42;
+    const idleDrift = 0.8;
+    const particleSize = 2.2;
+
+    const pointer = { active: false, x: width / 2, y: height / 2, smoothX: width / 2, smoothY: height / 2 };
+
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      pointer.x = e.clientX - rect.left;
+      pointer.y = e.clientY - rect.top;
+      pointer.active = true;
+    });
+    container.addEventListener('mouseleave', () => { pointer.active = false; });
+
+    let particles = targets.map((target, index) => {
+      const seed = ((index * 9301 + 49297) % 233280) / 233280;
+      const depth = 0.45 + (((index * 233 + 97) % 1000) / 1000) * 0.9;
+      const angle = seed * Math.PI * 2;
+      const distance = scatter * (0.35 + depth * 0.75);
+      const startX = target.x + Math.cos(angle) * distance;
+      const startY = target.y + Math.sin(angle) * distance;
+
+      return {
+        x: startX,
+        y: startY,
+        startX,
+        startY,
+        targetX: target.x,
+        targetY: target.y,
+        size: Math.max(0.8, particleSize * (0.75 + target.alpha * 0.45)),
+        seed,
+        depth,
+        delay: seed * stagger
+      };
+    });
+
+    const gatherStart = performance.now();
+
+    function render(now) {
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.shadowBlur = particleSize * 3;
+      ctx.shadowColor = '#a3a5ff';
+
+      pointer.smoothX += (pointer.x - pointer.smoothX) * 0.18;
+      pointer.smoothY += (pointer.y - pointer.smoothY) * 0.18;
+
+      particles.forEach((particle) => {
+        let baseX = particle.targetX;
+        let baseY = particle.targetY;
+        const local = (now - gatherStart - particle.delay) / gatherDuration;
+        const progress = Math.min(Math.max(local, 0), 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        baseX = particle.startX + (particle.targetX - particle.startX) * eased;
+        baseY = particle.startY + (particle.targetY - particle.startY) * eased;
+
+        if (progress >= 1 && idleDrift > 0) {
+          const driftTime = now * 0.001;
+          baseX += Math.sin(driftTime * 0.9 + particle.seed * 10) * idleDrift * particle.depth;
+          baseY += Math.cos(driftTime * 0.75 + particle.depth * 10) * idleDrift * particle.depth;
+        }
+
+        if (pointer.active && pointerRepel > 0) {
+          const dx = baseX - pointer.smoothX;
+          const dy = baseY - pointer.smoothY;
+          const distance = Math.hypot(dx, dy);
+          if (distance > 0 && distance < repelRadius) {
+            const force = Math.pow(1 - distance / repelRadius, 2) * pointerRepel;
+            baseX += (dx / distance) * force;
+            baseY += (dy / distance) * force;
+          }
+        }
+
+        particle.x += (baseX - particle.x) * 0.22;
+        particle.y += (baseY - particle.y) * 0.22;
+
+        ctx.fillStyle = progress > 0.8 ? '#f8fafc' : '#a3a5ff';
+        ctx.globalAlpha = Math.min(Math.max(0.35 + progress * 0.65, 0), 1);
+
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  };
+}
+setInterval(initParticleLogoAnimation, 300);
 </script>
 <style>
 :root{
@@ -438,7 +590,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
   <div style="position:relative;display:flex;align-items:center;justify-content:flex-end;min-height:100vh;padding:40px 6% 40px 24px;overflow:hidden;animation:fade .3s ease">
     <video ref="{{ loginVidRef }}" src="uploads/login-bg-video.mp4" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"></video>
-    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><img src="assets/logo-dge-white.png" alt="Department of Government Enablement" style="height: 117px; width: 465px; position: absolute; left: 10%; top: 50%; transform: translateY(-50%);"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><div id="particleLogoContainer" style="height: 117px; width: 465px; max-width: 45vw; position: absolute; left: 8%; top: 50%; transform: translateY(-50%); z-index: 5;"></div></div>
     
     <div style="position:relative;z-index:2;width:100%;max-width:420px">
       
