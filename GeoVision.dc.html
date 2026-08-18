@@ -644,6 +644,73 @@ a:hover{color:var(--card-ink)}
 spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #spline-logo,spline-viewer::shadow [href*="spline"]{display:none!important;opacity:0!important;visibility:hidden!important}
 
 @media (max-width: 640px) {
+  /* 1. Landing Top Navigation Header */
+  .gv-landing-nav-wrap {
+    padding: 0 12px !important;
+    gap: 8px !important;
+  }
+  .gv-landing-logo {
+    height: 24px !important;
+  }
+  .gv-landing-nav-center {
+    position: static !important;
+    transform: none !important;
+    gap: 12px !important;
+    margin-inline-start: auto !important;
+  }
+  .gv-landing-nav-right {
+    margin-inline-start: 6px !important;
+    gap: 6px !important;
+  }
+  .gv-landing-nav-right .gv-ghost-text {
+    display: none !important;
+  }
+
+  /* 2. GeoVision Hero Section & 3D Robot */
+  .gv-hero-wrap {
+    margin-top: 30px !important;
+  }
+  .gv-hero-logo {
+    width: 90% !important;
+    max-width: 310px !important;
+    height: 70px !important;
+  }
+  .gv-3d-robot-wrap {
+    top: -110px !important;
+    width: 300px !important;
+    height: 220px !important;
+  }
+  .gv-search-box {
+    margin-top: 20px !important;
+  }
+
+  /* 3. Login Screen Mobile Layout */
+  .gv-login-container {
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 24px 16px !important;
+  }
+  .gv-login-logo-bg {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    margin-bottom: 16px !important;
+    background: none !important;
+  }
+  #particleLogoContainer {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    width: 280px !important;
+    height: 70px !important;
+    max-width: 90vw !important;
+  }
+
+  /* 4. Map Screen Header & Panels */
   .gv-top-left-logo { display: none !important; }
   .gv-top-center-nav {
     top: 10px !important;
@@ -697,16 +764,6 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
     padding: 0 6px !important;
   }
   .gv-central-toolbar::-webkit-scrollbar { display: none !important; }
-  .gv-hero-logo {
-    width: 90% !important;
-    max-width: 320px !important;
-    height: 70px !important;
-  }
-  .gv-3d-robot-wrap {
-    top: -120px !important;
-    width: 300px !important;
-    height: 220px !important;
-  }
 }
 </style>
 </helmet>
@@ -716,9 +773,9 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   <div style="{{ frameStyle }}">
 
   <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
-  <div style="position:relative;display:flex;align-items:center;justify-content:flex-end;min-height:100vh;padding:40px 6% 40px 24px;overflow:hidden;animation:fade .3s ease">
+  <div class="gv-login-container" style="position:relative;display:flex;align-items:center;justify-content:flex-end;min-height:100vh;padding:40px 6% 40px 24px;overflow:hidden;animation:fade .3s ease">
     <video ref="{{ loginVidRef }}" src="uploads/login-bg-video.mp4" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"></video>
-    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><div id="particleLogoContainer" style="height: 117px; width: 465px; max-width: 45vw; position: absolute; left: 8%; top: 50%; transform: translateY(-50%); z-index: 5;"></div></div>
+    <div class="gv-login-logo-bg" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><div id="particleLogoContainer" style="height: 117px; width: 465px; max-width: 45vw; position: absolute; left: 8%; top: 50%; transform: translateY(-50%); z-index: 5;"></div></div>
     
     <div style="position:relative;z-index:2;width:100%;max-width:420px">
       
@@ -762,17 +819,17 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ false }}">
   <div style="min-height:calc(100vh - 34px);background:var(--shell);animation:fade .3s ease">
     <div style="position:sticky;top:0;z-index:60;border-bottom:1px solid var(--pane-line);background:{{ navGlass }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
-      <div style="display:flex;align-items:center;gap:18px;max-width:1240px;margin:0 auto;height:60px;padding:0 22px">
-        <img src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:32px;width:auto;flex:none;filter:{{ logoFilter }}">
-        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:30px">
+      <div class="gv-landing-nav-wrap" style="display:flex;align-items:center;gap:18px;max-width:1240px;margin:0 auto;height:60px;padding:0 22px">
+        <img class="gv-landing-logo" src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:32px;width:auto;flex:none;filter:{{ logoFilter }}">
+        <div class="gv-landing-nav-center" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:30px">
           <button onClick="{{ goLanding }}" style="{{ ghostNavOn }}">{{ t.home }}</button>
           <button onClick="{{ goMap }}" style="{{ ghostNav }}">{{ t.map }}</button>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-inline-start:auto">
-          <button onClick="{{ goAbout }}" style="{{ ghostNav }}">{{ t.about }}</button>
+        <div class="gv-landing-nav-right" style="display:flex;align-items:center;gap:12px;margin-inline-start:auto">
+          <button onClick="{{ goAbout }}" class="gv-ghost-text" style="{{ ghostNav }}">{{ t.about }}</button>
           <button onClick="{{ toggleTheme }}" style="{{ ghostIcon }}"><dc-import name="Icon" hint-size="17px,17px" icon="{{ themeIcon }}" size="{{ 17 }}" filled="{{ true }}"></dc-import></button>
           <button onClick="{{ toggleLang }}" style="{{ ghostIcon }}">{{ langShort }}</button>
-          <button onClick="{{ goLogin }}" style="{{ ghostNav }}">{{ t.signIn }}</button>
+          <button onClick="{{ goLogin }}" class="gv-ghost-text" style="{{ ghostNav }}">{{ t.signIn }}</button>
           <button onClick="{{ goMap }}" style="{{ solidSm }}">{{ t.openMap }}</button>
         </div>
       </div>
@@ -781,19 +838,19 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
     <div style="position:relative;max-width:1180px;margin:0 auto;padding:64px 22px 70px">
       <div style="position:absolute;inset:0 0 auto;height:520px;pointer-events:none;background-image:linear-gradient(var(--heroGrid) 1px,transparent 1px),linear-gradient(90deg,var(--heroGrid) 1px,transparent 1px);background-size:44px 44px;animation:gridDrift 18s linear infinite;mask-image:radial-gradient(60% 70% at 50% 10%,#000,transparent)"></div>
 
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;animation:rise .5s ease;margin-top:60px">
+      <div class="gv-hero-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;animation:rise .5s ease;margin-top:60px">
         
         <!-- 3D Interactive Robot emerging from behind GeoVision logo -->
-        <div id="robot3dContainer" style="position:absolute;top:-170px;left:50%;transform:translateX(-50%);width:460px;height:340px;z-index:1;pointer-events:auto;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.1) 100%);mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.1) 100%);">
+        <div class="gv-3d-robot-wrap" id="robot3dContainer" style="position:absolute;top:-170px;left:50%;transform:translateX(-50%);width:460px;height:340px;z-index:1;pointer-events:auto;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.1) 100%);mask-image:linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.1) 100%);">
           <spline-viewer url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style="width:100%;height:100%"></spline-viewer>
         </div>
 
-        <h1 style="position:relative;z-index:5;width:480px;height:120px;margin:0 0 12px;background:{{ heroGradient }};-webkit-mask-image:url('assets/logo-geovision.png');mask-image:url('assets/logo-geovision.png');-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;font-size:0;line-height:0;color:transparent;overflow:hidden">GeoVision</h1>
+        <h1 class="gv-hero-logo" style="position:relative;z-index:5;width:480px;height:120px;margin:0 0 12px;background:{{ heroGradient }};-webkit-mask-image:url('assets/logo-geovision.png');mask-image:url('assets/logo-geovision.png');-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;font-size:0;line-height:0;color:transparent;overflow:hidden">GeoVision</h1>
         
 
         
 
-        <div style="position:relative;width:100%;max-width:620px;margin-top:28px;z-index:20">
+        <div class="gv-search-box" style="position:relative;width:100%;max-width:620px;margin-top:28px;z-index:20">
           <div style="display:flex;align-items:center;gap:8px;height:54px;padding:0 8px 0 18px;border-radius:40px;background:var(--pane-2);border:1px solid var(--pane-line)">
             <span style="color:var(--dim);flex:none"><dc-import name="Icon" hint-size="18px,18px" icon="search" size="{{ 18 }}"></dc-import></span>
             <input value="{{ query }}" onChange="{{ setQuery }}" onFocus="{{ openSug }}" onKeyDown="{{ searchOnEnter }}" placeholder="{{ t.searchPh }}" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font:400 14.5px/1 var(--f)">
