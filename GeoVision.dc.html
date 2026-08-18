@@ -16,32 +16,52 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
 <script>
+  // 1. Override window.open to block any Spline website redirects
+  const _origOpen = window.open;
+  window.open = function(url, target, features) {
+    if (url && (String(url).includes('spline.design') || String(url).includes('spline'))) {
+      return null;
+    }
+    return _origOpen.apply(this, arguments);
+  };
+
+  // 2. Continuously strip all links and anchors inside spline-viewer shadowRoot
   const cleanSplineLinks = () => {
     document.querySelectorAll('spline-viewer').forEach((v) => {
       if (v.shadowRoot) {
-        v.shadowRoot.querySelectorAll('a').forEach((a) => {
+        v.shadowRoot.querySelectorAll('a, [href]').forEach((a) => {
           a.removeAttribute('href');
           a.removeAttribute('target');
           a.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important;visibility:hidden!important';
-          a.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+          a.onclick = (e) => { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; };
         });
         const logo = v.shadowRoot.querySelector('#logo') || v.shadowRoot.querySelector('#spline-logo') || v.shadowRoot.querySelector('.watermark');
         if (logo) {
-          logo.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important';
+          logo.style.cssText = 'display:none!important;pointer-events:none!important;opacity:0!important;visibility:hidden!important';
         }
       }
     });
   };
-  setInterval(cleanSplineLinks, 100);
-  document.addEventListener('click', (e) => {
-    if (e.target && (e.target.tagName === 'SPLINE-VIEWER' || e.target.closest('spline-viewer'))) {
-      const href = e.target.href || (e.target.closest('a') && e.target.closest('a').href);
-      if (href && href.includes('spline.design')) {
+  setInterval(cleanSplineLinks, 50);
+
+  // 3. Intercept click & auxclick events on spline-viewer in capture phase
+  ['click', 'auxclick', 'contextmenu'].forEach((evtType) => {
+    document.addEventListener(evtType, (e) => {
+      const path = e.composedPath ? e.composedPath() : [];
+      const isSplineLink = path.some((el) => {
+        if (!el) return false;
+        const tag = (el.tagName || '').toUpperCase();
+        const href = el.href || (el.getAttribute && el.getAttribute('href')) || '';
+        return tag === 'A' || href.includes('spline');
+      });
+      if (isSplineLink) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
       }
-    }
-  }, true);
+    }, true);
+  });
 </script>
 <style>
 :root{
