@@ -717,7 +717,7 @@ a:hover{color:var(--card-ink)}
       <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px;height:44px;pointer-events:auto;box-sizing:border-box">
         <!-- 1. Left AI Chat Icon (Outside bottom section, 16px gap) -->
         <button onClick="{{ toggleChat }}" style="{{ aiButtonGlass }}" title="{{ aiButtonTitle }}" style-hover="transform:scale(1.08)">
-          <img src="{{ aiBotImg }}" alt="AI Chat" style="display:block;width:44px;height:44px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.18))">
+          <img src="{{ aiBotImg }}" alt="AI Chat" style="display:block;width:62px;height:62px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.22))">
         </button>
 
         <!-- 2. Central Toolbar Section -->
@@ -1438,7 +1438,7 @@ class Component extends DCLogic {
       toggleRightPanel: () => this.setState({ rightPanelShow: s.rightPanelShow === false ? true : false }),
       aiButtonTitle: (s.chat && !s.chatMin) ? (s.lang === 'ar' ? 'إخفاء محادثة الذكاء الاصطناعي' : 'Deactivate AI Chat') : (s.lang === 'ar' ? 'تفعيل محادثة الذكاء الاصطناعي' : 'Activate AI Chat'),
       aiBotImg: (s.chat && !s.chatMin) ? 'assets/Active AI bot.gif' : 'assets/Deactive AI bot.png',
-      aiButtonGlass: 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:none;border:none;box-shadow:none;cursor:pointer;outline:none;padding:0;margin:0;box-sizing:border-box;transition:all 0.2s',
+      aiButtonGlass: 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;background:none;border:none;box-shadow:none;cursor:pointer;outline:none;padding:0;margin:0;box-sizing:border-box;transition:all 0.2s',
       hideButtonIcon: (s.rightPanelShow !== false) ? 'sidepanel' : 'sidepanelleft',
       hideButtonTitle: (s.rightPanelShow !== false) ? (s.lang === 'ar' ? 'إخفاء القائمة اليمنى' : 'Hide Right Menu') : (s.lang === 'ar' ? 'إظهار القائمة اليمنى' : 'Show Right Menu'),
       hideButtonGlass: 'position:relative;display:grid;place-items:center;width:30px;height:30px;border-radius:999px;background:' +
