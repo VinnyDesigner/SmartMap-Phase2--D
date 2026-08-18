@@ -8,7 +8,7 @@
 <body>
 <x-dc>
 <svg viewBox="0 0 24 24" fill="{{ svgFill }}" stroke="{{ svgStroke }}" stroke-width="{{ sw }}" stroke-linecap="round" stroke-linejoin="round" width="{{ size }}" height="{{ size }}" style="display:block;flex:none">
-  <sc-for list="{{ paths }}" as="d" hint-placeholder-count="1"><path d="{{ d }}"></path></sc-for>
+  <sc-for list="{{ paths }}" as="d" hint-placeholder-count="1"><path d="{{ d }}" fill-rule="evenodd" clip-rule="evenodd"></path></sc-for>
   <sc-for list="{{ circles }}" as="c" hint-placeholder-count="0"><circle cx="{{ c.x }}" cy="{{ c.y }}" r="{{ c.r }}"></circle></sc-for>
 </svg>
 </x-dc>
@@ -76,8 +76,8 @@ const ICONS = {
 };
 
 const FILLED = {
-  sidepanel: [["M3 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z", "M17 3h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z", "M6.5 8.5l3.5 3.5-3.5 3.5"]],
-  sidepanelleft: [["M3 3h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z", "M10 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z", "M16.5 8.5l-3.5 3.5 3.5 3.5"]],
+  sidepanel: [["M3 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM6.5 8.5l3.5 3.5-3.5 3.5v-1.4L8.6 12 6.5 9.9V8.5Z", "M17 3h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"]],
+  sidepanelleft: [["M3 3h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z", "M10 3h9a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM16.5 8.5l-3.5 3.5 3.5 3.5v-1.4L14.4 12l2.1-2.1V8.5Z"]],
   bookmark: [["M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"]],
   layers: [["M12 2 1 8l11 6 11-6-11-6Z", "M1 12.5 12 18.5l11-6-2-1.1-9 5-9-5-2 1.1Z"]],
   filter: [["M3 5h18l-7 8v6l-4 2v-8L3 5Z"]],
