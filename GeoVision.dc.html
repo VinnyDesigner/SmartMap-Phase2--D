@@ -532,14 +532,21 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       </div>
 
       <!-- Floating Navigation (top-center) -->
-      <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:3px;padding:3px;border-radius:99px;background:{{ navContainerBg }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ navContainerBorder }};box-shadow:{{ navContainerShadow }};transition:all 0.25s">
-        <button onClick="{{ goMap }}" style="{{ navMapPill }}">
-          <dc-import name="Icon" hint-size="11px,11px" icon="map" size="{{ 11 }}"></dc-import>
-          <span style="font-weight:600;font-size:11px">{{ t.map }}</span>
+      <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px">
+        <!-- Solid Home Icon Button (16px left of toggle) -->
+        <button onClick="{{ goLanding }}" style="{{ navHomeBtnGlass }}" title="{{ t.home }}" style-hover="transform:scale(1.06)">
+          <dc-import name="Icon" hint-size="15px,15px" icon="home" size="{{ 15 }}" filled="{{ true }}"></dc-import>
         </button>
-        <button onClick="{{ goAbout }}" style="{{ navAboutPill }}">
-          <span style="font-weight:500;font-size:11px">{{ t.about }}</span>
-        </button>
+
+        <div style="display:flex;align-items:center;gap:3px;padding:3px;border-radius:99px;background:{{ navContainerBg }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ navContainerBorder }};box-shadow:{{ navContainerShadow }};transition:all 0.25s">
+          <button onClick="{{ goMap }}" style="{{ navMapPill }}">
+            <dc-import name="Icon" hint-size="11px,11px" icon="map" size="{{ 11 }}"></dc-import>
+            <span style="font-weight:600;font-size:11px">{{ t.map }}</span>
+          </button>
+          <button onClick="{{ goAbout }}" style="{{ navAboutPill }}">
+            <span style="font-weight:500;font-size:11px">{{ t.about }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Floating Controls (top-right) -->
@@ -1048,14 +1055,21 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
     <div style="position:relative;z-index:10;display:flex;align-items:center;gap:14px;height:60px;padding:0 20px;background:{{ aboutHeaderBg }};border-bottom:1px solid {{ aboutHeaderBorder }};transition:all 0.25s">
       <img src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:27px;width:auto;flex:none;filter:{{ logoFilter }}">
-      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:3px;padding:3px;border-radius:99px;background:{{ navContainerBg }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ navContainerBorder }};box-shadow:{{ navContainerShadow }};transition:all 0.25s">
-        <button onClick="{{ goMap }}" style="{{ navMapPill }}">
-          <dc-import name="Icon" hint-size="11px,11px" icon="map" size="{{ 11 }}"></dc-import>
-          <span style="font-weight:500;font-size:11px">{{ t.map }}</span>
+      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:16px">
+        <!-- Solid Home Icon Button (16px left of toggle) -->
+        <button onClick="{{ goLanding }}" style="{{ navHomeBtnGlass }}" title="{{ t.home }}" style-hover="transform:scale(1.06)">
+          <dc-import name="Icon" hint-size="15px,15px" icon="home" size="{{ 15 }}" filled="{{ true }}"></dc-import>
         </button>
-        <button onClick="{{ goAbout }}" style="{{ navAboutPill }}">
-          <span style="font-weight:600;font-size:11px">{{ t.about }}</span>
-        </button>
+
+        <div style="display:flex;align-items:center;gap:3px;padding:3px;border-radius:99px;background:{{ navContainerBg }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ navContainerBorder }};box-shadow:{{ navContainerShadow }};transition:all 0.25s">
+          <button onClick="{{ goMap }}" style="{{ navMapPill }}">
+            <dc-import name="Icon" hint-size="11px,11px" icon="map" size="{{ 11 }}"></dc-import>
+            <span style="font-weight:500;font-size:11px">{{ t.map }}</span>
+          </button>
+          <button onClick="{{ goAbout }}" style="{{ navAboutPill }}">
+            <span style="font-weight:600;font-size:11px">{{ t.about }}</span>
+          </button>
+        </div>
       </div>
       <div style="margin-inline-start:auto;display:flex;align-items:center;gap:10px">
         <button onClick="{{ toggleTheme }}" style="{{ sqBtn }}"><dc-import name="Icon" hint-size="14px,14px" icon="{{ themeIcon }}" size="{{ 14 }}" filled="{{ true }}"></dc-import></button>
@@ -1675,6 +1689,9 @@ class Component extends DCLogic {
       topBarTitleColor: dark ? '#cfd8e6' : '#1e293b',
       aboutHeaderBg: dark ? 'rgba(11,18,32,0.92)' : 'rgba(255,255,255,0.92)',
       aboutHeaderBorder: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+      navHomeBtnGlass: 'position:relative;display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:' +
+        (dark ? 'rgba(30,41,59,0.92)' : '#1e293b') + ';border:1px solid ' +
+        (dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.18)') + ';color:#ffffff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.18);transition:all 0.2s ease',
       navGlass: dark ? 'rgba(11,18,32,0.92)' : 'rgba(255,255,255,0.92)',
       ghostNav: 'background:none;border:none;padding:6px 2px;color:var(--dim);font:400 14px/1 var(--f);cursor:pointer;transition:color .15s',
       ghostNavOn: 'background:none;border:none;padding:6px 2px;color:var(--ink);font:500 14px/1 var(--f);cursor:pointer',
