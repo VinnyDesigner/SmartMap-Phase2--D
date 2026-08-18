@@ -89,26 +89,18 @@
         e.stopImmediatePropagation();
         return false;
       }
-  // 4. Forward mouse movements across the top 40% screen area to Spline 3D canvas
+    }, true);
+  });
+
+  // 4. Scope 3D interactive mouse tracking strictly to the top 30% of screen height
   window.addEventListener('mousemove', (e) => {
-    if (e.clientY <= window.innerHeight * 0.45) {
-      document.querySelectorAll('spline-viewer').forEach((v) => {
-        if (v.shadowRoot) {
-          const canvas = v.shadowRoot.querySelector('canvas');
-          if (canvas) {
-            canvas.dispatchEvent(new MouseEvent('mousemove', {
-              clientX: e.clientX,
-              clientY: e.clientY,
-              pageX: e.pageX,
-              pageY: e.pageY,
-              bubbles: true,
-              cancelable: true,
-              composed: true
-            }));
-          }
-        }
-      });
-    }
+    const isTop30 = e.clientY <= (window.innerHeight * 0.30);
+    document.querySelectorAll('spline-viewer').forEach((v) => {
+      if (v.shadowRoot) {
+        const cv = v.shadowRoot.querySelector('canvas');
+        if (cv) cv.style.pointerEvents = isTop30 ? 'auto' : 'none';
+      }
+    });
   }, { passive: true });
 </script>
 <style>
@@ -248,9 +240,9 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
       <div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;animation:rise .5s ease;margin-top:60px">
         
-        <!-- 3D Interactive Robot emerging from behind GeoVision logo (Interaction Area: Top 40% of Screen) -->
-        <div style="position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:100vw;max-width:100vw;height:440px;z-index:1;pointer-events:none;overflow:hidden;-webkit-mask-image:linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 32%, rgba(0,0,0,0.85) 62%, rgba(0,0,0,1) 100%);mask-image:linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 32%, rgba(0,0,0,0.85) 62%, rgba(0,0,0,1) 100%);">
-          <spline-viewer url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style="width:100%;height:100%;pointer-events:auto;margin:0 auto;display:block"></spline-viewer>
+        <!-- 3D Interactive Robot emerging from behind GeoVision logo (mouse tracking expanded across top 30% hero section) -->
+        <div style="position:absolute;top:-170px;left:50%;transform:translateX(-50%);width:100%;max-width:1000px;height:360px;z-index:1;pointer-events:auto;overflow:hidden;-webkit-mask-image:linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.9) 70%, rgba(0,0,0,1) 100%);mask-image:linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.9) 70%, rgba(0,0,0,1) 100%);">
+          <spline-viewer url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" style="width:100%;height:100%"></spline-viewer>
           <div style="position:absolute;bottom:0;left:0;right:0;height:140px;z-index:999;pointer-events:auto;background:transparent" onClick="{{ noop }}"></div>
         </div>
 
