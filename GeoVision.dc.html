@@ -735,7 +735,7 @@ a:hover{color:var(--card-ink)}
 
         <!-- 3. Right Hide Icon (Outside bottom section, 16px gap) -->
         <button onClick="{{ toggleRightPanel }}" style="{{ hideButtonGlass }}" title="{{ hideButtonTitle }}" style-hover="transform:scale(1.06)">
-          <dc-import name="Icon" hint-size="16px,16px" icon="{{ hideButtonIcon }}" size="{{ 16 }}" stroke="{{ 1.8 }}"></dc-import>
+          <dc-import name="Icon" hint-size="20px,20px" icon="{{ hideButtonIcon }}" size="{{ 20 }}" stroke="{{ 1.8 }}"></dc-import>
         </button>
       </div>
       </sc-if>
@@ -1441,10 +1441,9 @@ class Component extends DCLogic {
       aiButtonGlass: 'position:relative;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;background:none;border:none;box-shadow:none;cursor:pointer;outline:none;padding:0;margin:0;box-sizing:border-box;transition:all 0.2s',
       hideButtonIcon: (s.rightPanelShow !== false) ? 'sidepanel' : 'sidepanelleft',
       hideButtonTitle: (s.rightPanelShow !== false) ? (s.lang === 'ar' ? 'إخفاء القائمة اليمنى' : 'Hide Right Menu') : (s.lang === 'ar' ? 'إظهار القائمة اليمنى' : 'Show Right Menu'),
-      hideButtonGlass: 'position:relative;display:grid;place-items:center;width:30px;height:30px;border-radius:999px;background:' +
-        ((s.rightPanelShow !== false) ? 'var(--blue)' : (dark ? '#2a2f38' : '#334155')) + ';border:' +
-        ((s.rightPanelShow !== false) ? '1.5px solid var(--blue)' : '1px solid rgba(255,255,255,0.15)') + ';color:#ffffff;cursor:pointer;box-shadow:' +
-        ((s.rightPanelShow !== false) ? '0 4px 14px rgba(37,99,235,0.3)' : '0 4px 12px rgba(0,0,0,0.18)') + ';transition:background 0.25s ease,border-color 0.25s ease',
+      hideButtonGlass: 'position:relative;display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:' +
+        (dark ? 'rgba(30,41,59,0.92)' : '#e2e8f0') + ';border:1px solid ' +
+        (dark ? 'rgba(255,255,255,0.12)' : '#cbd5e1') + ';color:' + (dark ? '#f8fafc' : '#334155') + ';cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.12);transition:all 0.2s ease',
       bottomToolbarBg: dark ? 'rgba(11,18,32,0.88)' : 'rgba(255,255,255,0.72)',
       bottomToolbarBorder: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)',
       bottomToolbarHoverBg: dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
