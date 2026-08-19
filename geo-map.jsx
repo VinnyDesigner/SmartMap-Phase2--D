@@ -46,7 +46,7 @@ function GeoMap(props) {
   const {
     basemap = 'gray', markers = [], selectedId = null, onSelect,
     aoi = false, buffer = false, shape = 'poly', center = [24.4539, 54.3773], zoom = 12,
-    accent = '#2563eb', pin = '#e0313f', interactive = true, onView, registerCmd,
+    accent = '#2563eb', pin = '#e0313f', interactive = true, onView, registerCmd, onMapTouch,
   } = props;
 
   const host = useRef(null);
@@ -56,7 +56,7 @@ function GeoMap(props) {
   const aoiRef = useRef(null);
   const bufRef = useRef(null);
   const cbs = useRef({});
-  cbs.current = { onSelect, onView };
+  cbs.current = { onSelect, onView, onMapTouch };
 
   useEffect(() => {
     let dead = false;
@@ -81,6 +81,9 @@ function GeoMap(props) {
         });
       };
       m.on('moveend zoomend', report);
+      m.on('click touchstart dragstart', (e) => {
+        if (cbs.current.onMapTouch) cbs.current.onMapTouch(e);
+      });
       m.whenReady(() => { setTimeout(() => { m.invalidateSize(); report(); }, 80); });
       m.__gvCmd = (cmd) => {
         if (cmd === 'in') m.setZoom(m.getZoom() + 1, { animate: false });

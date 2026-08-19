@@ -587,7 +587,7 @@ setInterval(initDepthTextEffect, 300);
   --pane:#0b1220; --pane-2:#141e30; --pane-line:rgba(255,255,255,.08);
   --ink:#eef2f8; --dim:#93a1bb;
   --card:#1d293d; --card-ink:#f8fafc; --card-dim:#94a3b8; --card-line:rgba(255,255,255,.11); --card-soft:rgba(255,255,255,.07);
-  --blue:#5b97ff; --blue-soft:rgba(91,151,255,.16); --blue-line:rgba(91,151,255,.35); --pin:#e0313f;
+  --blue:#1d4ed8; --blue-soft:rgba(29,78,216,.22); --blue-line:rgba(29,78,216,.45); --pin:#e0313f;
   --heroGrid:rgba(125,180,255,.09);
 }
 [data-t="light"]{
@@ -601,7 +601,7 @@ setInterval(initDepthTextEffect, 300);
   --shell:#080d17; --shell-2:#0c1322; --line:rgba(255,255,255,.09);
   --pane:#0b1220; --pane-2:#141e30; --pane-line:rgba(255,255,255,.08); --ink:#eef2f8; --dim:#93a1bb;
   --card:#1d293d; --card-ink:#f8fafc; --card-dim:#94a3b8; --card-line:rgba(255,255,255,.11); --card-soft:rgba(255,255,255,.07);
-  --blue:#5b97ff; --blue-soft:rgba(91,151,255,.16); --blue-line:rgba(91,151,255,.35);
+  --blue:#1d4ed8; --blue-soft:rgba(29,78,216,.22); --blue-line:rgba(29,78,216,.45);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--shell);font-family:var(--f)}
@@ -631,7 +631,7 @@ button,input,select,textarea{font-family:var(--f)}
 .gv-ring-1,.gv-ring-2{transform-box:fill-box;transform-origin:center;animation:ringIn .55s cubic-bezier(.2,.9,.3,1) backwards}
 .gv-ring-1{animation-delay:.1s}.gv-ring-2{animation-delay:.2s}
 .leaflet-container{background:#dfe6ef!important;font-family:var(--f)}
-.leaflet-control-attribution{font:400 10px/1.6 var(--f)!important;background:rgba(255,255,255,.7)!important;color:#475467!important}
+.leaflet-control-attribution, .leaflet-control-attribution * { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
 .leaflet-control-attribution a{color:#2563eb!important}
 [data-t="dark"] .leaflet-container{background:#0f1521!important}
 [data-t="dark"] .leaflet-control-attribution{background:rgba(10,16,26,.66)!important;color:#8fa0bb!important}
@@ -726,125 +726,420 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   }
 }
 
+@keyframes slideUpBottomSheet {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 @media (max-width: 640px) {
+  /* 20% UI & Font Reduction across Mobile */
+  html {
+    font-size: 80% !important;
+  }
+
+  /* Map container fills 100% of viewport on mobile (no bottom bar gap) */
+  .gv-map-wrap {
+    top: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
   /* 1. Landing Top Navigation Header */
   .gv-landing-nav-wrap {
-    padding: 0 12px !important;
-    gap: 8px !important;
+    padding: 0 10px !important;
+    gap: 6px !important;
+    height: 50px !important;
   }
   .gv-landing-logo {
-    height: 24px !important;
+    height: 20px !important;
   }
   .gv-landing-nav-center {
-    position: static !important;
-    transform: none !important;
-    gap: 12px !important;
-    margin-inline-start: auto !important;
+    display: none !important;
   }
   .gv-landing-nav-right {
-    margin-inline-start: 6px !important;
-    gap: 6px !important;
-  }
-  .gv-landing-nav-right .gv-ghost-text {
     display: none !important;
+  }
+  .gv-landing-hamburger-btn {
+    display: grid !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  }
+  .gv-landing-hamburger-btn svg {
+    stroke: #ffffff !important;
   }
 
   /* 2. GeoVision Hero Section & 3D Robot */
   .gv-hero-wrap {
-    margin-top: 30px !important;
+    margin-top: 24px !important;
   }
   .gv-hero-logo {
-    width: 90% !important;
-    max-width: 310px !important;
-    height: 70px !important;
+    width: 85% !important;
+    max-width: 250px !important;
+    height: 58px !important;
   }
   .gv-3d-robot-wrap {
-    top: -110px !important;
-    width: 300px !important;
-    height: 220px !important;
+    top: -95px !important;
+    width: 250px !important;
+    height: 180px !important;
   }
   .gv-search-box {
-    margin-top: 20px !important;
+    margin-top: 16px !important;
+    max-width: 92% !important;
   }
 
-  /* 3. Login Screen Mobile Layout */
+  /* 3. Dribbble-Style 60% Bottom Sheet Login Drawer */
   .gv-login-container {
+    position: fixed !important;
+    inset: 0 !important;
+    min-height: 100vh !important;
+    padding: 0 !important;
     flex-direction: column !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     align-items: center !important;
-    padding: 24px 16px !important;
+    overflow: hidden !important;
   }
-  .gv-login-logo-bg {
+  .gv-login-top-brand {
     position: relative !important;
-    inset: auto !important;
+    z-index: 5 !important;
     width: 100% !important;
+    height: 40vh !important;
     display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
     justify-content: center !important;
-    margin-bottom: 16px !important;
+    padding-top: 15px !important;
     background: none !important;
+  }
+  .gv-login-dge-logo {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    inset-inline-start: auto !important;
+    height: 38px !important;
+    width: auto !important;
+    margin-top: -30px !important;
+    margin-bottom: 10px !important;
   }
   #particleLogoContainer {
     position: relative !important;
     left: auto !important;
     top: auto !important;
     transform: none !important;
-    width: 280px !important;
-    height: 70px !important;
-    max-width: 90vw !important;
+    width: 240px !important;
+    height: 60px !important;
+    max-width: 85vw !important;
+  }
+  .gv-login-card-wrap {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60vh !important;
+    width: 100% !important;
+    max-width: none !important;
+    z-index: 50 !important;
+    border-top-left-radius: 28px !important;
+    border-top-right-radius: 28px !important;
+    background: rgba(11, 18, 32, 0.88) !important;
+    backdrop-filter: blur(30px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.6) !important;
+    padding: 16px 20px 24px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    animation: slideUpBottomSheet 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .gv-dribbble-handle {
+    display: block !important;
+  }
+  .gv-login-card-inner {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+  .gv-login-card-inner h1 {
+    font-size: 20px !important;
+    margin-bottom: 4px !important;
+  }
+  .gv-login-card-inner p {
+    font-size: 11.5px !important;
+    margin-bottom: 18px !important;
+  }
+  .gv-login-card-inner input {
+    height: 40px !important;
+    font-size: 12px !important;
+    border-radius: 10px !important;
+  }
+  .gv-login-card-inner button {
+    font-size: 12px !important;
+  }
+
+  /* Mobile Map Screen Header: About button on left, Logo in center, Hamburger on right */
+  .gv-top-left-logo { display: none !important; }
+
+  .gv-mobile-top-logo {
+    display: flex !important;
+    align-items: center !important;
+    top: 14px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  .gv-mobile-top-logo img {
+    height: 24px !important;
+    width: auto !important;
+  }
+
+  .gv-mobile-top-about-btn {
+    display: grid !important;
+    top: 12px !important;
+    inset-inline-start: 16px !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
   }
 
   /* 4. Map Screen Header & Panels */
-  .gv-top-left-logo { display: none !important; }
-  .gv-top-center-nav {
-    top: 10px !important;
-    left: 10px !important;
-    transform: none !important;
-    gap: 8px !important;
+  .gv-map-screen-wrap {
+    padding: 0 !important;
+    height: 100vh !important;
+    background: transparent !important;
   }
+
+  .gv-top-left-logo { display: none !important; }
+
+  /* AI Chat & Layers Pill Buttons on Mobile (20% larger AI icon & centered Layers icon) */
+  #gvAiChatBtn {
+    inset-inline-start: 16px !important;
+    bottom: 2.2vh !important;
+    transform: none !important;
+    width: auto !important;
+    height: 44px !important;
+    padding: 0 16px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    background: rgba(15, 23, 42, 0.92) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    z-index: 950 !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  #gvAiChatBtn img {
+    width: 32px !important;
+    height: 32px !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 !important;
+    flex: none !important;
+  }
+
+  #gvHidePanelBtn {
+    inset-inline-end: 16px !important;
+    bottom: 2.2vh !important;
+    transform: none !important;
+    width: auto !important;
+    height: 44px !important;
+    padding: 0 16px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    background: rgba(15, 23, 42, 0.92) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    z-index: 950 !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  #gvHidePanelBtn svg {
+    width: 22px !important;
+    height: 22px !important;
+    color: #ffffff !important;
+    display: block !important;
+    margin: 0 !important;
+    flex: none !important;
+    transform-origin: center center !important;
+  }
+
+  .gv-mobile-btn-label {
+    display: inline-block !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    letter-spacing: 0.2px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  /* Hide minimized search bar pill on mobile, keep AI bot button only */
+  .gv-chat-min-pill {
+    display: none !important;
+  }
+
+  /* Hide Home icon button & Map/About toggle on mobile view */
+  .gv-top-center-nav {
+    display: none !important;
+  }
+
   .gv-top-right-controls {
-    top: 10px !important;
-    inset-inline-end: 10px !important;
+    top: 12px !important;
+    inset-inline-end: 16px !important;
     gap: 4px !important;
   }
-  .gv-left-ai-panel {
-    position: fixed !important;
-    top: 54px !important;
-    bottom: 74px !important;
-    left: 10px !important;
-    right: 10px !important;
-    width: auto !important;
-    max-width: none !important;
-    z-index: 900 !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.65) !important;
+  .gv-desktop-ctrl-btn {
+    display: none !important;
   }
+  .gv-mobile-hamburger-btn {
+    display: grid !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  }
+  .gv-mobile-hamburger-btn svg {
+    stroke: #ffffff !important;
+  }
+
+  /* Remove entire header on About Us screen & show top-left Back button on mobile view */
+  .gv-about-header {
+    display: none !important;
+  }
+  .gv-about-mobile-back-btn {
+    display: grid !important;
+  }
+  .gv-about-content-wrap {
+    padding-top: 72px !important;
+  }
+  .gv-profile-menu-dropdown {
+    top: 48px !important;
+    width: min(340px, 88vw) !important;
+    padding: 12px 10px !important;
+    border-radius: 20px !important;
+  }
+  .gv-profile-menu-dropdown > div:first-child {
+    padding: 14px 16px 16px 16px !important;
+    margin-bottom: 8px !important;
+  }
+  .gv-profile-menu-dropdown > div:first-child > div:first-child {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+  .gv-profile-menu-dropdown > div:first-child > div:nth-child(2) {
+    font-size: 13px !important;
+    margin-top: 5px !important;
+  }
+  .gv-profile-menu-dropdown button {
+    padding: 15px 16px !important;
+    gap: 14px !important;
+    border-radius: 12px !important;
+    margin-bottom: 3px !important;
+  }
+  .gv-profile-menu-dropdown button span {
+    font-size: 15px !important;
+  }
+  .gv-profile-menu-dropdown button span:last-child {
+    font-size: 13px !important;
+  }
+
+  /* Bottom Sheet Drawer for AI Chat & Right Side Properties on Mobile (80% of screen height) */
+  .gv-left-ai-panel,
   .gv-right-side-panel {
     position: fixed !important;
-    top: 54px !important;
-    bottom: 74px !important;
-    left: 10px !important;
-    right: 10px !important;
-    width: auto !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
     max-width: none !important;
+    height: 80vh !important;
     z-index: 900 !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.65) !important;
+    border-top-left-radius: 28px !important;
+    border-top-right-radius: 28px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    background: rgba(11, 18, 32, 0.95) !important;
+    backdrop-filter: blur(30px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 -20px 60px rgba(0,0,0,0.85) !important;
+    padding: 10px 16px 60px 16px !important;
+    overflow-y: auto !important;
+    animation: slideUpBottomSheet 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
+
+  .gv-mobile-drawer-handle {
+    display: block !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    width: 48px !important;
+    height: 5px !important;
+    border-radius: 99px !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    margin: 4px auto 12px auto !important;
+    cursor: ns-resize !important;
+    touch-action: none !important;
+    flex: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+  .gv-mobile-drawer-handle::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -14px !important;
+    bottom: -14px !important;
+    left: -24px !important;
+    right: -24px !important;
+  }
+
+  /* Remove Zoom In (+) and Zoom Out (-) buttons on Mobile view */
+  .gv-zoom-controls-wrap {
+    display: none !important;
+  }
+
   .gv-floating-map-tools {
-    top: 54px !important;
-    inset-inline-end: 10px !important;
+    top: 48px !important;
+    inset-inline-end: 8px !important;
   }
-  .gv-bottom-dock {
-    bottom: 12px !important;
-    left: 10px !important;
-    right: 10px !important;
-    transform: none !important;
-    justify-content: space-between !important;
-    gap: 6px !important;
-    width: calc(100% - 20px) !important;
-  }
+
+
+
   .gv-central-toolbar {
     overflow-x: auto !important;
-    max-width: calc(100vw - 110px) !important;
-    padding: 0 6px !important;
+    max-width: calc(100vw - 100px) !important;
+    padding: 0 5px !important;
+    height: 38px !important;
+  }
+  .gv-central-toolbar button {
+    width: 30px !important;
+    height: 30px !important;
   }
   .gv-central-toolbar::-webkit-scrollbar { display: none !important; }
 }
@@ -858,11 +1153,12 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
   <div class="gv-login-container" style="position:relative;display:flex;align-items:center;justify-content:flex-end;min-height:100vh;padding:40px 6% 40px 24px;overflow:hidden;animation:fade .3s ease">
     <video ref="{{ loginVidRef }}" src="uploads/login-bg-video.mp4" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"></video>
-    <div class="gv-login-logo-bg" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><div id="particleLogoContainer" style="height: 117px; width: 465px; max-width: 45vw; position: absolute; left: 8%; top: 50%; transform: translateY(-50%); z-index: 5;"></div></div>
+    <div class="gv-login-top-brand" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,20,.72) 0%,rgba(5,10,20,.35) 55%,rgba(5,10,20,.55) 100%);z-index:1"><img class="gv-login-dge-logo" src="assets/logo-dge.png" alt="Department of Government Enablement" style="position: absolute; top: 30px; inset-inline-start: 40px; height: 38px; width: auto; z-index: 2; left: 39px"><div id="particleLogoContainer" style="height: 117px; width: 465px; max-width: 45vw; position: absolute; left: 8%; top: 50%; transform: translateY(-50%); z-index: 5;"></div></div>
     
-    <div style="position:relative;z-index:2;width:100%;max-width:420px">
+    <div class="gv-login-card-wrap" style="position:relative;z-index:2;width:100%;max-width:420px">
+      <div class="gv-dribbble-handle" style="display:none;width:36px;height:4px;border-radius:99px;background:rgba(255,255,255,0.35);margin:0 auto 14px"></div>
       
-      <div style="padding:32px;border-radius:20px;background:var(--pane);border:1px solid var(--pane-line);backdrop-filter:blur(18px);box-shadow:0 28px 70px rgba(5,10,25,.5)">
+      <div class="gv-login-card-inner" style="padding:32px;border-radius:20px;background:var(--pane);border:1px solid var(--pane-line);backdrop-filter:blur(18px);box-shadow:0 28px 70px rgba(5,10,25,.5)">
         <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;letter-spacing:-.01em">{{ t.loginTitle }}</h1>
         <p style="margin:0 0 26px;font-size:14px;line-height:1.6;color:var(--dim)">{{ t.loginSub }}</p>
         <div style="display:flex;flex-direction:column;gap:14px">
@@ -914,6 +1210,49 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
           <button onClick="{{ toggleLang }}" style="{{ ghostIcon }}">{{ langShort }}</button>
           <button onClick="{{ goLogin }}" class="gv-ghost-text" style="{{ ghostNav }}">{{ t.signIn }}</button>
           <button onClick="{{ goMap }}" style="{{ solidSm }}">{{ t.openMap }}</button>
+        </div>
+
+        <!-- Mobile Landing Hamburger Menu -->
+        <div class="gv-landing-mobile-menu-wrap" style="position:relative;margin-inline-start:auto">
+          <button class="gv-landing-hamburger-btn" onClick="{{ toggleLandingMenu }}" style="display:none;place-items:center;width:40px;height:40px;border-radius:12px;background:#0f172a;border:1px solid rgba(255,255,255,0.22);color:#ffffff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.35)">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          <sc-if value="{{ landingMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div class="gv-landing-menu-dropdown" style="position:absolute;top:46px;inset-inline-end:0;width:240px;padding:10px;border-radius:16px;background:{{ dark ? 'rgba(11,18,32,0.96)' : 'rgba(255,255,255,0.96)' }};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid {{ dark ? 'rgba(255,255,255,0.12)' : '#e2e8f0' }};box-shadow:0 20px 48px rgba(0,0,0,0.4);z-index:600;animation:rise .18s ease;display:flex;flex-direction:column;gap:4px">
+            <button onClick="{{ goLandingMenuMap }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;background:var(--blue);color:#fff;border:none;font:600 14px/1 var(--f);cursor:pointer">
+              <dc-import name="Icon" hint-size="16px,16px" icon="map" size="{{ 16 }}"></dc-import>
+              <span>{{ t.openMap }}</span>
+            </button>
+            <button onClick="{{ goLandingMenuHome }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:10px;background:none;border:none;color:var(--ink);font:500 14px/1 var(--f);text-align:start;cursor:pointer">
+              <dc-import name="Icon" hint-size="16px,16px" icon="home" size="{{ 16 }}"></dc-import>
+              <span>{{ t.home }}</span>
+            </button>
+            <button onClick="{{ goLandingMenuAbout }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:10px;background:none;border:none;color:var(--ink);font:500 14px/1 var(--f);text-align:start;cursor:pointer">
+              <dc-import name="Icon" hint-size="16px,16px" icon="info" size="{{ 16 }}"></dc-import>
+              <span>{{ t.about }}</span>
+            </button>
+            <div style="height:1px;background:var(--pane-line);margin:4px 0"></div>
+            <button onClick="{{ toggleTheme }}" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 14px;border-radius:10px;background:none;border:none;color:var(--ink);font:500 14px/1 var(--f);cursor:pointer">
+              <span style="display:flex;align-items:center;gap:12px">
+                <dc-import name="Icon" hint-size="16px,16px" icon="{{ themeIcon }}" size="{{ 16 }}" filled="{{ true }}"></dc-import>
+                <span>{{ dark ? (s.lang === 'ar' ? 'المظهر الداكن' : 'Dark Mode') : (s.lang === 'ar' ? 'المظهر الفاتح' : 'Light Mode') }}</span>
+              </span>
+            </button>
+            <button onClick="{{ toggleLang }}" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 14px;border-radius:10px;background:none;border:none;color:var(--ink);font:500 14px/1 var(--f);cursor:pointer">
+              <span style="display:flex;align-items:center;gap:12px">
+                <dc-import name="Icon" hint-size="16px,16px" icon="globe" size="{{ 16 }}"></dc-import>
+                <span>{{ s.lang === 'ar' ? 'اللغة العربية' : 'English' }}</span>
+              </span>
+              <span style="font-size:12px;color:var(--dim);font-weight:600">{{ langShort }}</span>
+            </button>
+            <button onClick="{{ goLandingMenuLogin }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:10px;background:none;border:none;color:var(--ink);font:500 14px/1 var(--f);text-align:start;cursor:pointer">
+              <dc-import name="Icon" hint-size="16px,16px" icon="user" size="{{ 16 }}"></dc-import>
+              <span>{{ t.signIn }}</span>
+            </button>
+          </div>
+          </sc-if>
         </div>
       </div>
     </div>
@@ -1009,13 +1348,23 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
 
   <sc-if value="{{ isMap }}" hint-placeholder-val="{{ true }}">
-  <div style="display:flex;flex-direction:column;height:calc(100vh - 34px);background:var(--shell);animation:fade .3s ease;padding:9px">
+  <div class="gv-map-screen-wrap" style="display:flex;flex-direction:column;height:calc(100vh - 34px);background:var(--shell);animation:fade .3s ease;padding:9px">
 
     <div style="{{ mapWrap }}">
-      <!-- Floating Branding (top-left) -->
+      <!-- Floating Branding (top-left on desktop) -->
       <div class="gv-top-left-logo" style="position:absolute;top:16px;left:16px;z-index:500;display:flex;align-items:center;gap:10px;pointer-events:none">
         <img src="assets/logo-dge.png" alt="DGE" style="height:25px;width:auto;filter:{{ logoFilter }}">
       </div>
+
+      <!-- Mobile Top Center Logo (shown only on mobile) -->
+      <div class="gv-mobile-top-logo" style="display:none;position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto">
+        <img src="assets/logo-dge.png" alt="DGE" style="height:24px;width:auto;filter:{{ logoFilter }}">
+      </div>
+
+      <!-- Mobile Top Left About Button (shown only on mobile) -->
+      <button class="gv-mobile-top-about-btn" onClick="{{ goAbout }}" title="{{ t.about }}" style="display:none;position:absolute;top:12px;inset-inline-start:16px;z-index:500;place-items:center;width:40px;height:40px;border-radius:12px;background:#0f172a;border:1px solid rgba(255,255,255,0.22);color:#ffffff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.35)">
+        <dc-import name="Icon" hint-size="18px,18px" icon="info" size="{{ 18 }}"></dc-import>
+      </button>
 
       <!-- Floating Navigation (top-center) -->
       <div class="gv-top-center-nav" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px">
@@ -1037,36 +1386,48 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
       <!-- Floating Controls (top-right) -->
       <div class="gv-top-right-controls" style="position:absolute;top:16px;inset-inline-end:16px;z-index:500;display:flex;align-items:center;gap:8px">
-        <button onClick="{{ toggleUiCollapse }}" style="{{ floatSqBtn }}" title="{{ uiCollapseTitle }}">
-          <dc-import name="Icon" hint-size="15px,15px" icon="{{ uiCollapseIcon }}" size="{{ 15 }}" stroke="{{ 1.8 }}"></dc-import>
+        <!-- Desktop controls -->
+        <button class="gv-desktop-ctrl-btn" onClick="{{ toggleTheme }}" style="{{ floatSqBtn }}"><dc-import name="Icon" hint-size="15px,15px" icon="{{ themeIcon }}" size="{{ 15 }}" filled="{{ true }}"></dc-import></button>
+        <button class="gv-desktop-ctrl-btn" onClick="{{ toggleLang }}" style="{{ floatSqBtn }}">{{ langShort }}</button>
+        <button class="gv-desktop-ctrl-btn" onClick="{{ toggleMenu }}" style="display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);border:none;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(37,99,235,0.25);transition:all 0.2s">
+          <dc-import name="Icon" hint-size="15px,15px" icon="user" size="{{ 15 }}" filled="{{ true }}"></dc-import>
         </button>
-        <button onClick="{{ toggleTheme }}" style="{{ floatSqBtn }}"><dc-import name="Icon" hint-size="15px,15px" icon="{{ themeIcon }}" size="{{ 15 }}" filled="{{ true }}"></dc-import></button>
-        <button onClick="{{ toggleLang }}" style="{{ floatSqBtn }}">{{ langShort }}</button>
-        <div style="position:relative;display:inline-block">
-          <button onClick="{{ toggleMenu }}" style="display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);border:none;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(37,99,235,0.25);transition:all 0.2s">
-            <dc-import name="Icon" hint-size="15px,15px" icon="user" size="{{ 15 }}" filled="{{ true }}"></dc-import>
-          </button>
-          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
-          <div style="position:absolute;top:42px;inset-inline-end:0;width:220px;padding:8px;border-radius:14px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 20px 48px rgba(5,10,25,.4);z-index:600;animation:rise .18s ease">
-            <div style="padding:10px 12px 12px;border-bottom:1px solid var(--pane-line);margin-bottom:6px">
-              <div style="font-size:13px;font-weight:600">{{ userName }}</div>
-              <div style="font-size:11px;color:var(--dim);margin-top:3px">{{ userMeta }}</div>
-            </div>
-            <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="5">
-              <button onClick="{{ m.go }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;background:none;border:none;color:var(--ink);font:400 13px/1 var(--f);text-align:start;cursor:pointer" style-hover="background:var(--pane-2)">
-                <span style="color:var(--dim)"><dc-import name="Icon" hint-size="14px,14px" icon="{{ m.icon }}" size="{{ 14 }}"></dc-import></span>
-                <span style="flex:1">{{ m.label }}</span>
-                <span style="font-size:11px;color:var(--dim)">{{ m.hint }}</span>
-              </button>
-            </sc-for>
+
+        <!-- Mobile Hamburger Menu Button (solid black background with white 3-line icon) -->
+        <button class="gv-mobile-hamburger-btn" onClick="{{ toggleMenu }}" style="display:none;place-items:center;width:40px;height:40px;border-radius:12px;background:#0f172a;border:1px solid rgba(255,255,255,0.22);color:#ffffff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.35)">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+
+        <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+        <div class="gv-profile-menu-dropdown" style="position:absolute;top:42px;inset-inline-end:0;width:220px;padding:8px;border-radius:14px;background:var(--pane);border:1px solid var(--pane-line);box-shadow:0 20px 48px rgba(5,10,25,.4);z-index:600;animation:rise .18s ease">
+          <div style="padding:10px 12px 12px;border-bottom:1px solid var(--pane-line);margin-bottom:6px">
+            <div style="font-size:13px;font-weight:600">{{ userName }}</div>
+            <div style="font-size:11px;color:var(--dim);margin-top:3px">{{ userMeta }}</div>
           </div>
-          </sc-if>
+          <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="5">
+            <button onClick="{{ m.go }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;background:none;border:none;color:var(--ink);font:400 13px/1 var(--f);text-align:start;cursor:pointer" style-hover="background:var(--pane-2)">
+              <span style="color:var(--dim)"><dc-import name="Icon" hint-size="14px,14px" icon="{{ m.icon }}" size="{{ 14 }}"></dc-import></span>
+              <span style="flex:1">{{ m.label }}</span>
+              <span style="font-size:11px;color:var(--dim)">{{ m.hint }}</span>
+            </button>
+          </sc-for>
         </div>
+        </sc-if>
       </div>
-      <x-import component="GeoMap" from="./geo-map.jsx" basemap="{{ basemap }}" markers="{{ visiblePois }}" selected-id="{{ selId }}" on-select="{{ pickPoi }}" on-view="{{ onView }}" aoi="{{ aoi }}" buffer="{{ bufferOn }}" shape="{{ sketchShape }}" accent="{{ accentHex }}" hint-size="100%,100%"></x-import>
+      <div class="gv-map-wrap" onClick="{{ collapsePanelsOnMobile }}" onTouchStart="{{ collapsePanelsOnMobile }}" style="position:absolute;inset:0;z-index:0">
+        <x-import component="GeoMap" from="./geo-map.jsx" basemap="{{ basemap }}" markers="{{ visiblePois }}" selected-id="{{ selId }}" on-select="{{ pickPoi }}" on-view="{{ onView }}" on-map-touch="{{ collapsePanelsOnMobile }}" aoi="{{ aoi }}" buffer="{{ bufferOn }}" shape="{{ sketchShape }}" accent="{{ accentHex }}" hint-size="100%,100%"></x-import>
+      </div>
  
+      <!-- AI Chat Toggle Button — always anchored 24px right of the left panel -->
+      <button id="gvAiChatBtn" onClick="{{ toggleChat }}" title="{{ aiButtonTitle }}" style="position:absolute;bottom:16px;inset-inline-start:calc(var(--chatW) + 40px);z-index:510;display:inline-flex;align-items:center;justify-content:center;width:62px;height:62px;background:none;border:none;box-shadow:none;cursor:pointer;outline:none;padding:0;margin:0;box-sizing:border-box;transition:transform 0.2s" style-hover="transform:scale(1.08)">
+        <img src="{{ aiBotImg }}" alt="AI Chat" style="display:block;width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.28))">
+        <span class="gv-mobile-btn-label" style="display:none">{{ s.lang === 'ar' ? 'محادثة الذكاء' : 'AI Chat' }}</span>
+      </button>
+
       <sc-if value="{{ chatMinShow }}" hint-placeholder-val="{{ false }}">
-      <div onClick="{{ expandChat }}" style="position:absolute;bottom:20px;inset-inline-start:16px;width:var(--chatW);display:flex;align-items:center;gap:10px;height:44px;padding:0 10px 0 16px;border-radius:999px;background:{{ chatBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ chatBorder }};box-shadow:{{ chatShadow }};cursor:pointer;z-index:420;animation:rise .24s ease">
+      <div class="gv-chat-min-pill" onClick="{{ expandChat }}" style="position:absolute;bottom:20px;inset-inline-start:16px;width:var(--chatW);display:flex;align-items:center;gap:10px;height:44px;padding:0 10px 0 16px;border-radius:999px;background:{{ chatBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ chatBorder }};box-shadow:{{ chatShadow }};cursor:pointer;z-index:420;animation:rise .24s ease">
         <span style="flex:1;min-width:0;color:var(--dim);font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.askPh }}</span>
         <button onClick="{{ expandChat }}" style="display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:999px;border:none;background:none;color:var(--ink);cursor:pointer">
           <dc-import name="Icon" hint-size="18px,18px" icon="sendai" size="{{ 18 }}"></dc-import>
@@ -1076,6 +1437,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
  
       <sc-if value="{{ chatOpenShow }}" hint-placeholder-val="{{ true }}">
       <div class="gv-left-ai-panel" style="position:absolute;top:70px;bottom:20px;inset-inline-start:16px;width:var(--chatW);display:flex;flex-direction:column;border-radius:16px;background:{{ chatBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ chatBorder }};box-shadow:{{ chatShadow }};overflow:hidden;z-index:420;animation:rise .26s ease">
+        <div class="gv-mobile-drawer-handle" onMouseDown="{{ dragChatDrawer }}" onTouchStart="{{ dragChatDrawer }}" style="display:none;width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,0.45);margin:6px auto 10px;cursor:ns-resize;touch-action:none;flex:none"></div>
         <div style="display:flex;flex:none;padding:6px 6px 0;background:{{ dark ? 'rgba(11,18,32,0.6)' : 'rgba(240,244,248,0.7)' }};border-bottom:1px solid {{ dark ? 'rgba(255,255,255,0.08)' : '#e2e8f0' }};gap:4px">
           <sc-for list="{{ chatTabs }}" as="c" hint-placeholder-count="3">
             <button onClick="{{ c.go }}" style="{{ c.style }}" title="{{ c.title }}">
@@ -1230,20 +1592,10 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       <video onClick="{{ toggleChatMin }}" title="Minimise chat" ref="{{ orbRef }}" src="assets/orb.mp4" autoPlay="{{ true }}" loop="{{ true }}" muted="{{ true }}" playsInline="{{ true }}" style="display:none"></video>
       </sc-if>
 
-      <div class="gv-floating-map-tools" style="position:absolute;top:74px;inset-inline-end:{{ ctrlInset }};display:flex;flex-direction:column;align-items:center;gap:10px;z-index:430;transition:inset-inline-end .24s ease">
-        <div style="{{ mapZoomWrap }}">
-          <button onClick="{{ zoomIn }}" style="{{ mapBtnZoomTop }}" style-hover="{{ mapBtnZoomHover }}"><dc-import name="Icon" hint-size="16px,16px" icon="plus" size="{{ 16 }}"></dc-import></button>
-          <div style="height:1px;background:{{ mapZoomDivider }};margin:0 6px"></div>
-          <button onClick="{{ zoomOut }}" style="{{ mapBtnZoomBottom }}" style-hover="{{ mapBtnZoomHover }}"><dc-import name="Icon" hint-size="16px,16px" icon="minus" size="{{ 16 }}"></dc-import></button>
-        </div>
-        <button onClick="{{ zoomHome }}" style="{{ mapBtnGlass }}" style-hover="{{ mapBtnGlassHover }}"><dc-import name="Icon" hint-size="18px,18px" icon="home" size="{{ 18 }}"></dc-import></button>
-        <button onClick="{{ zoomHome }}" style="{{ mapBtnGlass }}" style-hover="{{ mapBtnGlassHover }}"><dc-import name="Icon" hint-size="18px,18px" icon="crosshair" size="{{ 18 }}"></dc-import></button>
-        <button onClick="{{ openSketch }}" style="{{ mapBtnSketchGlass }}" style-hover="{{ mapBtnSketchGlassHover }}"><dc-import name="Icon" hint-size="18px,18px" icon="sketch" size="{{ 18 }}"></dc-import></button>
-      </div>
-
       <!-- Right Column Multi-card Stack -->
       <sc-if value="{{ rightCardsShow }}" hint-placeholder-val="{{ true }}">
       <div class="gv-right-side-panel custom-scroll {{ genieClass }}" style="position:absolute;top:70px;bottom:20px;inset-inline-end:16px;width:var(--panW);max-width:var(--panW);box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:4px 6px 36px 4px;z-index:425;overflow-y:auto;overflow-x:hidden;pointer-events:auto;-webkit-overflow-scrolling:touch" data-chips="1">
+        <div class="gv-mobile-drawer-handle" onMouseDown="{{ dragRightDrawer }}" onTouchStart="{{ dragRightDrawer }}" style="display:none;width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,0.45);margin:6px auto 10px;cursor:ns-resize;touch-action:none;flex:none"></div>
 
         <!-- Card 1: Map Title -->
         <div style="{{ glassCard }}">
@@ -1497,34 +1849,15 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       </div>
       </sc-if>
 
-      <!-- Floating Bottom Control Dock -->
+      <!-- Right Panel Toggle Button — anchored dynamically to the right panel edge -->
       <sc-if value="{{ bottomToolbarShow }}" hint-placeholder-val="{{ true }}">
-      <div class="gv-bottom-dock" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:16px;height:44px;pointer-events:auto;box-sizing:border-box">
-        <!-- 1. Left AI Chat Icon (Outside bottom section, 16px gap) -->
-        <button onClick="{{ toggleChat }}" style="{{ aiButtonGlass }}" title="{{ aiButtonTitle }}">
-          <img src="{{ aiBotImg }}" alt="AI Chat" style="display:block;width:62px;height:62px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.22))">
-        </button>
+      <button id="gvHidePanelBtn" onClick="{{ toggleRightPanel }}" title="{{ hideButtonTitle }}" style="{{ hideButtonPosStyle }}" style-hover="transform:scale(1.06)">
+        <svg viewBox="0 0 24 24" width="20" height="20" style="{{ hideButtonImgStyle }}">
+          <path d="M7 2h7.5a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5ZM6.8 8.3a1.2 1.2 0 0 0 0 1.7L9.2 12l-2.4 2.4a1.2 1.2 0 1 0 1.7 1.7l3.2-3.2a1.2 1.2 0 0 0 0-1.7L8.5 8.3a1.2 1.2 0 0 0-1.7 0ZM17 2h0.5a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H17a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/>
+        </svg>
+        <span class="gv-mobile-btn-label" style="display:none">{{ s.lang === 'ar' ? 'الطبقات' : 'Layers' }}</span>
+      </button>
 
-        <!-- 2. Central Toolbar Section -->
-        <div class="gv-central-toolbar" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 10px;border-radius:999px;background:{{ bottomToolbarBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ bottomToolbarBorder }};box-shadow:0 12px 40px rgba(0,0,0,0.08);box-sizing:border-box">
-          <sc-for list="{{ rail }}" as="r" hint-placeholder-count="7">
-            <button onClick="{{ r.go }}" style="{{ r.styleGlass }}" style-hover="background:{{ bottomToolbarHoverBg }};transform:scale(1.05)">
-              <dc-import name="Icon" hint-size="16px,16px" icon="{{ r.icon }}" size="{{ 16 }}" stroke="{{ 1.8 }}" filled="{{ false }}"></dc-import>
-            </button>
-          </sc-for>
-          <span style="width:1px;height:17px;background:{{ bottomToolbarSeparator }};margin:0 3px"></span>
-          <button onClick="{{ openHelp }}" style="{{ railHelpGlass }}" style-hover="background:{{ bottomToolbarHoverBg }};transform:scale(1.05)">
-            <dc-import name="Icon" hint-size="16px,16px" icon="help" size="{{ 16 }}" stroke="{{ 1.8 }}" filled="{{ false }}"></dc-import>
-          </button>
-        </div>
-
-        <!-- 3. Right Hide Icon (Outside bottom section, 16px gap) -->
-        <button id="gvHidePanelBtn" onClick="{{ toggleRightPanel }}" style="{{ hideButtonGlass }}" title="{{ hideButtonTitle }}" style-hover="transform:scale(1.06)">
-          <svg viewBox="0 0 24 24" width="20" height="20" style="{{ hideButtonImgStyle }}">
-            <path d="M7 2h7.5a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5ZM6.8 8.3a1.2 1.2 0 0 0 0 1.7L9.2 12l-2.4 2.4a1.2 1.2 0 1 0 1.7 1.7l3.2-3.2a1.2 1.2 0 0 0 0-1.7L8.5 8.3a1.2 1.2 0 0 0-1.7 0ZM17 2h0.5a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H17a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/>
-          </svg>
-        </button>
-      </div>
       </sc-if>
 
       <sc-if value="{{ copied }}" hint-placeholder-val="{{ false }}">
@@ -1539,7 +1872,7 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
     <!-- Topography WebGL 2 Background (40% Opacity) -->
     <div id="topographyBgContainer" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.4;z-index:0"></div>
 
-    <div style="position:relative;z-index:10;display:flex;align-items:center;gap:14px;height:60px;padding:0 20px;background:{{ aboutHeaderBg }};border-bottom:1px solid {{ aboutHeaderBorder }};transition:all 0.25s">
+    <div class="gv-about-header" style="position:relative;z-index:10;display:flex;align-items:center;gap:14px;height:60px;padding:0 20px;background:{{ aboutHeaderBg }};border-bottom:1px solid {{ aboutHeaderBorder }};transition:all 0.25s">
       <img src="assets/logo-dge.png" alt="Department of Government Enablement" style="height:27px;width:auto;flex:none;filter:{{ logoFilter }}">
       <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:16px">
         <!-- Solid Home Icon Button (16px left of toggle) -->
@@ -1584,12 +1917,17 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       </div>
     </div>
 
-    <div style="position:relative;z-index:10;max-width:864px;margin:0 auto;padding:44px 20px 24px">
+    <!-- Mobile Top Left Back Button (About Us screen only) -->
+    <button class="gv-about-mobile-back-btn" onClick="{{ goMap }}" title="Back to Map" style="display:none;position:absolute;top:16px;inset-inline-start:16px;z-index:500;place-items:center;width:40px;height:40px;border-radius:12px;background:#0f172a;border:1px solid rgba(255,255,255,0.22);color:#ffffff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.35)">
+      <dc-import name="Icon" hint-size="18px,18px" icon="left" size="{{ 18 }}"></dc-import>
+    </button>
+
+    <div class="gv-about-content-wrap" style="position:relative;z-index:10;max-width:864px;margin:0 auto;padding:44px 20px 24px">
       <div style="position:absolute;inset:0 0 auto;height:350px;pointer-events:none;background-image:linear-gradient(var(--heroGrid) 1px,transparent 1px),linear-gradient(90deg,var(--heroGrid) 1px,transparent 1px);background-size:44px 44px;animation:gridDrift 18s linear infinite;mask-image:radial-gradient(60% 70% at 50% 0%,#000,transparent)"></div>
 
       
       <h1 id="aboutDepthTextContainer" data-text="{{ t.aboutTitle }}" style="position:relative;margin:0 0 18px;max-width:24ch;animation:rise .5s ease .05s both">{{ t.aboutTitle }}</h1>
-      <p style="position:relative;font-size:14px;line-height:1.65;color:var(--dim);max-width:64ch;margin:0 0 27px;animation:rise .5s ease .1s both">{{ t.aboutBody }}</p>
+      <p style="position:relative;font-size:17px;line-height:1.7;color:var(--dim);max-width:68ch;margin:0 0 27px;animation:rise .5s ease .1s both">{{ t.aboutBody }}</p>
 
       <div style="position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#2563eb 0%,#1d4ed8 45%,#0d1a45 100%);box-shadow:0 40px 90px rgba(15,40,120,.35);animation:rise .55s ease .15s both">
         <div style="position:absolute;inset:0;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.35) 1px,transparent 1px);background-size:26px 26px;mix-blend-mode:overlay"></div>
@@ -1962,29 +2300,38 @@ class Component extends DCLogic {
     rightLayersOpen: true,
     rightLegendOpen: false,
     uiCollapsed: false,
-    rightPanelShow: true,
-    genieState: 'expanded',
+    rightPanelShow: (typeof window !== 'undefined' && window.innerWidth <= 640) ? false : true,
+    genieState: (typeof window !== 'undefined' && window.innerWidth <= 640) ? 'collapsed' : 'expanded',
   };
 
   componentDidMount() {
+    const isMobile = (window.innerWidth <= 640);
     this.setState({
       theme: this.props.theme || 'dark',
       lang: this.props.lang || 'en',
-      device: this.props.device || 'desktop',
+      device: this.props.device || (isMobile ? 'mobile' : 'desktop'),
       brTags: this.props.showBrIds ?? false,
+      ...(isMobile ? { rightPanelShow: false, chat: false, genieState: 'collapsed' } : {})
     });
   }
 
   componentDidUpdate() {
     document.body.style.background = this.state.theme === 'dark' ? '#0d1424' : '#e9edf4';
     document.documentElement.dir = this.state.lang === 'ar' ? 'rtl' : 'ltr';
+    const isPanelOpen = (this.state.rightPanelShow !== false || (this.state.chat && !this.state.chatMin)) && !this.state.uiCollapsed;
+    document.body.classList.toggle('gv-mobile-panel-open', isPanelOpen);
   }
 
   set(k, v) { this.setState({ [k]: v }); }
 
   openCard(cardId) {
+    const isMobile = (window.innerWidth <= 640);
     this.setState({
       uiCollapsed: false,
+      rightPanelShow: true,
+      genieState: 'expanded',
+      chat: isMobile ? false : this.state.chat,
+      chatMin: isMobile ? true : this.state.chatMin,
       rightLayersOpen: cardId === 'categories',
       rightFiltersOpen: cardId === 'filters',
       rightBasemapOpen: cardId === 'basemap',
@@ -2004,6 +2351,68 @@ class Component extends DCLogic {
   loginVid = (el) => {
     this._loginVid = el;
     if (el) { el.muted = true; el.volume = 0; el.loop = true; el.playbackRate = 0.7; const p = el.play(); if (p && p.catch) p.catch(() => {}); }
+  };
+
+  handleDrawerDrag = (e, panelType) => {
+    if (window.innerWidth > 640) return;
+    const isTouch = e.type === 'touchstart';
+    const getEvY = (evt) => isTouch ? (evt.touches && evt.touches[0] ? evt.touches[0].clientY : 0) : evt.clientY;
+    const startY = getEvY(e);
+    
+    const panel = e.target ? e.target.closest('.gv-left-ai-panel, .gv-right-side-panel') : null;
+    if (!panel) return;
+    
+    const startRect = panel.getBoundingClientRect();
+    const startHeight = startRect.height;
+    
+    panel.style.transition = 'none';
+    let currentHeight = startHeight;
+    let deltaY = 0;
+    
+    const onMove = (moveEv) => {
+      const curY = isTouch ? (moveEv.touches && moveEv.touches[0] ? moveEv.touches[0].clientY : startY) : moveEv.clientY;
+      deltaY = curY - startY;
+      currentHeight = Math.max(40, Math.min(window.innerHeight * 0.9, startHeight - deltaY));
+      panel.style.height = currentHeight + 'px';
+      if (moveEv.cancelable) moveEv.preventDefault();
+    };
+    
+    const onEnd = () => {
+      window.removeEventListener(isTouch ? 'touchmove' : 'mousemove', onMove);
+      window.removeEventListener(isTouch ? 'touchend' : 'mouseup', onEnd);
+      
+      panel.style.transition = 'height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s';
+      
+      if (deltaY > startHeight * 0.5 || currentHeight < startHeight * 0.5) {
+        panel.style.height = '';
+        if (panelType === 'chat') {
+          this.setState({ chat: false });
+        } else {
+          this.setState({ rightPanelShow: false, genieState: 'collapsed' });
+        }
+      } else {
+        if (deltaY < -50) {
+          panel.style.height = '85vh';
+        } else {
+          panel.style.height = '60vh';
+        }
+      }
+    };
+    
+    window.addEventListener(isTouch ? 'touchmove' : 'mousemove', onMove, { passive: false });
+    window.addEventListener(isTouch ? 'touchend' : 'mouseup', onEnd);
+  };
+
+  collapsePanelsOnMobile = () => {
+    if (window.innerWidth <= 640) {
+      if (this.state.chat || this.state.rightPanelShow !== false) {
+        this.setState({
+          rightPanelShow: false,
+          genieState: 'collapsed',
+          chat: false
+        });
+      }
+    }
   };
 
   toggleIn(key, id) {
@@ -2071,7 +2480,7 @@ class Component extends DCLogic {
     const chip = (on) => 'display:inline-flex;align-items:center;height:32px;padding:0 14px;border-radius:99px;font:600 13px/1 var(--f);cursor:pointer;transition:all 0.2s;' +
       (on
         ? (dark
-            ? 'background:rgba(91,151,255,0.18);color:#5b97ff;border:1.5px solid #5b97ff;box-shadow:0 2px 8px rgba(91,151,255,0.16);'
+            ? 'background:rgba(29,78,216,0.22);color:#60a5fa;border:1.5px solid #1d4ed8;box-shadow:0 2px 8px rgba(29,78,216,0.2);'
             : 'background:rgba(37,99,235,0.12);color:#1d4ed8;border:1.5px solid #2563eb;box-shadow:0 2px 8px rgba(37,99,235,0.14);'
           )
         : (dark
@@ -2081,7 +2490,7 @@ class Component extends DCLogic {
     const smallChip = (on) => 'display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:99px;font:600 11px/1 var(--f);cursor:pointer;transition:all 0.2s;' +
       (on
         ? (dark
-            ? 'background:rgba(91,151,255,0.18);color:#5b97ff;border:1.5px solid #5b97ff;box-shadow:0 2px 8px rgba(91,151,255,0.16);'
+            ? 'background:rgba(29,78,216,0.22);color:#60a5fa;border:1.5px solid #1d4ed8;box-shadow:0 2px 8px rgba(29,78,216,0.2);'
             : 'background:rgba(37,99,235,0.12);color:#1d4ed8;border:1.5px solid #2563eb;box-shadow:0 2px 8px rgba(37,99,235,0.14);'
           )
         : (dark
@@ -2209,6 +2618,12 @@ class Component extends DCLogic {
         ? 'width:430px;margin:16px auto;border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)'
         : 'display:block',
       goMap: () => this.set('screen', 'map'), goAbout: () => this.set('screen', 'about'),
+      landingMenuOpen: s.landingMenuOpen,
+      toggleLandingMenu: () => this.setState({ landingMenuOpen: !s.landingMenuOpen }),
+      goLandingMenuMap: () => this.setState({ screen: 'map', landingMenuOpen: false }),
+      goLandingMenuHome: () => this.setState({ screen: 'landing', landingMenuOpen: false }),
+      goLandingMenuAbout: () => this.setState({ screen: 'about', landingMenuOpen: false }),
+      goLandingMenuLogin: () => this.setState({ screen: 'login', landingMenuOpen: false }),
       tabMap: topTab(s.screen === 'map'), tabAbout: topTab(s.screen === 'about'),
       tabBr: topTab(s.brTags), tabDev: topTab(s.device === 'mobile'),
       toggleBr: () => this.set('brTags', !s.brTags),
@@ -2280,9 +2695,15 @@ class Component extends DCLogic {
       hideButtonIcon: (s.rightPanelShow !== false) ? 'sidepanel' : 'sidepanelleft',
       hideButtonTitle: (s.rightPanelShow !== false) ? (s.lang === 'ar' ? 'إخفاء القائمة اليمنى' : 'Hide Right Menu') : (s.lang === 'ar' ? 'إظهار القائمة اليمنى' : 'Show Right Menu'),
       hideButtonImgStyle: 'display:block;width:20px;height:20px;flex:none;transition:transform 0.2s ease;' + ((s.rightPanelShow === false) ? 'transform:scaleX(-1);' : ''),
-      hideButtonGlass: 'position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:' +
+      hideButtonGlass: 'display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:' +
         (dark ? 'rgba(30,41,59,0.92)' : '#1e293b') + ';border:1px solid ' +
-        (dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.18)') + ';color:#ffffff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.18);transition:all 0.2s ease',
+        (dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.18)') + ';color:#ffffff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.18)',
+      hideButtonPosStyle: 'position:absolute;bottom:20px;inset-inline-end:' +
+        ((s.rightPanelShow !== false && !s.uiCollapsed) ? 'calc(var(--panW) + 40px)' : '24px') +
+        ';z-index:510;display:grid;place-items:center;width:44px;height:44px;border-radius:999px;background:' +
+        (dark ? 'rgba(30,41,59,0.92)' : '#1e293b') + ';border:1px solid ' +
+        (dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.18)') +
+        ';color:#ffffff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.18);transition:inset-inline-end 0.35s cubic-bezier(0.16,1,0.3,1),right 0.35s cubic-bezier(0.16,1,0.3,1);pointer-events:auto',
       bottomToolbarBg: dark ? 'rgba(11,18,32,0.88)' : 'rgba(255,255,255,0.72)',
       bottomToolbarBorder: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)',
       bottomToolbarHoverBg: dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
@@ -2299,9 +2720,45 @@ class Component extends DCLogic {
       rightLegendRot: s.rightLegendOpen ? 'rotate(90deg)' : 'none',
       mapBtnSketchGlassHover: s.panel === 'sketch' ? 'background:rgba(37,99,235,.92)' : (dark ? 'background:rgba(255,255,255,.12);color:var(--blue)' : 'background:rgba(255,255,255,.85);color:var(--blue)'),
       collapseChat: () => this.setState({ chat: false, chatMin: true }),
-      expandChat: () => this.setState({ chat: true, chatMin: false }),
-      toggleChatMin: () => this.setState((st) => ({ chatMin: !st.chatMin, chat: true })),
-      toggleChat: () => this.setState((st) => ((st.chat && !st.chatMin) ? { chat: false, chatMin: true } : { chat: true, chatMin: false })),
+      expandChat: () => {
+        const isMobile = (window.innerWidth <= 640);
+        this.setState({
+          chat: true,
+          chatMin: false,
+          rightPanelShow: isMobile ? false : s.rightPanelShow,
+          genieState: isMobile ? 'collapsed' : s.genieState
+        });
+      },
+      toggleChatMin: () => {
+        const isMobile = (window.innerWidth <= 640);
+        this.setState((st) => {
+          const opening = !st.chat || st.chatMin;
+          return {
+            chatMin: !st.chatMin,
+            chat: true,
+            rightPanelShow: (opening && isMobile) ? false : st.rightPanelShow,
+            genieState: (opening && isMobile) ? 'collapsed' : st.genieState
+          };
+        });
+      },
+      toggleChat: () => {
+        const isMobile = (window.innerWidth <= 640);
+        this.setState((st) => {
+          const opening = !(st.chat && !st.chatMin);
+          return opening ? {
+            chat: true,
+            chatMin: false,
+            rightPanelShow: isMobile ? false : st.rightPanelShow,
+            genieState: isMobile ? 'collapsed' : st.genieState
+          } : {
+            chat: false,
+            chatMin: true
+          };
+        });
+      },
+      dragChatDrawer: (e) => this.handleDrawerDrag(e, 'chat'),
+      dragRightDrawer: (e) => this.handleDrawerDrag(e, 'right'),
+      collapsePanelsOnMobile: () => this.collapsePanelsOnMobile(),
       chatToggle: railStyle(s.chat),
       chatTabs: [
         { id: 'ask', icon: 'sparkles', label: t.askAi, iconSize: 16, title: t.askAi, flex: '1.3' },
