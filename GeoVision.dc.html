@@ -2413,13 +2413,20 @@ class Component extends DCLogic {
 
   flyTo(r) {
     const s = this.state;
+    const isMobile = (window.innerWidth <= 640);
     const padL = s.chat ? 200 : 0;
     const padR = s.panel ? 200 : 0;
     this.liveMaps().forEach((m) => {
       const p = m.project([r.lat, r.lng], 15).add(window.L.point((padR - padL) / 2, 0));
       m.setView(m.unproject(p, 15), 15, { animate: false });
     });
-    this.setState({ sel: r.id });
+    this.setState({
+      sel: r.id,
+      rightPanelShow: true,
+      genieState: 'expanded',
+      uiCollapsed: false,
+      ...(isMobile ? { chat: false } : {})
+    });
   }
 
   ask(q) {
@@ -3140,7 +3147,17 @@ class Component extends DCLogic {
         .map((f) => ({ ...f, go: () => this.set('format', f.id), style: smallChip(s.format === f.id), styleSmall: smallChip(s.format === f.id) })),
 
       visiblePois: pins, selId: s.sel,
-      pickPoi: (p) => this.setState({ sel: p.id, resultOpen: RESULTS.some((r) => r.id === p.id) ? p.id : s.resultOpen }),
+      pickPoi: (p) => {
+        const isMobile = (window.innerWidth <= 640);
+        this.setState({
+          sel: p.id,
+          resultOpen: RESULTS.some((r) => r.id === p.id) ? p.id : s.resultOpen,
+          rightPanelShow: true,
+          genieState: 'expanded',
+          uiCollapsed: false,
+          ...(isMobile ? { chat: false } : {})
+        });
+      },
 
       helpItems: HELP.map((h, i) => ({
         ...h, open: s.helpOpen.includes(i), rot: s.helpOpen.includes(i) ? 'rotate(180deg)' : 'none',
