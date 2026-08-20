@@ -2296,14 +2296,29 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    const isMobile = (window.innerWidth <= 640);
+    const isMobile = (window.innerWidth <= 640 || this.state.device === 'mobile');
     this.setState({
       theme: this.props.theme || 'dark',
       lang: this.props.lang || 'en',
       device: this.props.device || (isMobile ? 'mobile' : 'desktop'),
       brTags: this.props.showBrIds ?? false,
-      ...(isMobile ? { rightPanelShow: false, chat: false, genieState: 'collapsed' } : {})
+      ...(isMobile ? { rightPanelShow: false, chat: false, chatMin: true, genieState: 'collapsed' } : {})
     });
+
+    this._handleResize = () => {
+      if (window.innerWidth <= 640) {
+        if (this.state.rightPanelShow !== false || this.state.chat) {
+          this.setState({ rightPanelShow: false, genieState: 'collapsed', chat: false, chatMin: true });
+        }
+      }
+    };
+    window.addEventListener('resize', this._handleResize);
+  }
+
+  componentWillUnmount() {
+    if (this._handleResize) {
+      window.removeEventListener('resize', this._handleResize);
+    }
   }
 
   componentDidUpdate() {
@@ -2640,7 +2655,14 @@ class Component extends DCLogic {
       tabMap: topTab(s.screen === 'map'), tabAbout: topTab(s.screen === 'about'),
       tabBr: topTab(s.brTags), tabDev: topTab(s.device === 'mobile'),
       toggleBr: () => this.set('brTags', !s.brTags),
-      toggleDevice: () => this.set('device', s.device === 'mobile' ? 'desktop' : 'mobile'),
+      toggleDevice: () => {
+        const nextDev = s.device === 'mobile' ? 'desktop' : 'mobile';
+        const isMobile = (nextDev === 'mobile' || window.innerWidth <= 640);
+        this.setState({
+          device: nextDev,
+          ...(isMobile ? { rightPanelShow: false, genieState: 'collapsed', chat: false, chatMin: true } : {})
+        });
+      },
       deviceLabel: s.device === 'mobile' ? 'Mobile' : 'Desktop',
       navMap: navStyle(true), navAbout: navStyle(false, '400'),
       navMapIdle: navStyle(false), navAboutActive: navStyle(true, '400'),
