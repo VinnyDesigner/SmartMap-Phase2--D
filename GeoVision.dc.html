@@ -1431,13 +1431,11 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       <sc-if value="{{ chatOpenShow }}" hint-placeholder-val="{{ true }}">
       <div class="gv-left-ai-panel" style="position:absolute;top:70px;bottom:20px;inset-inline-start:16px;width:var(--chatW);display:flex;flex-direction:column;border-radius:16px;background:{{ chatBg }};backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid {{ chatBorder }};box-shadow:{{ chatShadow }};overflow:hidden;z-index:420;animation:rise .26s ease">
         <div class="gv-mobile-drawer-handle" onMouseDown="{{ dragChatDrawer }}" onTouchStart="{{ dragChatDrawer }}" style="display:none;width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,0.45);margin:6px auto 10px;cursor:ns-resize;touch-action:none;flex:none"></div>
-        <div style="display:flex;flex:none;padding:6px 6px 0;background:{{ dark ? 'rgba(11,18,32,0.6)' : 'rgba(240,244,248,0.7)' }};border-bottom:1px solid {{ dark ? 'rgba(255,255,255,0.08)' : '#e2e8f0' }};gap:4px">
+        <div style="display:flex;flex:none;padding:6px;background:{{ dark ? 'rgba(11,18,32,0.75)' : 'rgba(240,244,248,0.85)' }};border-bottom:1px solid {{ dark ? 'rgba(255,255,255,0.08)' : '#e2e8f0' }};gap:6px">
           <sc-for list="{{ chatTabs }}" as="c" hint-placeholder-count="3">
             <button onClick="{{ c.go }}" style="{{ c.style }}" title="{{ c.title }}">
-              <dc-import name="Icon" hint-size="20px,20px" icon="{{ c.icon }}" size="{{ c.iconSize }}"></dc-import>
-              <sc-if value="{{ c.hasLabel }}" hint-placeholder-val="{{ true }}">
-                <span style="font-weight:600;font-size:13px;white-space:nowrap">{{ c.label }}</span>
-              </sc-if>
+              <dc-import name="Icon" hint-size="15px,15px" icon="{{ c.icon }}" size="{{ 15 }}"></dc-import>
+              <span style="font-weight:600;font-size:12px;white-space:nowrap">{{ c.label }}</span>
             </button>
           </sc-for>
         </div>
@@ -2776,16 +2774,16 @@ class Component extends DCLogic {
       collapsePanelsOnMobile: () => this.collapsePanelsOnMobile(),
       chatToggle: railStyle(s.chat),
       chatTabs: [
-        { id: 'ask', icon: 'sparkles', label: t.askAi, iconSize: 16, title: t.askAi, flex: '1.3' },
-        { id: 'history', icon: 'history', label: '', iconSize: 20, title: t.history, flex: '0.85' },
-        { id: 'marks', icon: 'bookmark', label: '', iconSize: 20, title: t.bookmarks || 'Book marks', flex: '0.85' },
+        { id: 'ask', icon: 'sparkles', label: s.lang === 'ar' ? 'الذكاء' : 'Ask AI', title: t.askAi },
+        { id: 'history', icon: 'history', label: s.lang === 'ar' ? 'السجل' : 'History', title: t.history },
+        { id: 'marks', icon: 'bookmark', label: s.lang === 'ar' ? 'المفضلة' : 'Saved', title: t.bookmarks || 'Saved' },
       ].map((c) => ({
-        id: c.id, label: c.label, hasLabel: !!c.label, icon: c.icon, iconSize: c.iconSize, title: c.title, go: () => this.set('chatTab', c.id),
-        style: 'display:flex;flex:' + c.flex + ';min-width:0;align-items:center;justify-content:center;gap:7px;height:42px;padding:0 8px;border-radius:14px 14px 0 0;background:' +
-          (s.chatTab === c.id ? (dark ? '#1d293d' : '#ffffff') : 'transparent') + ';border:' +
-          (s.chatTab === c.id ? (dark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)') : 'none') + ';border-bottom:none;color:' +
+        id: c.id, label: c.label, icon: c.icon, title: c.title, go: () => this.set('chatTab', c.id),
+        style: 'display:flex;flex:1;min-width:0;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 8px;border-radius:10px;background:' +
+          (s.chatTab === c.id ? (dark ? 'rgba(255,255,255,0.12)' : '#ffffff') : 'transparent') + ';border:' +
+          (s.chatTab === c.id ? (dark ? '1px solid rgba(255,255,255,0.14)' : '1px solid rgba(0,0,0,0.08)') : '1px solid transparent') + ';color:' +
           (s.chatTab === c.id ? (dark ? '#ffffff' : '#0f172a') : (dark ? '#94a3b8' : '#64748b')) +
-          ';box-shadow:' + (s.chatTab === c.id ? (dark ? '0 -4px 14px rgba(0,0,0,0.25)' : '0 -2px 8px rgba(0,0,0,0.05)') : 'none') +
+          ';box-shadow:' + (s.chatTab === c.id ? (dark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.08)') : 'none') +
           ';cursor:pointer;transition:all 0.2s',
       })),
       tabAsk: s.chatTab === 'ask', tabHistory: s.chatTab === 'history', tabMarks: s.chatTab === 'marks',
