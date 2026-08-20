@@ -1192,10 +1192,9 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
         </div>
         <div class="gv-landing-nav-right" style="display:flex;align-items:center;gap:12px;margin-inline-start:auto">
           <button onClick="{{ goAbout }}" class="gv-ghost-text" style="{{ ghostNav }}">{{ t.about }}</button>
+          <button onClick="{{ goLogin }}" class="gv-ghost-text" style="{{ ghostNav }}">{{ t.signIn }}</button>
           <button onClick="{{ toggleTheme }}" style="{{ ghostIcon }}"><dc-import name="Icon" hint-size="17px,17px" icon="{{ themeIcon }}" size="{{ 17 }}" filled="{{ true }}"></dc-import></button>
           <button onClick="{{ toggleLang }}" style="{{ ghostIcon }}">{{ langShort }}</button>
-          <button onClick="{{ goLogin }}" class="gv-ghost-text" style="{{ ghostNav }}">{{ t.signIn }}</button>
-          <button onClick="{{ goMap }}" style="{{ solidSm }}">{{ t.openMap }}</button>
         </div>
 
         <!-- Mobile Landing Hamburger Menu -->
@@ -2603,10 +2602,17 @@ class Component extends DCLogic {
       frameStyle: s.device === 'mobile'
         ? 'width:430px;margin:16px auto;border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)'
         : 'display:block',
-      goMap: () => this.set('screen', 'map'), goAbout: () => this.set('screen', 'about'),
+      goMap: () => {
+        const isMobile = (window.innerWidth <= 640);
+        this.setState({ screen: 'map', ...(isMobile ? { chat: false, chatMin: true, rightPanelShow: false, genieState: 'collapsed' } : {}) });
+      },
+      goAbout: () => this.set('screen', 'about'),
       landingMenuOpen: s.landingMenuOpen,
       toggleLandingMenu: () => this.setState({ landingMenuOpen: !s.landingMenuOpen }),
-      goLandingMenuMap: () => this.setState({ screen: 'map', landingMenuOpen: false }),
+      goLandingMenuMap: () => {
+        const isMobile = (window.innerWidth <= 640);
+        this.setState({ screen: 'map', landingMenuOpen: false, ...(isMobile ? { chat: false, chatMin: true, rightPanelShow: false, genieState: 'collapsed' } : {}) });
+      },
       goLandingMenuHome: () => this.setState({ screen: 'landing', landingMenuOpen: false }),
       goLandingMenuAbout: () => this.setState({ screen: 'about', landingMenuOpen: false }),
       goLandingMenuLogin: () => this.setState({ screen: 'login', landingMenuOpen: false }),
