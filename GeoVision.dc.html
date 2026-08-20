@@ -892,12 +892,12 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   .gv-mobile-top-logo {
     display: flex !important;
     align-items: center !important;
-    top: 14px !important;
+    top: 12px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
   .gv-mobile-top-logo img {
-    height: 24px !important;
+    height: 30px !important;
     width: auto !important;
   }
 
@@ -905,10 +905,14 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
     display: grid !important;
     top: 12px !important;
     inset-inline-start: 16px !important;
-    background: #0f172a !important;
-    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+    padding: 0 !important;
+    width: 36px !important;
+    height: 36px !important;
+    place-items: center !important;
   }
 
   /* 4. Map Screen Header & Panels */
@@ -1001,14 +1005,18 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
   .gv-desktop-ctrl-btn {
     display: none !important;
   }
+  .gv-landing-hamburger-btn,
   .gv-mobile-hamburger-btn {
     display: grid !important;
-    background: #0f172a !important;
-    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
   }
-  .gv-mobile-hamburger-btn svg {
+  .gv-mobile-hamburger-btn svg,
+  .gv-landing-hamburger-btn svg {
     stroke: #ffffff !important;
   }
 
@@ -1347,8 +1355,8 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
       </div>
 
       <!-- Mobile Top Left About Button (shown only on mobile) -->
-      <button class="gv-mobile-top-about-btn" onClick="{{ goAbout }}" title="{{ t.about }}" style="display:none;position:absolute;top:12px;inset-inline-start:16px;z-index:500;place-items:center;width:40px;height:40px;border-radius:12px;background:#0f172a;border:1px solid rgba(255,255,255,0.22);color:#ffffff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.35)">
-        <dc-import name="Icon" hint-size="18px,18px" icon="info" size="{{ 18 }}"></dc-import>
+      <button class="gv-mobile-top-about-btn" onClick="{{ goAbout }}" title="{{ t.about }}" style="display:none;position:absolute;top:12px;inset-inline-start:16px;z-index:500;place-items:center;width:36px;height:36px;background:none;border:none;color:#ffffff;cursor:pointer;padding:0">
+        <dc-import name="Icon" hint-size="24px,24px" icon="info" size="{{ 24 }}"></dc-import>
       </button>
 
       <!-- Floating Navigation (top-center) -->
