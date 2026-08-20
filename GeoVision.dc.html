@@ -2313,8 +2313,8 @@ class Component extends DCLogic {
     const isMobile = (window.innerWidth <= 640);
     this.setState({
       uiCollapsed: false,
-      rightPanelShow: true,
-      genieState: 'expanded',
+      rightPanelShow: isMobile ? false : true,
+      genieState: isMobile ? 'collapsed' : 'expanded',
       chat: isMobile ? false : this.state.chat,
       chatMin: isMobile ? true : this.state.chatMin,
       rightLayersOpen: cardId === 'categories',
@@ -2604,7 +2604,15 @@ class Component extends DCLogic {
       ],
       landingCats: TREE.map((g) => ({
         label: L(g), icon: g.icon, n: g.items.length,
-        go: () => this.setState({ screen: 'map', panel: 'categories', expanded: [g.id] }),
+        go: () => {
+          const isMobile = (window.innerWidth <= 640);
+          this.setState({
+            screen: 'map',
+            panel: 'categories',
+            expanded: [g.id],
+            ...(isMobile ? { rightPanelShow: false, genieState: 'collapsed', chat: false } : { rightPanelShow: true, genieState: 'expanded' })
+          });
+        },
       })),
       frameStyle: s.device === 'mobile'
         ? 'width:430px;margin:16px auto;border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)'
