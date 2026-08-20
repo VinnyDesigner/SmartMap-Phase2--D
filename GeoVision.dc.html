@@ -920,81 +920,67 @@ spline-viewer::shadow #logo,spline-viewer::shadow a,spline-viewer::shadow #splin
 
   .gv-top-left-logo { display: none !important; }
 
-  /* AI Chat & Layers Pill Buttons on Mobile (20% larger AI icon & centered Layers icon) */
+  /* AI Chat & Layers Circular Buttons on Mobile */
   #gvAiChatBtn {
     inset-inline-start: 16px !important;
-    bottom: 2.2vh !important;
+    bottom: 20px !important;
     transform: none !important;
-    width: auto !important;
-    height: 44px !important;
-    padding: 0 16px !important;
-    border-radius: 999px !important;
-    display: inline-flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
+    width: 56px !important;
+    height: 56px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: grid !important;
+    place-items: center !important;
     background: rgba(15, 23, 42, 0.92) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
     z-index: 950 !important;
     cursor: pointer !important;
     margin: 0 !important;
     box-sizing: border-box !important;
   }
   #gvAiChatBtn img {
-    width: 32px !important;
-    height: 32px !important;
+    width: 36px !important;
+    height: 36px !important;
     object-fit: contain !important;
     display: block !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     flex: none !important;
   }
 
   #gvHidePanelBtn {
     inset-inline-end: 16px !important;
-    bottom: 2.2vh !important;
+    bottom: 20px !important;
     transform: none !important;
-    width: auto !important;
-    height: 44px !important;
-    padding: 0 16px !important;
-    border-radius: 999px !important;
-    display: inline-flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
+    width: 56px !important;
+    height: 56px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: grid !important;
+    place-items: center !important;
     background: rgba(15, 23, 42, 0.92) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
     z-index: 950 !important;
     cursor: pointer !important;
     margin: 0 !important;
     box-sizing: border-box !important;
   }
   #gvHidePanelBtn svg {
-    width: 22px !important;
-    height: 22px !important;
+    width: 24px !important;
+    height: 24px !important;
     color: #ffffff !important;
     display: block !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     flex: none !important;
-    transform-origin: center center !important;
   }
 
   .gv-mobile-btn-label {
-    display: inline-block !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: #ffffff !important;
-    letter-spacing: 0.2px !important;
-    margin: 0 !important;
-    white-space: nowrap !important;
-    line-height: 1 !important;
+    display: none !important;
   }
 
   /* Hide minimized search bar pill on mobile, keep AI bot button only */
